@@ -1,0 +1,80 @@
+name: FrameForge verification
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container: node:24.11.1-bookworm-slim
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test -- --run --reporter=default --reporter=junit --outputFile=reports/vitest.xml
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-test-results
+          path: frontend/reports/vitest.xml
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container: maven:3.9.14-eclipse-temurin-21
+    services:
+      mysql:
+        image: mysql:8.4.8
+        env:
+          MYSQL_DATABASE: frameforge_test
+          MYSQL_USER: frameforge
+          MYSQL_PASSWORD: integration-demo
+          MYSQL_ROOT_PASSWORD: integration-root
+          TZ: UTC
+        options: >-
+          --health-cmd="mysql -h 127.0.0.1 -uframeforge -pintegration-demo -Dframeforge_test -e 'SELECT 1'"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    env:
+      DB_URL: jdbc:mysql://mysql:3306/frameforge_test?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
+      DB_USER: frameforge
+      DB_PASSWORD: integration-demo
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - run: sh ./mvnw -B -ntp -Pmysql-it verify
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: |
+            backend/target/surefire-reports/
+            backend/target/failsafe-reports/
+  compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose config --quiet
+      - run: docker compose up --build -d --wait --wait-timeout 240
+      - run: docker run --rm --network frameforge_default -v "$PWD:/workspace:ro" -w /workspace -e FRAMEFORGE_URL=http://frontend:3000 node:24.11.1-bookworm-slim node scripts/smoke.mjs > smoke-result.json
+      - if: always()
+        run: docker compose logs --no-color > compose.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compose-smoke-results
+          path: |
+            smoke-result.json
+            compose.log
+      - if: always()
+        run: docker compose down

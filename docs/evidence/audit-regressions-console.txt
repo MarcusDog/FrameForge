@@ -1,0 +1,177 @@
+Captured console evidence for independent AI review, baseline df5c3ed, 2026-11-02.
+Only trailing whitespace and final blank lines normalized. Exit codes are from actual tool results.
+
+===== audit-regressions-before.log | exit 1 =====
+
+> frameforge-frontend@1.0.0 test
+> vitest --run src/lib/task-feed.test.ts src/components/task-sync.test.tsx --reporter=verbose
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22misolates tasks and never turns a query error into execution failure; manual recovery works[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mone failed task does not interrupt another running task[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mstops polling terminal tasks and never schedules without active tasks[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mignores stale versions and preserves terminal state[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mrestores unfinished tasks beyond the first history page[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22maborts and rejects old responses after user switch[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mdoes not let an old refresh overwrite the current generation[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma stalled query times out without failing its task or blocking the next poll[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mretains RUNNING A on HTTP 500, completes B once, and recovers only A on retry[32m 6[2mms[22m[39m
+ [31m×[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma late query failure cannot attach an error to a newer terminal snapshot[32m 5[2mms[22m[39m
+[31m   → expected 'obsolete query failure' to be undefined[39m
+ [31m×[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma newer successful snapshot clears a query error but a stale snapshot does not[32m 1[2mms[22m[39m
+[31m   → expected 'temporary query error' to be undefined[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mrenders RUNNING A with a retryable sync error while B succeeds and stops polling[33m 315[2mms[22m[39m
+ [31m×[39m src/components/task-sync.test.tsx[2m > [22mkeeps the task detail RUNNING and provides the same recoverable sync feedback[32m 46[2mms[22m[39m
+[31m   → expected [ [ '/api/tasks/A', { …(3) } ], …(3) ] to have a length of 2 but got 4[39m
+ [31m×[39m src/components/task-sync.test.tsx[2m > [22mclears a detail load error when a subsequent history refresh restores the task[32m 31[2mms[22m[39m
+[31m   → expected <div class="query-error" …(1)>…(1)</div> to be null[39m
+ [31m×[39m src/components/task-sync.test.tsx[2m > [22mdoes not carry an Alice detail error into Bob while Bob's detail response is pending[32m 23[2mms[22m[39m
+[31m   → expected <h2></h2> to be null[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mignores late success and HTTP 500 poll responses after the actual Provider switches user[32m 35[2mms[22m[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/task-feed.test.ts > task tracking business lifecycle > a late query failure cannot attach an error to a newer terminal snapshot
+AssertionError: expected 'obsolete query failure' to be undefined
+
+- Expected:
+undefined
+
++ Received:
+"obsolete query failure"
+
+ ❯ src/lib/task-feed.test.ts:148:41
+    146|     await vi.advanceTimersByTimeAsync(0);
+    147|     expect(feed.getSnapshot().items.a.status).toBe("SUCCEEDED");
+    148|     expect(feed.getSnapshot().errors.a).toBeUndefined();
+       |                                         ^
+    149|     await vi.advanceTimersByTimeAsync(6000);
+    150|     expect(transport.mock.calls.filter(([path])=>path==="/tasks/a")).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/lib/task-feed.test.ts > task tracking business lifecycle > a newer successful snapshot clears a query error but a stale snapshot does not
+AssertionError: expected 'temporary query error' to be undefined
+
+- Expected:
+undefined
+
++ Received:
+"temporary query error"
+
+ ❯ src/lib/task-feed.test.ts:161:41
+    159|     expect(feed.getSnapshot().errors.a).toBe("temporary query error");
+    160|     feed.add(task("a","RUNNING",4));
+    161|     expect(feed.getSnapshot().errors.a).toBeUndefined();
+       |                                         ^
+    162|     transport.mockResolvedValue(task("a","SUCCEEDED",7));await vi.adva…
+    163|     expect(feed.getSnapshot().items.a.status).toBe("SUCCEEDED");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/components/task-sync.test.tsx > keeps the task detail RUNNING and provides the same recoverable sync feedback
+AssertionError: expected [ [ '/api/tasks/A', { …(3) } ], …(3) ] to have a length of 2 but got 4
+
+- Expected
++ Received
+
+- 2
++ 4
+
+ ❯ src/components/task-sync.test.tsx:91:70
+     89|   expect(screen.queryByRole("alert")).toBeNull();
+     90|   expect(screen.getByText("已完成",{selector:".status"})).toBeInTheDocume…
+     91|   expect(fetchMock.mock.calls.filter(([url])=>url==="/api/tasks/A")).t…
+       |                                                                      ^
+     92| });
+     93|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/components/task-sync.test.tsx > clears a detail load error when a subsequent history refresh restores the task
+AssertionError: expected <div class="query-error" …(1)>…(1)</div> to be null
+
+- Expected:
+null
+
++ Received:
+<div
+  class="query-error"
+  role="alert"
+>
+  状态同步失败，可重试。已保留上次状态。
+  <button
+    class="text-button"
+  >
+    恢复查询
+  </button>
+</div>
+
+ ❯ src/components/task-sync.test.tsx:107:39
+    105|   restored=true;fireEvent.click(screen.getByRole("button",{name:"刷新服务端…
+
+    106|   expect(screen.getByText("已完成",{selector:".status"})).toBeInTheDocume…
+    107|   expect(screen.queryByRole("alert")).toBeNull();
+       |                                       ^
+    108| });
+    109|
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (16)[39m
+[2m   Start at [22m 13:37:05
+[2m   Duration [22m 2.18s[2m (transform 603ms, setup 348ms, import 769ms, tests 480ms, environment 1.69s)[22m
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/components/task-sync.test.tsx > does not carry an Alice detail error into Bob while Bob's detail response is pending
+AssertionError: expected <h2></h2> to be null
+
+- Expected:
+
+null
+
++ Received:
+<h2>
+  Alice 的旧详情错误
+</h2>
+
+ ❯ src/components/task-sync.test.tsx:122:46
+    120|   fireEvent.click(screen.getByRole("button",{name:"切换到 Bob"}));await f…
+    121|   expect(screen.getByLabelText("当前身份")).toHaveTextContent("bob");
+    122|   expect(screen.queryByText("Alice 的旧详情错误")).toBeNull();
+       |                                              ^
+    123|   expect(screen.getByText("正在读取任务…")).toBeInTheDocument();
+    124|   await act(async()=>{bob.resolve(Response.json({code:"NOT_FOUND",mess…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+===== audit-regressions-after.log | exit 0 =====
+
+> frameforge-frontend@1.0.0 test
+> vitest --run src/lib/task-feed.test.ts src/components/task-sync.test.tsx --reporter=verbose
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22misolates tasks and never turns a query error into execution failure; manual recovery works[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mone failed task does not interrupt another running task[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mstops polling terminal tasks and never schedules without active tasks[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mignores stale versions and preserves terminal state[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mrestores unfinished tasks beyond the first history page[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22maborts and rejects old responses after user switch[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mdoes not let an old refresh overwrite the current generation[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma stalled query times out without failing its task or blocking the next poll[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mretains RUNNING A on HTTP 500, completes B once, and recovers only A on retry[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma late query failure cannot attach an error to a newer terminal snapshot[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma newer successful snapshot clears a query error but a stale snapshot does not[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mrenders RUNNING A with a retryable sync error while B succeeds and stops polling[32m 281[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mkeeps the task detail RUNNING and provides the same recoverable sync feedback[32m 39[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mclears a detail load error when a subsequent history refresh restores the task[32m 22[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mdoes not carry an Alice detail error into Bob while Bob's detail response is pending[32m 25[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mignores late success and HTTP 500 poll responses after the actual Provider switches user[32m 41[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+[2m   Start at [22m 13:39:10
+[2m   Duration [22m 1.65s[2m (transform 506ms, setup 229ms, import 597ms, tests 435ms, environment 1.12s)[22m

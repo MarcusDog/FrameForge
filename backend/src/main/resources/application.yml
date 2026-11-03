@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/frameforge?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true}
+    username: ${DB_USER:frameforge}
+    password: ${DB_PASSWORD:frameforge-demo}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  jackson:
+    time-zone: UTC
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
+server:
+  shutdown: graceful
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    arg-name-based-constructor-auto-mapping: true
+management:
+  endpoints.web.exposure.include: health
+  endpoint.health.show-details: never
+frameforge:
+  storage: ${STORAGE_PATH:./.runtime/storage}
+  simulation-enabled: ${SIMULATION_ENABLED:true}
+  queue-capacity: ${TASK_QUEUE_CAPACITY:20}

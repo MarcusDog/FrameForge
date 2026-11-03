@@ -1,0 +1,185 @@
+R-07 / R-08 / R-12 原始控制台证据
+日期：2026-11-02
+以下文本直接取自 PowerShell Tee-Object 捕获的命令输出；没有重写失败信息。
+容器日志时区为 UTC。
+
+===== 首次定向测试：exit 1，10 passed / 2 failed =====
+
+> frameforge-frontend@1.0.0 test
+> vitest --run src/lib/task-feed.test.ts src/components/task-sync.test.tsx --reporter=verbose
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22misolates tasks and never turns a query error into execution failure; manual recovery works[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mone failed task does not interrupt another running task[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mstops polling terminal tasks and never schedules without active tasks[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mignores stale versions and preserves terminal state[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mrestores unfinished tasks beyond the first history page[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22maborts and rejects old responses after user switch[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mdoes not let an old refresh overwrite the current generation[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma stalled query times out without failing its task or blocking the next poll[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mretains RUNNING A on HTTP 500, completes B once, and recovers only A on retry[32m 5[2mms[22m[39m
+ [31m×[39m src/components/task-sync.test.tsx[2m > [22mrenders RUNNING A with a retryable sync error while B succeeds and stops polling[32m 262[2mms[22m[39m
+[31m   → [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  状态同步失败，可重试[31m
+Received:
+[31m  暂时无法获取最新状态，已保留上次记录。同步接口暂时不可用恢复查询[31m[39m
+ [31m×[39m src/components/task-sync.test.tsx[2m > [22mkeeps the task detail RUNNING and provides the same recoverable sync feedback[32m 24[2mms[22m[39m
+[31m   → [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  状态同步失败，可重试[31m
+Received:
+[31m  查询连接异常，保留上次状态。恢复查询[31m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mignores late success and HTTP 500 poll responses after the actual Provider switches user[32m 55[2mms[22m[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/task-sync.test.tsx > renders RUNNING A with a retryable sync error while B succeeds and stops polling
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  状态同步失败，可重试
+Received:
+  暂时无法获取最新状态，已保留上次记录。同步接口暂时不可用恢复查询
+ ❯ src/components/task-sync.test.tsx:64:17
+     62|   mode="failure";await advance(1500);
+     63|   const alert=within(a).getByRole("alert");
+     64|   expect(alert).toHaveTextContent("状态同步失败，可重试");
+       |                 ^
+     65|   expect(alert).toHaveTextContent("同步接口暂时不可用");
+     66|   expect(a.querySelector(".status")).toHaveTextContent("处理中");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/task-sync.test.tsx > keeps the task detail RUNNING and provides the same recoverable sync feedback
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  状态同步失败，可重试
+Received:
+  查询连接异常，保留上次状态。恢复查询
+ ❯ src/components/task-sync.test.tsx:86:37
+
+     84|   expect(screen.getByText("处理中")).toBeInTheDocument();
+     85|   mode="failure";await advance(1500);
+     86|   expect(screen.getByRole("alert")).toHaveTextContent("状态同步失败，可重试");
+       |                                     ^
+     87|   expect(screen.getByText("处理中")).toBeInTheDocument();
+     88|   mode="recovery";fireEvent.click(screen.getByRole("button",{name:"恢复查…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m10 passed[39m[22m[90m (12)[39m
+[2m   Start at [22m 13:14:49
+[2m   Duration [22m 1.82s[2m (transform 503ms, setup 291ms, import 632ms, tests 360ms, environment 1.48s)[22m
+
+
+===== 最小文案修改后定向复验：exit 0，12 passed =====
+
+> frameforge-frontend@1.0.0 test
+> vitest --run src/lib/task-feed.test.ts src/components/task-sync.test.tsx --reporter=verbose
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22misolates tasks and never turns a query error into execution failure; manual recovery works[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mone failed task does not interrupt another running task[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mstops polling terminal tasks and never schedules without active tasks[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mignores stale versions and preserves terminal state[32m 0[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mrestores unfinished tasks beyond the first history page[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22maborts and rejects old responses after user switch[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mdoes not let an old refresh overwrite the current generation[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma stalled query times out without failing its task or blocking the next poll[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mretains RUNNING A on HTTP 500, completes B once, and recovers only A on retry[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mrenders RUNNING A with a retryable sync error while B succeeds and stops polling[32m 255[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mkeeps the task detail RUNNING and provides the same recoverable sync feedback[32m 40[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mignores late success and HTTP 500 poll responses after the actual Provider switches user[32m 49[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m   Start at [22m 13:16:04
+[2m   Duration [22m 1.50s[2m (transform 517ms, setup 202ms, import 599ms, tests 364ms, environment 1.00s)[22m
+
+
+===== 完整前端回归：exit 0，23 passed =====
+
+> frameforge-frontend@1.0.0 test
+> vitest --run --reporter=verbose
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/api.test.ts[2m > [22mtimes out an unresponsive query with a recoverable request error[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/api.test.ts[2m > [22mallows uploads and submission sixty seconds before timing out[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/api.test.ts[2m > [22mpreserves caller cancellation and clears the request deadline[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/api.test.ts[2m > [22malso times out if the server stalls while sending JSON[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22misolates tasks and never turns a query error into execution failure; manual recovery works[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mone failed task does not interrupt another running task[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mstops polling terminal tasks and never schedules without active tasks[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mignores stale versions and preserves terminal state[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mrestores unfinished tasks beyond the first history page[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22maborts and rejects old responses after user switch[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mdoes not let an old refresh overwrite the current generation[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22ma stalled query times out without failing its task or blocking the next poll[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts[2m > [22mtask tracking business lifecycle[2m > [22mretains RUNNING A on HTTP 500, completes B once, and recovers only A on retry[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/providers.test.tsx[2m > [22mlocks consecutive identity changes synchronously[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/providers.test.tsx[2m > [22mwaits for all bootstrap requests and cancels them on unmount[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/providers.test.tsx[2m > [22mdoes not track tasks on the gallery page[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/providers.test.tsx[2m > [22maborts tracking when leaving related pages and restores it on return[32m 57[2mms[22m[39m
+ [32m✓[39m src/components/studio.test.tsx[2m > [22mrejects invalid files and disables submit until the upload completes[32m 262[2mms[22m[39m
+ [32m✓[39m src/components/studio.test.tsx[2m > [22mreplacing a slot prevents an old upload response from overriding the new file[32m 54[2mms[22m[39m
+ [32m✓[39m src/components/studio.test.tsx[2m > [22mremoving an image releases its preview and aborts upload[32m 39[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mrenders RUNNING A with a retryable sync error while B succeeds and stops polling[33m 309[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mkeeps the task detail RUNNING and provides the same recoverable sync feedback[32m 48[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx[2m > [22mignores late success and HTTP 500 poll responses after the actual Provider switches user[32m 57[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[32m23 passed[39m[22m[90m (23)[39m
+[2m   Start at [22m 13:17:30
+[2m   Duration [22m 1.99s[2m (transform 1.73s, setup 587ms, import 2.16s, tests 920ms, environment 3.29s)[22m
+
+
+===== lint / typecheck / build：exit 0 =====
+
+> frameforge-frontend@1.0.0 lint
+> eslint . --max-warnings=0
+
+
+> frameforge-frontend@1.0.0 typecheck
+> tsc --noEmit
+
+
+> frameforge-frontend@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 116ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.9s
+  Running TypeScript ...
+  Finished TypeScript in 2.7s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/5) ...
+  Generating static pages using 7 workers (1/5)
+  Generating static pages using 7 workers (2/5)
+  Generating static pages using 7 workers (3/5)
+✓ Generating static pages using 7 workers (5/5) in 849ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /history
+├ ○ /tasks
+├ ƒ /tasks/[id]
+└ ƒ /templates/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

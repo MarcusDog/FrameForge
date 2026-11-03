@@ -1,0 +1,14 @@
+node_modules/
+.next/
+coverage/
+reports/
+smoke-result.json
+target/
+.env
+.env.*.local
+.runtime/
+*.log
+.DS_Store
+Thumbs.db
+
+*.tsbuildinfo

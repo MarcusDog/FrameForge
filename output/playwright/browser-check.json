@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "time": "2026-11-02T12:57:19.126Z",
+  "browser": "156.0.4314.58",
+  "success": "edfaf022-40df-4c75-a09e-78dd2c066ad5",
+  "failure": "c99b3ed5-bd5a-4181-a601-6eda77c2bfce",
+  "checks": [
+    "UTF-8 gallery and category filter",
+    "Dynamic uploads, successful acceptance, repeat submission",
+    "Leaving task pages stops queries; returning restores tracking",
+    "Refresh recovery, independent success/failure, real result preview, Escape close",
+    "No task polling after terminal state",
+    "User switch clears previous tasks and upload state",
+    "390px and 320px gallery/studio layouts without horizontal overflow",
+    "Unknown template error"
+  ],
+  "pageErrors": []
+}

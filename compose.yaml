@@ -1,0 +1,101 @@
+name: frameforge
+services:
+  mysql:
+    image: mysql:8.4.8
+    environment:
+      MYSQL_DATABASE: frameforge
+      MYSQL_USER: frameforge
+      MYSQL_PASSWORD: ${DB_PASSWORD:-frameforge-demo}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local-root-demo}
+      TZ: UTC
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -h 127.0.0.1 -u $$MYSQL_USER -D frameforge -e 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: runtime
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/frameforge?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
+      DB_USER: frameforge
+      DB_PASSWORD: ${DB_PASSWORD:-frameforge-demo}
+      STORAGE_PATH: /data
+      SIMULATION_ENABLED: ${SIMULATION_ENABLED:-true}
+      TASK_QUEUE_CAPACITY: ${TASK_QUEUE_CAPACITY:-20}
+    volumes:
+      - media-data:/data
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  frontend:
+    build:
+      context: frontend
+      target: runtime
+      args:
+        JAVA_API_BASE_URL: http://backend:8080
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  mysql-test:
+    profiles: ["test"]
+    image: mysql:8.4.8
+    environment:
+      MYSQL_DATABASE: frameforge_test
+      MYSQL_USER: frameforge
+      MYSQL_PASSWORD: integration-demo
+      MYSQL_ROOT_PASSWORD: integration-root
+      TZ: UTC
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -h 127.0.0.1 -u $$MYSQL_USER -D frameforge_test -e 'SELECT 1'"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+  backend-test:
+    profiles: ["test"]
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: test
+    environment:
+      DB_URL: jdbc:mysql://mysql-test:3306/frameforge_test?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
+      DB_USER: frameforge
+      DB_PASSWORD: integration-demo
+    volumes:
+      - maven-cache:/root/.m2
+    depends_on:
+      mysql-test:
+        condition: service_healthy
+  frontend-test:
+    profiles: ["test"]
+    build:
+      context: frontend
+      target: test
+volumes:
+  mysql-data:
+  media-data:
+  maven-cache:
