@@ -24,7 +24,9 @@
 
 2026-11-03 本地容器预检：27 前端、15 Java 单元、12 MySQL 集成全部通过，0 failures/errors/skipped；lint/typecheck/build 成功，Compose config 成功。原始输出见 [github-preflight-console.txt](evidence/github-preflight-console.txt)。没有在宿主机执行工程构建、测试或业务脚本。
 
-远端 CI：待首个发布提交实际运行后填写对应 SHA、run URL 和结论；本地通过不等于 GitHub 已通过。
+远端 CI 已触发：[首个 push run 41603794341](https://github.com/MarcusDog/FrameForge/actions/runs/41603794341)，对应提交 6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd。GitHub 返回 failure，三个任务 steps 都为空，原因为“The job was not started because your account is locked due to a billing issue.”。任务未启动，没有测试/构建日志和 artifacts，不能写成远端测试已通过，也不能将它误报为业务测试失败。
+
+原始 API 信息见 [github-actions-first-run.json](evidence/github-actions-first-run.json)。账户所有者需处理 GitHub 计费锁定后重新运行此 workflow；本轮没有修改账户账单、跳过检查、改用自托管 runner 或伪造绿色状态。后续文档提交同样保留 push 触发。
 
 ## R-13：材料逐项对应
 
@@ -63,5 +65,7 @@
 
 - 业务代码本地验收基线：e70c44a9d06fc380fa55ea4c4d06730abcc672e6；本轮只更新 CI、忽略规则和交付文档。
 - GitHub 是从本地完整工程导出的发布快照，初始发布不携带本地开发历史；上述本地 SHA 不承诺可在 GitHub 打开。完整本地历史与原始附件均保留。
+- 本地发布分支为 github/main，推送到 origin 的 main；本地 main 保留原始附件历史，不直接发布。远端默认推送映射已指向该发布分支。GitHub 克隆者使用正常的 main 即可，不需要本地历史。
 - 公开内容包括工程、必要题目归档、示例素材、测试与证据；原始“前端设计/”“题目要求/”、缓存、构建产物、用户媒体、凭据不上传。
-- GitHub 验收提交及远端运行结果：发布并检查后填入真实值；不会把待执行操作提前写为通过。
+- 可供招聘方复核的代码验收提交：[6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd](https://github.com/MarcusDog/FrameForge/commit/6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd)，本地容器验证通过，远端因账户计费锁定未执行。不是“云端通过的验收提交”。
+- [github-source-provenance.json](evidence/github-source-provenance.json) 记录 git diff exit 0，证明该公开快照的业务源码/依赖/Compose 与本地验收基线一致。后续提交只补交付证据与文档，最新入口取 main。

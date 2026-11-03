@@ -104,3 +104,13 @@
 - 运行容器与最新 backend 构建镜像的 app.jar SHA256 均为 128b42251d20b421ffd38576894c98be21c21852863da46b3ec264840f7e9a3d。题目来源与 EXAM_SPEC SHA256 完全相同。运行/SQL/初始化/环境输出见 evidence/audit-runtime-console.txt。
 - 本轮共 54 项测试（27+15+12），均为本轮运行结果；Java 源码未改，修复后不重复执行同一后端检查。远端 CI、当前真实浏览器小屏/刷新/焦点、部署回滚未验证；旧截图不当成本轮运行证据。人工投入/审查待本人确认。完整逐项分级见 REVIEW.md。
 - 整理文档时一条补丁因旧行文本与当前 REQUIREMENTS 不匹配而被拒绝，未改动文件；重新读取现有行后应用成功。这是文档编辑失败，不是测试失败，未据此改写验收结果。
+
+## GitHub 交付复核 / 2026-11-03
+
+- Docker 初次不可连接，隐藏启动 D:/Docker/docker 下的现有 Docker Desktop 后恢复；没有安装新运行时。
+- docker compose --profile test run --build --rm frontend-test sh -c 'npm run lint && npm run typecheck && npm run test -- --run --reporter=default --reporter=junit --outputFile=reports/vitest.xml && npm run build'：exit 0，27 tests，JUnit XML 参数可用，lint/typecheck/build 通过。
+- docker compose --profile test run --build --rm backend-test：exit 0，15 unit+12 MySQL IT，0 failures/errors/skipped，BUILD SUCCESS。原始输出见 evidence/github-preflight-console.txt。
+- docker compose config --quiet、docker compose up --build -d --wait --wait-timeout 180：exit 0；容器内 node scripts/smoke.mjs：exit 0/PASS。输出见 evidence/github-runtime-console.txt。
+- gh repo create MarcusDog/FrameForge --public 成功；git push origin refs/heads/github/main:refs/heads/main 成功，公开快照为 6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd。本地开发历史/原始附件未公开，源代码一致性记录见 github-source-provenance.json。
+- gh run view 首次 push run 41603794341：failure，三个 job 无 steps；读取失败日志返回 log not found；check-run annotations 均明确“account is locked due to a billing issue”。原始 API JSON 已保存，artifact total_count=0。远端未运行测试，不能以本地 54 通过替代。
+- 本轮变动为交付文档、CI 报告/超时/去重配置和报告忽略规则；未改业务代码和测试断言，未使用 Computer Use 或在宿主机运行工程构建/测试/业务脚本。个人实际投入与人工审查待本人确认。

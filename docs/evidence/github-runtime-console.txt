@@ -1,0 +1,223 @@
+2026-11-03 GitHub delivery runtime preflight. Captured output; trailing whitespace normalized.
+
+===== github-preflight-compose.log | actual exit 0 =====
+ Image frameforge-frontend Building
+ Image frameforge-backend Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.17kB 0.0s done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B done
+#2 DONE 0.0s
+
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 898B done
+#3 DONE 0.0s
+
+#4 [backend internal] load metadata for docker.io/library/eclipse-temurin:21.0.10_7-jre-jammy
+#4 ...
+
+#5 [backend internal] load metadata for docker.io/library/maven:3.9.14-eclipse-temurin-21
+#5 DONE 0.2s
+
+#4 [backend internal] load metadata for docker.io/library/eclipse-temurin:21.0.10_7-jre-jammy
+#4 DONE 0.2s
+
+#6 [frontend internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#6 DONE 0.2s
+
+#7 [backend internal] load .dockerignore
+#7 transferring context: 143B done
+#7 DONE 0.0s
+
+#8 [frontend internal] load .dockerignore
+#8 transferring context: 102B done
+#8 DONE 0.0s
+
+#9 [backend runtime 1/5] FROM docker.io/library/eclipse-temurin:21.0.10_7-jre-jammy@sha256:fa4854e6057665066cb79953616671c20f32b96a85d6dd8b78db0762203924c4
+#9 resolve docker.io/library/eclipse-temurin:21.0.10_7-jre-jammy@sha256:fa4854e6057665066cb79953616671c20f32b96a85d6dd8b78db0762203924c4 0.0s done
+#9 DONE 0.0s
+
+#10 [backend build 1/8] FROM docker.io/library/maven:3.9.14-eclipse-temurin-21@sha256:98819eb3745bd2007c3f1a19b59085c1fa3929aecb7dbfa431dfcf5a4f18ce3c
+#10 resolve docker.io/library/maven:3.9.14-eclipse-temurin-21@sha256:98819eb3745bd2007c3f1a19b59085c1fa3929aecb7dbfa431dfcf5a4f18ce3c 0.0s done
+#10 DONE 0.0s
+
+#11 [frontend deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#11 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#11 DONE 0.0s
+
+#12 [backend internal] load build context
+#12 transferring context: 2.44kB done
+#12 DONE 0.0s
+
+#13 [frontend internal] load build context
+#13 transferring context: 2.41kB done
+#13 DONE 0.0s
+
+#14 [frontend deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#14 CACHED
+
+#15 [frontend deps 2/4] WORKDIR /app
+#15 CACHED
+
+#16 [frontend deps 3/4] COPY package.json package-lock.json ./
+#16 CACHED
+
+#17 [frontend test 1/1] COPY . .
+#17 CACHED
+
+#18 [backend build 6/8] COPY backend/src src
+#18 CACHED
+
+#19 [backend build 2/8] WORKDIR /workspace/backend
+#19 CACHED
+
+#20 [backend build 4/8] COPY backend/.mvn .mvn
+#20 CACHED
+
+#21 [backend runtime 3/5] RUN groupadd --gid 10001 app && useradd --uid 10001 --gid app --no-create-home app && mkdir /data && chown app:app /data
+#21 CACHED
+
+#22 [backend build 3/8] COPY backend/pom.xml backend/mvnw backend/mvnw.cmd ./
+#22 CACHED
+
+#23 [backend build 7/8] COPY database /workspace/database
+#23 CACHED
+
+#24 [backend runtime 2/5] RUN apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core curl && rm -rf /var/lib/apt/lists/*
+#24 CACHED
+
+#25 [backend runtime 4/5] WORKDIR /app
+#25 CACHED
+
+#26 [backend build 5/8] RUN chmod +x mvnw
+#26 CACHED
+
+#27 [backend build 8/8] RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -ntp verify
+#27 CACHED
+
+#28 [backend runtime 5/5] COPY --from=build /workspace/backend/target/frameforge-1.0.0.jar app.jar
+#28 CACHED
+
+#29 [backend] exporting to image
+#29 exporting layers done
+#29 exporting manifest sha256:5607c6751ad80f9eb403bb1d9390c3d59013f62c127c28c594d92216b5ddd655 done
+#29 exporting config sha256:9c23b68cb5ab19561201189728e30f217d90afe36f2e92b174e40c3eeef3c6b2 done
+#29 exporting attestation manifest sha256:c27ba2fa439f640a4b873d845e758590d989dc236c491e8717936cc719e2529e 0.0s done
+#29 exporting manifest list sha256:b7504dd07b10b15fb6ef85a184867e68991d67e4bc2b00a0297d49f032da50b5 0.0s done
+#29 naming to docker.io/library/frameforge-backend:latest done
+#29 unpacking to docker.io/library/frameforge-backend:latest done
+#29 DONE 0.1s
+
+#30 [frontend build 1/1] RUN npm run build
+#30 ...
+
+#31 [backend] resolving provenance for metadata file
+#31 DONE 0.0s
+
+#30 [frontend build 1/1] RUN npm run build
+#30 1.186
+#30 1.186 > frameforge-frontend@1.0.0 build
+#30 1.186 > next build
+#30 1.186
+#30 1.903 ▲ Next.js 16.4.3 (Turbopack)
+#30 2.032 ✓ Running next.config.ts took 128ms
+#30 2.048
+#30 2.081   Creating an optimized production build ...
+#30 4.612 ✓ Compiled successfully in 2.5s
+#30 4.614   Running TypeScript ...
+#30 7.420   Finished TypeScript in 2.8s ...
+#30 7.423   Collecting page data using 7 workers ...
+#30 8.125   Generating static pages using 7 workers (0/5) ...
+#30 8.334   Generating static pages using 7 workers (1/5)
+#30 8.337   Generating static pages using 7 workers (2/5)
+#30 8.338   Generating static pages using 7 workers (3/5)
+#30 8.338 ✓ Generating static pages using 7 workers (5/5) in 214ms
+#30 8.345   Finalizing page optimization ...
+#30 8.608
+#30 8.611 Route (app)
+#30 8.611 ┌ ○ /
+#30 8.611 ├ ○ /_not-found
+#30 8.611 ├ ○ /history
+#30 8.611 ├ ○ /tasks
+#30 8.611 ├ ƒ /tasks/[id]
+#30 8.611 └ ƒ /templates/[id]
+#30 8.611
+#30 8.611
+#30 8.611 ○  (Static)   prerendered as static content
+#30 8.611 ƒ  (Dynamic)  server-rendered on demand
+#30 8.611
+#30 8.734 npm notice
+#30 8.734 npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+#30 8.734 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+#30 8.734 npm notice To update run: npm install -g npm@11.21.1
+#30 8.734 npm notice
+#30 DONE 8.8s
+
+#15 [frontend deps 2/4] WORKDIR /app
+#15 CACHED
+
+#32 [frontend runtime 3/5] COPY --from=build --chown=node:node /app/.next/standalone ./
+#32 DONE 0.5s
+
+#33 [frontend runtime 4/5] COPY --from=build --chown=node:node /app/.next/static ./.next/static
+#33 DONE 0.1s
+
+#34 [frontend runtime 5/5] COPY --from=build --chown=node:node /app/public ./public
+#34 DONE 0.1s
+
+#35 [frontend] exporting to image
+#35 exporting layers
+#35 exporting layers 2.3s done
+#35 exporting manifest sha256:0acd2a08a0842e3dda20f6ebb21b4dbd4426a173428dcb9dfe033c62f620d363 0.0s done
+#35 exporting config sha256:087dabfb0961445a22c546c306a8b234a0eb44eb116fbbfb8b04da33957e31b0 0.0s done
+#35 exporting attestation manifest sha256:5e7d610ac6874f575b503dbf480888479ff7874ae8f9677499e758af1e1425f0 0.0s done
+#35 exporting manifest list sha256:baa99f211c6d31062293108721d0363c70272ead37bd3a0141ddcb876c043928 0.0s done
+#35 naming to docker.io/library/frameforge-frontend:latest done
+#35 unpacking to docker.io/library/frameforge-frontend:latest
+#35 unpacking to docker.io/library/frameforge-frontend:latest 0.8s done
+#35 DONE 3.2s
+
+#36 [frontend] resolving provenance for metadata file
+#36 DONE 0.0s
+ Image frameforge-backend Built
+ Image frameforge-frontend Built
+ Container frameforge-mysql-1 Running
+ Container frameforge-backend-1 Running
+ Container frameforge-frontend-1 Recreate
+ Container frameforge-frontend-1 Recreated
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-backend-1 Waiting
+ Container frameforge-backend-1 Healthy
+ Container frameforge-frontend-1 Starting
+ Container frameforge-frontend-1 Started
+ Container frameforge-backend-1 Waiting
+ Container frameforge-frontend-1 Waiting
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-backend-1 Healthy
+ Container frameforge-frontend-1 Healthy
+
+===== github-preflight-smoke.log | actual exit 0 =====
+{
+  "result": "PASS",
+  "base": "http://frontend:3000",
+  "templates": 6,
+  "successId": "6f6615e9-5b4f-4b7a-ae97-c1d359b79627",
+  "failureId": "f97fd2e8-c260-47e3-9048-7aafdfdc7a95",
+  "checks": [
+    "UTF-8 seed",
+    "local covers",
+    "cookie forwarding",
+    "upload",
+    "multi-task",
+    "three stages",
+    "failure stop",
+    "PNG result",
+    "history recovery",
+    "user isolation",
+    "HTTP client errors"
+  ]
+}

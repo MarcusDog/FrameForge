@@ -168,3 +168,7 @@ AI 新增 README 验收入口和 SUBMISSION.md，更新素材发布范围；CI �
 实际在现有 Docker 环境执行前端完整检查（含新 JUnit 输出参数）及后端真实 MySQL 集成，54 项测试、lint/typecheck/build 全部通过。GitHub 连接器用于账户/仓库只读核查；其当前工具不提供新建仓库及本地 Git 推送，改用已登录 GitHub CLI 创建公开仓库并准备发布快照。没有安装新运行时或使用 Computer Use；数据和构建仍使用 D 盘已有 Docker 存储。
 
 环境/工具错误如实区分：首次 Docker 查询因引擎未运行失败，隐藏启动现有 Docker Desktop 后恢复；Git 默认转义中文文件名导致一次只读文件尺寸枚举报错，改用 core.quotePath=false 正确读取。它们不是工程测试失败。远端发布和 CI 的实际结果将在完成后记录于 SUBMISSION.md，人工贡献与工时仍待本人确认。
+
+实际发布：公开工程快照 6d3e27f 推送成功，原始设计/题目目录未进入发布树，完整本地历史保留。Git diff 验证公开业务代码与本地 e70c44a 基线一致；没有借发布过程改动业务行为。重新执行 Compose 构建启动与容器 HTTP smoke 均成功，输出见 github-runtime-console.txt。
+
+首次远端 run 41603794341 返回 failure，三个任务没有任何执行步骤，annotations 明确为账户计费锁定。gh run view --log-failed 返回 log not found，与任务未启动相符；改读 check-run annotations 获取真实原因，并保存 JSON，没有凭空补出构建错误。当前不存在可供下载的远端测试 artifact。没有为了绿灯修改触发器或删检查；剩余动作是账户所有者解除锁定后重跑。R-12 配置和本地等价检查已交付，远端执行仍受外部条件阻挡。

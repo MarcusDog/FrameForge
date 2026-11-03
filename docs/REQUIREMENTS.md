@@ -15,7 +15,7 @@
 | R-09 | 个人历史/时间/状态/失败原因/结果预览，刷新恢复，游标分页 | 本轮 MySQL 分页、feed 恢复与 HTTP PNG；浏览器为上轮证据 | 后端/恢复逻辑已验证；当前浏览器刷新与预览未复测 |
 | R-10 | Alice/Bob Cookie Demo 身份，素材/任务/历史/结果服务端归属校验 | 本轮 HTTP/MySQL 隔离、smoke、Provider 用户切换 | 已实现并验证 |
 | R-11 | 浅色工作台、参考信息布局、语义上传/按钮/对话框、焦点、小屏操作 | 本轮组件标签/禁用/错误反馈；桌面/390px/320px 图与断言为上轮产物 | 组件行为已验证；当前视觉/焦点/小屏源码支持但未复测 |
-| R-12 | push/PR 三任务 CI，前端四项检查、Java 测试构建、MySQL 集成、Compose smoke | 本轮 27 前端 + 15 Java 单元 + 12 MySQL 集成通过；配置已交付 | 已实现；远端 Actions 未运行 |
+| R-12 | push/PR 三任务 CI，前端四项检查、Java 测试构建、MySQL 集成、Compose smoke | 2026-11-03 再验 27 前端 + 15 单元 + 12 MySQL；远端 push 已触发 | 本地通过；远端账户计费锁定、任务未启动，见 SUBMISSION |
 | R-13 | 源码、锁文件、SQL、完整 README、真实 AI 工作流/决策/修复/限制/工作量 | README、AI_WORKFLOW、DECISIONS、VERIFICATION、DELIVERY、REVIEW 与原始输出 | 材料已核对；个人投入/贡献/人工审查待本人确认 |
 | R-14 | 前后端 Dockerfile、三服务 Compose、卷、healthcheck、示例配置 | 本轮 config/up/三服务 healthy/HTTP smoke/全新 tmpfs MySQL 初始化 | 已实现并验证；全无缓存安装未验证 |
 
@@ -27,3 +27,5 @@
 - 不声称已经公网部署、远端 CI 通过、人工手写代码或人工审查通过。
 
 以上是开发阶段实现索引，不替代独立验收。以 REVIEW.md 的 R-01～R-14 表为最新证据分级：本轮未复测真实浏览器分类/刷新/小屏/焦点、未运行远端 CI；个人投入/人工审查待本人确认。已修复五项先前未被测试覆盖的前端竞态/重复查询问题。
+
+2026-11-03 GitHub 发布与新增材料入口见 SUBMISSION.md；它补充 REVIEW 的历史结论：远端工作流已触发，但账户计费锁定导致任务未启动，仍没有远端测试通过记录。

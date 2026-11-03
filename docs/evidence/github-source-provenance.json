@@ -1,0 +1,24 @@
+{
+  "recordedDate": "2026-11-03",
+  "localTestedBusinessCommit": "e70c44a9d06fc380fa55ea4c4d06730abcc672e6",
+  "publicationCommit": "6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd",
+  "gitDiffExitCode": 0,
+  "comparedPaths": [
+    "backend",
+    "frontend/src",
+    "frontend/package.json",
+    "frontend/package-lock.json",
+    "frontend/next.config.ts",
+    "frontend/tsconfig.json",
+    "frontend/vitest.config.ts",
+    "frontend/Dockerfile",
+    "compose.yaml",
+    "database",
+    "scripts"
+  ],
+  "excludedFromPublication": [
+    "前端设计/",
+    "题目要求/"
+  ],
+  "localHistoricalCommitsPublished": false
+}

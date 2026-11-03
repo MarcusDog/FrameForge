@@ -214,6 +214,8 @@ docker run --rm --network frameforge_default --mount "type=bind,source=$PWD,targ
 
 GitHub Actions 在 push / pull_request 时触发 frontend、backend、compose 三个任务。前端四项检查；Java 单元/构建及真实 MySQL 集成；Compose 启动和 HTTP smoke。远端 Actions 是否实际运行以仓库记录为准，本地配置存在不等于云端已通过。
 
+2026-11-03 实际推送已触发 [GitHub Actions](https://github.com/MarcusDog/FrameForge/actions/runs/41603794341)，但账户因计费问题被锁定，三个任务均未启动，不能标记为远端通过。处理账户锁定后可重新运行；本地容器 54 项测试及构建已通过。验收代码提交与原始 API 证据见 [SUBMISSION.md](docs/SUBMISSION.md)。
+
 ## 部署与基本回滚
 
 本题不要求公网部署。目标机器准备 Docker 后复制源码和非敏感配置，配置持久卷备份，再执行 Compose 启动并运行 smoke。生产化前需替换 Demo 身份、配置 HTTPS 和正式凭据。
