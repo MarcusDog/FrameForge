@@ -19,7 +19,7 @@ export function Providers({children}:{children:ReactNode}){
   const bootstrap=useRef<AbortController|null>(null),switchRequest=useRef<AbortController|null>(null);
   const feed=useMemo(()=>new TaskFeed(api,1500,user?.id),[user?.id]);
   const pathname=usePathname();
-  const trackingPage=pathname==="/tasks"||pathname.startsWith("/tasks/")||pathname==="/history"||pathname.startsWith("/templates/");
+  const trackingPage=pathname==="/account"||pathname==="/tasks"||pathname.startsWith("/tasks/")||pathname==="/history"||pathname.startsWith("/templates/");
   useEffect(()=>{if(user&&trackingPage)void feed.start();return feed.stop;},[feed,user,trackingPage]);
   useEffect(()=>()=>{epoch.current++;bootstrap.current?.abort();switchRequest.current?.abort();},[]);
   useEffect(()=>{
@@ -69,8 +69,7 @@ export function useFeed(){
 export function IdentityPrompt(){
   const session=useSession();
   return <section className="identity-panel">
-    <div><span className="eyebrow">YOUR OWN CREATIVE SPACE</span><h2>选择一个演示身份，开始创作</h2>
-    <p>素材和任务按用户独立保存。刷新后，创作记录依然在这里。</p></div>
+    <div><h2>选择账户</h2></div>
     <div className="button-row">{session.users.map(user=><button key={user.id} className="button secondary" disabled={session.switching||session.sessionLoading} onClick={()=>void session.switchUser(user.id)}>以 {user.name} 体验 <span aria-hidden>↗</span></button>)}</div>
   </section>;
 }

@@ -13,9 +13,10 @@ import static studio.frameforge.Models.*;
 @Configuration
 public class TaskDispatcher {
     @Bean
-    ThreadPoolTaskExecutor taskExecutor(@Value("${frameforge.queue-capacity}") int capacity) {
+    ThreadPoolTaskExecutor taskExecutor(@Value("${frameforge.queue-capacity}") int capacity,@Value("${frameforge.workers}") int workers) {
+        if(workers<1||workers>4) throw new IllegalArgumentException("TASK_WORKERS must be between 1 and 4");
         ThreadPoolTaskExecutor executor=new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);executor.setMaxPoolSize(1);executor.setQueueCapacity(capacity);
+        executor.setCorePoolSize(workers);executor.setMaxPoolSize(workers);executor.setQueueCapacity(capacity);
         executor.setThreadNamePrefix("frameforge-worker-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         executor.setAwaitTerminationSeconds(10);

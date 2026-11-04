@@ -24,3 +24,4 @@ frameforge:
   storage: ${STORAGE_PATH:./.runtime/storage}
   simulation-enabled: ${SIMULATION_ENABLED:true}
   queue-capacity: ${TASK_QUEUE_CAPACITY:20}
+  workers: ${TASK_WORKERS:2}

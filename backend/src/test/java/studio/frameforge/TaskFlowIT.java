@@ -30,7 +30,7 @@ import static studio.frameforge.Models.*;
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,properties={
     "spring.sql.init.mode=always","spring.sql.init.schema-locations=file:../database/001-schema.sql",
     "spring.sql.init.data-locations=file:../database/002-seed.sql","frameforge.queue-capacity=1",
-    "frameforge.storage=./target/it-storage"
+    "frameforge.storage=./target/it-storage","frameforge.workers=1"
 })
 class TaskFlowIT {
     @Autowired TestRestTemplate http;
@@ -213,5 +213,17 @@ class TaskFlowIT {
         var missing=http.getForEntity("/api/not-an-api",String.class);
         assertEquals(HttpStatus.NOT_FOUND,missing.getStatusCode());
         assertTrue(missing.getBody().contains("HTTP_404"));
+    }
+    @Test void personalSummaryUsesAllOwnedDatabaseRecordsAndCannotSelectAnotherUser() throws Exception {
+        var accepted=submit(request(upload("alice"),key(),null,0)).getBody();terminal(accepted.taskId());upload("bob");
+        for(String user:List.of("alice","bob")){
+            var response=get("/api/me/summary?userId=alice",user,UserSummary.class);
+            assertEquals(HttpStatus.OK,response.getStatusCode());var summary=response.getBody();
+            assertEquals(jdbc.queryForObject("SELECT COUNT(*) FROM task WHERE user_id=?",Long.class,user),summary.totalTasks());
+            assertEquals(jdbc.queryForObject("SELECT COUNT(*) FROM asset WHERE user_id=?",Long.class,user),summary.assetCount());
+            assertEquals(jdbc.queryForObject("SELECT COUNT(*) FROM task WHERE user_id=? AND status='SUCCEEDED'",Long.class,user),summary.succeededTasks());
+            assertEquals(summary.totalTasks(),summary.activeTasks()+summary.succeededTasks()+summary.failedTasks());
+        }
+        assertEquals(HttpStatus.UNAUTHORIZED,http.getForEntity("/api/me/summary",String.class).getStatusCode());
     }
 }

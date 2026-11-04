@@ -3,6 +3,7 @@ node_modules/
 coverage/
 reports/
 smoke-result.json
+batch-smoke-result.json
 target/
 .env
 .env.*.local

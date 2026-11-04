@@ -25,8 +25,8 @@ export function ResultPreview({task}:{task:Task}){
 }
 export function TaskCard({task,error,onRetry,compact=false}:{task:Task;error?:string;onRetry:()=>void;compact?:boolean}){
   return <article className={"task-card"+(compact?" compact":"")}>
-    <div className="task-heading"><Image className="task-thumb" src={task.coverUrl} alt="" width={80} height={70} unoptimized/>
-      <div><h3><Link href={"/tasks/"+task.id}>{task.templateTitle}</Link></h3><small>{dateTime(task.createdAt)}</small></div>
+    <div className="task-heading"><Image className="task-thumb" src={task.assets[0]?.previewUrl||task.coverUrl} alt={task.assets.length?"上传素材预览":""} width={80} height={70} unoptimized/>
+      <div><h3><Link href={"/tasks/"+task.id}>{task.templateTitle}</Link></h3><small>#{task.id.slice(0,6)} · {dateTime(task.createdAt)}</small></div>
       <span className={"status "+task.status.toLowerCase()}><i/>{statusName[task.status]}</span></div>
     <Timeline task={task}/>
     {task.status==="FAILED"&&<div className="task-failure"><strong>{task.currentStage?stageName[task.currentStage]+"失败":"任务未能执行"}</strong><p>{task.errorMessage}</p></div>}

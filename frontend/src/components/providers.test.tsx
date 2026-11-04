@@ -58,7 +58,8 @@ it("does not track tasks on the gallery page",async()=>{
   await waitFor(()=>expect(screen.getByLabelText("当前用户")).toHaveTextContent("alice"));
   expect(request.mock.calls.filter(call=>call[0].startsWith("/tasks"))).toHaveLength(0);
 });
-it("aborts tracking when leaving related pages and restores it on return",async()=>{
+it.each(["/history","/account"])("aborts tracking when leaving %s and restores it on return",async path=>{
+  route.path=path;
   const defaults=request.getMockImplementation()!;
   request.mockImplementation((path:string,init?:RequestInit)=>path.startsWith("/tasks")?new Promise(()=>{}):defaults(path,init));
   const view=render(<Providers><Probe/></Providers>);
@@ -66,6 +67,6 @@ it("aborts tracking when leaving related pages and restores it on return",async(
   const signals=request.mock.calls.filter(call=>call[0].startsWith("/tasks")).map(call=>call[1].signal as AbortSignal);
   route.path="/";view.rerender(<Providers><Probe/></Providers>);
   expect(signals.every(signal=>signal.aborted)).toBe(true);
-  route.path="/history";view.rerender(<Providers><Probe/></Providers>);
+  route.path=path;view.rerender(<Providers><Probe/></Providers>);
   await waitFor(()=>expect(request.mock.calls.filter(call=>call[0].startsWith("/tasks"))).toHaveLength(4));
 });

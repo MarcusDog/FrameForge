@@ -67,6 +67,7 @@ jobs:
       - run: docker compose config --quiet
       - run: docker compose up --build -d --wait --wait-timeout 240
       - run: docker run --rm --network frameforge_default -v "$PWD:/workspace:ro" -w /workspace -e FRAMEFORGE_URL=http://frontend:3000 node:24.11.1-bookworm-slim node scripts/smoke.mjs > smoke-result.json
+      - run: docker run --rm --network frameforge_default -v "$PWD:/workspace:ro" -w /workspace -e FRAMEFORGE_URL=http://frontend:3000 node:24.11.1-bookworm-slim node scripts/batch-smoke.mjs > batch-smoke-result.json
       - if: always()
         run: docker compose logs --no-color > compose.log
       - uses: actions/upload-artifact@v4
@@ -75,6 +76,7 @@ jobs:
           name: compose-smoke-results
           path: |
             smoke-result.json
+            batch-smoke-result.json
             compose.log
       - if: always()
         run: docker compose down

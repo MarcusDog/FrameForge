@@ -7,6 +7,15 @@ import static studio.frameforge.Models.*;
 public interface StoreMapper {
     @Select("SELECT * FROM demo_user ORDER BY id") List<DemoUser> users();
     @Select("SELECT * FROM demo_user WHERE id=#{id}") DemoUser user(String id);
+    @Select("""
+        SELECT COUNT(*) AS total_tasks,
+          COALESCE(SUM(status IN ('QUEUED','RUNNING')),0) AS active_tasks,
+          COALESCE(SUM(status='SUCCEEDED'),0) AS succeeded_tasks,
+          COALESCE(SUM(status='FAILED'),0) AS failed_tasks,
+          (SELECT COUNT(*) FROM asset WHERE user_id=#{userId}) AS asset_count
+        FROM task WHERE user_id=#{userId}
+        """)
+    UserSummary summary(String userId);
     @Select("SELECT * FROM template ORDER BY id") List<Template> templates();
     @Select("SELECT * FROM template WHERE id=#{id}") Template template(String id);
     @Insert("INSERT INTO asset(id,user_id,path,mime_type,size_bytes,width,height) VALUES(#{id},#{userId},#{path},#{mimeType},#{sizeBytes},#{width},#{height})")

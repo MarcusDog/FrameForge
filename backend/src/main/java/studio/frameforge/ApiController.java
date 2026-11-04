@@ -32,6 +32,7 @@ public class ApiController {
     }
     @GetMapping("/demo/users") public List<DemoUser> users() { return store.users(); }
     @GetMapping("/demo/session") public DemoUser session(HttpServletRequest request) { return store.user(user(request)); }
+    @GetMapping("/me/summary") public UserSummary summary(HttpServletRequest request) { return store.summary(user(request)); }
     @PostMapping("/demo/session")
     public DemoUser session(@Valid @RequestBody SessionRequest body,HttpServletResponse response) {
         DemoUser user=store.user(body.userId());

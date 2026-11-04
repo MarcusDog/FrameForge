@@ -2,6 +2,8 @@
 
 选择模板、上传照片、提交后台制作，然后继续浏览。Java 按 **素材检查 → 模拟生成 → 结果整理** 执行，MySQL 保存任务和真实时间线，Java2D 将本次上传的照片拼成可预览 PNG。无真实 AI 调用。
 
+当前版本：个人中心、批量独立任务、两条并行制作和 12 种版式。最近本地验证为 **63 项测试通过**；验收提交与远端 CI 状态见 [交付清单](docs/SUBMISSION.md)。
+
 ## 快速启动
 
 需要 Docker Desktop（Linux containers）和 Docker Compose。首次构建需联网下载官方镜像、npm/Maven 依赖；启动后素材与业务无需外部服务。
@@ -21,11 +23,11 @@ docker compose ps
 
 | 要求 | 交付位置与核验方法 |
 |---|---|
-| R-12 CI 与关键测试 | [.github/workflows/ci.yml](.github/workflows/ci.yml) 在 push/PR 运行前端 lint、类型检查、27 项测试和 build；Java 一次 Maven verify 运行 15 单元+12 MySQL 集成并构建。Compose 再验证完整 HTTP 闭环。测试报告和 Compose 日志作为 Actions artifacts 保存，远端状态以对应 run 为准 |
+| R-12 CI 与关键测试 | [.github/workflows/ci.yml](.github/workflows/ci.yml) 在 push/PR 运行前端 lint、类型检查、33 项测试和 build；Java 一次 Maven verify 运行 17 单元+13 MySQL 集成并构建。Compose 再验证完整 HTTP 闭环与批量并行/失败隔离。测试报告和 Compose 日志作为 Actions artifacts 保存，远端状态以对应 run 为准 |
 | R-13 完整材料与 AI 工作流 | 前后端源码、npm 锁文件、Maven Wrapper/BOM、六表 SQL/种子、示例配置、素材、README 均包含。下文给出连接/API/演示/限制/回滚；AI_WORKFLOW 记录上下文、生成修改、真实失败与复验；个人实际投入与人工审查待本人确认 |
 | R-14 容器交付 | 根目录 docker compose up --build 启动前端、Java、MySQL，初始化表与种子；数据卷保留数据库和媒体。评估者无需在宿主机直接运行工程脚本 |
 
-本地代码验收基线：e70c44a9d06fc380fa55ea4c4d06730abcc672e6。GitHub 发布快照与最终验收提交见 SUBMISSION.md；原始题目/设计附件保留本地，公开仓库包含必要的题目归档与工程，不上传依赖、构建缓存和用户上传文件。
+历史本地代码验收基线（2026-11-02）：e70c44a9d06fc380fa55ea4c4d06730abcc672e6。GitHub 发布快照与最终验收提交见 SUBMISSION.md；原始题目/设计附件保留本地，公开仓库包含必要的题目归档与工程，不上传依赖、构建缓存和用户上传文件。
 
 可直接使用默认演示配置；需要修改端口或参数时，将 .env.example 复制为 .env 后编辑。配置中均为本地示例密码，不含真实凭据。
 
@@ -56,7 +58,7 @@ npm 直接依赖使用精确版本，完整依赖树及完整性值见 frontend/
 ~~~text
 frontend/              Next App Router、页面、上传与 TaskFeed、行为测试
 backend/               Spring Boot、Service、MyBatis Mapper、JUnit/MySQL 集成测试
-database/              六表结构与 Alice/Bob、六模板种子
+database/              六表结构与 Alice/Bob、十二模板种子
 docs/                  原题、验收矩阵、技术选择、实际 AI 工作流与验证
 scripts/               HTTP 验收、Java2D 本地封面生成器
 .github/workflows/     push / pull_request CI
@@ -82,7 +84,8 @@ MySQL 首次创建空数据卷时，自动执行 database/001-schema.sql 和 002
 | DB_PASSWORD | frameforge-demo | 演示数据库应用用户密码 |
 | MYSQL_ROOT_PASSWORD | local-root-demo | 首次初始化 root 密码 |
 | SIMULATION_ENABLED | true | 启用开发演示控制 |
-| TASK_QUEUE_CAPACITY | 20 | 一个工作线程之外的排队容量 |
+| TASK_QUEUE_CAPACITY | 20 | 工作线程之外的排队容量 |
+| TASK_WORKERS | 2 | 后台同时处理的任务数，支持 1～4；其余任务排队 |
 | DB_URL / DB_USER | 见 application.yml | Java 独立开发时的 JDBC 配置 |
 | STORAGE_PATH | ./.runtime/storage | 独立开发的文件目录；容器内为 /data |
 | JAVA_API_BASE_URL | 本地 localhost:8080；容器 backend:8080 | Next 构建时的 rewrite 目标，修改后需重建前端 |
@@ -121,6 +124,7 @@ JSON 成功响应直接返回对象；失败格式：
 | GET /api/demo/session | Cookie | {id,name}；未选用户 401 |
 | POST /api/demo/session | {userId:"alice"或"bob"} | 用户；设置 HttpOnly、SameSite=Lax Cookie |
 | GET /api/config | 无 | {simulationEnabled} |
+| GET /api/me/summary | Cookie | 当前用户 {totalTasks,activeTasks,succeededTasks,failedTasks,assetCount}；从 MySQL 全量统计 |
 | GET /api/templates | 无 | 模板数组 |
 | GET /api/templates/{id} | 模板 ID | 模板详情，不存在 404 |
 | POST /api/assets | multipart 的 file | {id,previewUrl,mimeType,sizeBytes,width,height} |
@@ -158,7 +162,7 @@ JSON 成功响应直接返回对象；失败格式：
 ## 异步正确性与边界
 
 - 提交事务写入任务、素材关联及三个阶段记录，AFTER_COMMIT 监听器向 Spring ThreadPoolTaskExecutor 投递；不会等待制作完成。
-- 一个线程、默认 20 队列。拒绝时通过 REQUIRES_NEW 将已受理任务写为 FAILED / EXECUTOR_SATURATED；客户端仍收到任务 ID。没有 CallerRunsPolicy。
+- 默认两个工作线程、20 队列。拒绝时通过 REQUIRES_NEW 将已受理任务写为 FAILED / EXECUTOR_SATURATED；客户端仍收到任务 ID。没有 CallerRunsPolicy。
 - Worker 每个阶段开始和结束调用独立 Service 的短事务；等待、Java2D 和磁盘操作位于事务外。
 - 条件更新、行锁和 version 保证终态不回退、重复调度不重复执行；查询不推进任务。
 - 后续阶段在失败后标为 SKIPPED。GENERATING 读取用户图片，ORGANIZING 原子落盘后才公布结果 URL。
@@ -240,12 +244,24 @@ GitHub Actions 在 push / pull_request 时触发 frontend、backend、compose �
 
 ## 最终验收摘要
 
-R-01～R-14 的实现与证据已整理在 docs/REQUIREMENTS.md；最终交付说明见 docs/DELIVERY.md。独立审查本轮实际通过 27 项前端行为测试、15 项 Java 单元、12 项 MySQL 集成（共 54 项，均本轮执行），以及完整容器 HTTP smoke、新库初始化和零审查客户端任务 GET 的后台执行检查。原有 8 组浏览器检查属于上一轮，本轮未重新运行；远端 Actions、真人实机和公网部署尚未验证。
+R-01～R-14 的实现与证据见 docs/REQUIREMENTS.md，当前交付说明见 docs/DELIVERY.md。2026-11-04 最近本地验证通过 33 项前端、17 项 Java 单元、13 项 MySQL 集成，共 63 项；lint/typecheck/build、HTTP 闭环、两任务并行与单任务失败隔离均通过，原始输出见 docs/evidence/ui-update-console.txt。旧浏览器截图属于历史产物；当前浏览器视觉/手机/焦点和人工贡献仍待确认。GitHub 发布与 CI 的实际结果单独记录在 SUBMISSION.md。
 
 无界面验证截图及结果：output/playwright/gallery-desktop.png、gallery-mobile.png、studio-mobile.png、history-desktop.png、result-preview.png、browser-check.json。可选脚本 scripts/browser-check.cjs 复用已安装的 Playwright Core/Edge；用 FF_PLAYWRIGHT_MODULE 指定模块，TEMP/TMP 可设为工程 D 盘 .runtime/temp；不参与项目启动，不要求评估者在宿主机安装或执行它。
 
-已修复 MySQL 中文导入问题：种子显式 SET NAMES utf8mb4，表固定 utf8mb4。首次启动自动应用；已有旧演示库需要使用 UTF-8 客户端重新执行 002-seed.sql 更新六条模板，保留任务/素材。Docker 主数据盘与构建缓存位置由 Docker Desktop 管理，安装目录在 D 盘并不代表数据也在 D 盘；本机已核对数据盘位于 D 盘。
+已修复 MySQL 中文导入问题：种子显式 SET NAMES utf8mb4，表固定 utf8mb4。首次启动自动应用；已有旧演示库需要使用 UTF-8 客户端重新执行 002-seed.sql 更新十二条模板，保留任务/素材。Docker 主数据盘与构建缓存位置由 Docker Desktop 管理，安装目录在 D 盘并不代表数据也在 D 盘；本机已核对数据盘位于 D 盘。
 
 R-07/R-08/R-12 的专项案例见 docs/AI_WORKFLOW.md：两个 RUNNING 任务中 A 查询 HTTP 500、B 成功，A 保留状态并显示“状态同步失败，可重试”，点击“恢复查询”后继续；B 停止轮询，切换用户拒绝旧响应。首次状态逻辑与切换用户测试即通过，实际只统一两处文案；原始执行输出见 docs/evidence/r07-r08-console.txt。
 
 独立验收、五项新发现及最小修复见 docs/REVIEW.md；本轮详情页改为复用已知任务快照，加载错误绑定用户和任务，旧查询错误不能污染较新快照。个人投入和人工审查仍待本人确认。
+
+## 个人中心、批量制作与 12 种版式（2026-11-04）
+
+点击头像或侧栏“个人中心”：查看当前账户、全部/进行中/完成/失败任务、上传素材数与最近记录，可切换 Alice/Bob。统计来自 Java/MySQL 的当前用户数据，不以当前加载的历史页数代替总数；会话使用原有 HttpOnly Demo Cookie，仍不是生产认证。
+
+“我的任务”→“批量制作”可一次选多张：单图模板每张生成一个独立任务，双图/三图模板按要求张数组成一组。每批最多 5 个任务，上传最多同时 3 张；素材准备齐、分组完整才可提交。提交受理后开始追踪，不等待生成结束。部分受理失败时只重试未受理任务并复用原提交键，已受理任务不会重复创建。新一批通过重新选图开始。
+
+默认两个 Java worker 同时处理，其余排队；每个任务独立展示上传图片缩略图、编号、阶段、失败与结果。终态不再自动查询，离开任务/历史/模板详情/个人中心时清理请求；切换用户清空旧视图，迟到响应不能污染新用户。空闲个人中心不持续请求统计。
+
+12 个模板分别使用明信片、拍立得、圆形肖像、杂志、庆祝卡、满版海报、胶片、留白双图、信笺、拼图、三联画、拱形双图。封面与结果使用同一个 Java2D 生成器；旧结果保留，新任务使用新排版。已有数据库升级需以 UTF-8 客户端重新执行 002-seed.sql；该种子只 upsert 用户/模板，不删除任务或素材。
+
+本轮本地验证：33 前端 + 17 Java 单元 + 13 MySQL 集成，共 63 项；lint/typecheck/build、HTTP 业务闭环、两条同时 RUNNING / 一条 QUEUED 以及单任务失败隔离均通过。详细记录和原始失败/复验见 [UI_UPDATE.md](docs/UI_UPDATE.md)。历史 GitHub 验收快照与本轮本地增强分开记录，本轮未将云端 CI 写成通过。

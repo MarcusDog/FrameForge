@@ -11,7 +11,7 @@ const task=(id:string,status:Task["status"]="RUNNING",version=2):Task=>({
   status,currentStage:"GENERATING",resultUrl:status==="SUCCEEDED"?"/api/tasks/"+id+"/result":null,
   errorCode:null,errorMessage:null,version,createdAt:"2026-11-02T13:00:00Z",updatedAt:"2026-11-02T13:00:00Z",
   stages:[{stage:"GENERATING",status:status==="SUCCEEDED"?"SUCCEEDED":"RUNNING",
-    startedAt:"2026-11-02T13:00:00Z",endedAt:null,durationMs:null,errorMessage:null}],assets:[]
+    startedAt:"2026-11-02T13:00:00Z",endedAt:null,durationMs:null,errorMessage:null}],assets:[{id:"asset-"+id,previewUrl:"/api/assets/"+id+"/content",mimeType:"image/png",sizeBytes:100,width:10,height:10}]
 });
 const page=(items:Task[]):TaskPage=>({items,nextCursor:null});
 function deferred<T>(){
@@ -66,6 +66,8 @@ it("renders RUNNING A with a retryable sync error while B succeeds and stops pol
   expect(a.querySelector(".status")).toHaveTextContent("处理中");
   expect(a.querySelector(".task-failure")).toBeNull();
   expect(b.querySelector(".status")).toHaveTextContent("已完成");
+  expect(within(a).getByAltText("上传素材预览")).toHaveAttribute("src","/api/assets/A/content");
+  expect(within(b).getByAltText("上传素材预览")).toHaveAttribute("src","/api/assets/B/content");
   expect(within(b).queryByRole("alert")).toBeNull();
   await advance(6000);
   const queries=(id:string)=>fetchMock.mock.calls.filter(([url])=>url==="/api/tasks/"+id).length;

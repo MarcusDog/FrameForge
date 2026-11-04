@@ -23,10 +23,10 @@ async function until(predicate,message,timeout=15000){
     page.on("request",request=>{if(request.method()==="GET"&&/\/api\/tasks\/[a-f0-9-]+$/.test(request.url()))polls++;});
     await page.goto(base);
     await page.locator(".template-card").first().waitFor();
-    assert.equal(await page.locator(".template-card").count(),6);
+    assert.equal(await page.locator(".template-card").count(),12);
     assert.ok((await page.locator("body").innerText()).includes("旅行明信片"));
     await page.getByRole("button",{name:"创意拼贴",exact:true}).click();
-    assert.equal(await page.locator(".template-card").count(),2);
+    assert.equal(await page.locator(".template-card").count(),4);
     await page.getByRole("button",{name:"全部",exact:true}).click();
     await page.screenshot({path:path.join(output,"gallery-desktop.png"),fullPage:true});
     checks.push("UTF-8 gallery and category filter");

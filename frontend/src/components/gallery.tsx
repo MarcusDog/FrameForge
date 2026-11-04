@@ -19,9 +19,9 @@ export function Gallery(){
     (template.title+template.description).includes(query.trim()));
   return <>
     <section className="gallery-hero">
-      <div className="hero-copy"><span className="eyebrow">A LITTLE INSPIRATION. A LOT OF POSSIBILITY.</span>
-        <h1>把灵感，变成<br/><em>值得收藏的画面。</em></h1>
-        <p>选择心动的模板，放入你的照片。<br/>其余的，交给 FrameForge。</p>
+      <div className="hero-copy">
+        <h1>用照片，做点<br/><em>喜欢的新东西。</em></h1>
+        <p>选一个模板，开始创作。</p>
         <div className="hero-note"><span>01 选择模板</span><i/> <span>02 上传照片</span><i/> <span>03 收获作品</span></div>
       </div>
       <div className="hero-art" aria-hidden>
@@ -31,7 +31,7 @@ export function Gallery(){
       </div>
     </section>
     <section className="gallery-section">
-      <div className="section-heading"><div><span className="eyebrow">THE TEMPLATE COLLECTION</span><h2>下一份作品，从这里开始<span className="muted-count">{templates?.length??"—"}</span></h2></div>
+      <div className="section-heading"><div><h2>选择模板<span className="muted-count">{templates?.length??"—"}</span></h2></div>
         <label className="search"><span aria-hidden>⌕</span><span className="sr-only">搜索模板</span><input placeholder="寻找一点灵感…" value={query} onChange={event=>setQuery(event.target.value)}/></label>
       </div>
       <div className="category-tabs" aria-label="模板分类">{categories.map(name=><button key={name} aria-pressed={category===name} onClick={()=>setCategory(name)} className={category===name?"active":""}>{name}</button>)}</div>

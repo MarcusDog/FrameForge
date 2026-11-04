@@ -13,6 +13,7 @@ public final class Models {
         public boolean terminal() { return this == SUCCEEDED || this == FAILED; }
     }
     public record DemoUser(String id, String name) {}
+    public record UserSummary(long totalTasks,long activeTasks,long succeededTasks,long failedTasks,long assetCount) {}
     public record Template(String id, String title, String category, String description,
                            int requiredImageCount, String coverUrl, String layout) {
         @JsonProperty public List<String> acceptedMimeTypes() { return List.of("image/jpeg", "image/png"); }

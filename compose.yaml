@@ -29,6 +29,7 @@ services:
       STORAGE_PATH: /data
       SIMULATION_ENABLED: ${SIMULATION_ENABLED:-true}
       TASK_QUEUE_CAPACITY: ${TASK_QUEUE_CAPACITY:-20}
+      TASK_WORKERS: ${TASK_WORKERS:-2}
     volumes:
       - media-data:/data
     ports:

@@ -40,7 +40,8 @@ async function terminal(id){
   throw new Error("Task did not finish: "+id);
 }
 const templates=await (await request("/templates")).json();
-assert.equal(templates.length,6);
+assert.equal(templates.length,12);
+assert.equal(new Set(templates.map(template=>template.layout)).size,12);
 assert.equal(templates.find(t=>t.id==="travel-postcard").title,"旅行明信片");
 assert.deepEqual(new Set(templates.map(t=>t.category)),new Set(["创意拼贴","生活影集","节日海报"]));
 assert.equal(new Set(templates.map(template=>template.category)).size,3);

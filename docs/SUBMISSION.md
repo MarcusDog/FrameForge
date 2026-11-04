@@ -1,6 +1,6 @@
 # GitHub 工程交付与 AI 工作流核对
 
-日期：2026-11-03（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。本文件是 R-12～R-14 的交付入口，逐条业务审查仍见 REVIEW.md / REQUIREMENTS.md。
+日期：2026-11-03（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。当前版本已包含个人中心、批量制作、两 worker 和 12 种版式；最近本地验证 63 项通过。本文件是 R-12～R-14 的交付入口，逐条业务审查仍见 REVIEW.md / REQUIREMENTS.md。
 
 ## 审核结论与仍存在的不足
 
@@ -61,11 +61,21 @@
 
 在仓库根目录运行 docker compose up --build；默认前端 http://localhost:3000、Java 8080、MySQL 内部网络。初始化 SQL、媒体和数据库卷、healthcheck、依赖等待及两个 Dockerfile 均已提供。完整评估命令见 README，不要求评估者在宿主机安装 Java/Node/Maven。
 
-## 发布与验收提交
+## 历史发布与验收提交（2026-11-03）
 
-- 业务代码本地验收基线：e70c44a9d06fc380fa55ea4c4d06730abcc672e6；本轮只更新 CI、忽略规则和交付文档。
+- 2026-11-03 业务代码本地验收基线：e70c44a9d06fc380fa55ea4c4d06730abcc672e6；该次发布只更新 CI、忽略规则和交付文档。
 - GitHub 是从本地完整工程导出的发布快照，初始发布不携带本地开发历史；上述本地 SHA 不承诺可在 GitHub 打开。完整本地历史与原始附件均保留。
 - 本地发布分支为 github/main，推送到 origin 的 main；本地 main 保留原始附件历史，不直接发布。远端默认推送映射已指向该发布分支。GitHub 克隆者使用正常的 main 即可，不需要本地历史。
 - 公开内容包括工程、必要题目归档、示例素材、测试与证据；原始“前端设计/”“题目要求/”、缓存、构建产物、用户媒体、凭据不上传。
 - 可供招聘方复核的代码验收提交：[6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd](https://github.com/MarcusDog/FrameForge/commit/6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd)，本地容器验证通过，远端因账户计费锁定未执行。不是“云端通过的验收提交”。
 - [github-source-provenance.json](evidence/github-source-provenance.json) 记录 git diff exit 0，证明该公开快照的业务源码/依赖/Compose 与本地验收基线一致。后续提交只补交付证据与文档，最新入口取 main。
+
+## 2026-11-04 本地试用增强
+
+本地后来新增了个人中心、批量制作、两 worker 和 12 种版式，并完成 63 项测试及运行更新，见 UI_UPDATE.md。上述 GitHub SHA 与 source-provenance 文件是 2026-11-03 发布的历史证据，不指代本地新版；本轮尚未更新远端快照或重跑云端 CI，不能把历史一致性证明套用到新版。
+
+## 最新版本同步 / 2026-11-04
+
+本次应用户明确要求，把本地 da3b2c631a03c0d3a3ef12df6f0a0a65c7f753bc 已验证的界面、个人中心、批量任务和模板更新发布至远端。新版本地证据为 33+17+13 共 63 项，见 UI_UPDATE.md；本次只修正文档与补充 CI 的 batch-smoke 步骤，没有改变业务代码或重算测试通过记录。
+
+公开快照 SHA 与本次 push 的实际 CI 结果将在完成后记录于本节；旧 SHA/账户锁定记录只属于旧版本。原始附件、缓存和用户媒体继续留在本地。

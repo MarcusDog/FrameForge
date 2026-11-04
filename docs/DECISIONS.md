@@ -2,7 +2,7 @@
 
 1. **职责**：Java 提供全部业务 API；Next 仅负责页面及同源转发。Cookie 可以随图片请求发送，结果读取仍校验归属。
 2. **事务**：提交事务中插入任务、关联和阶段，再发事件；AFTER_COMMIT 投递。监听器的拒绝落库必须 REQUIRES_NEW，避免在已提交事务里写入失效。
-3. **容量**：一个线程、20 队列、AbortPolicy；拒绝持久化为失败，不用 CallerRunsPolicy 阻塞提交线程。
+3. **容量**：两个线程（TASK_WORKERS 可设 1～4）、20 队列、AbortPolicy；拒绝持久化为失败，不用 CallerRunsPolicy 阻塞提交线程。
 4. **状态**：任务与阶段边界在短事务中原子更新；条件 SQL 防止终态回退；version 防止前端旧响应覆盖。
 5. **身份**：Alice/Bob 的 HttpOnly SameSite Cookie 演示，非生产认证；数据层始终按用户归属查询，文件不直接暴露目录。
 6. **追踪**：Hooks + Context；快照与查询异常分开；只轮询未终结任务，使用 AbortController、会话代次和版本保护。

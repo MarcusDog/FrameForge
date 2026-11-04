@@ -114,3 +114,14 @@
 - gh repo create MarcusDog/FrameForge --public 成功；git push origin refs/heads/github/main:refs/heads/main 成功，公开快照为 6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd。本地开发历史/原始附件未公开，源代码一致性记录见 github-source-provenance.json。
 - gh run view 首次 push run 41603794341：failure，三个 job 无 steps；读取失败日志返回 log not found；check-run annotations 均明确“account is locked due to a billing issue”。原始 API JSON 已保存，artifact total_count=0。远端未运行测试，不能以本地 54 通过替代。
 - 本轮变动为交付文档、CI 报告/超时/去重配置和报告忽略规则；未改业务代码和测试断言，未使用 Computer Use 或在宿主机运行工程构建/测试/业务脚本。个人实际投入与人工审查待本人确认。
+
+## 个人中心、批量制作与版式 / 2026-11-04
+
+- 运行环境复核：项目源码与此前验收一致后，复用 D 盘现有镜像启动，未安装新运行时。随后按用户新增试用反馈开发本轮功能。
+- 后端 docker compose --profile test run --build --rm backend-test：exit 0，17 单元+13 MySQL 集成，0 failures/errors/skipped；12 版式输入图可见性/结果差异、两 worker 和用户统计隔离新增验证。
+- Node 容器依次 npm run lint / typecheck / test -- --run / build：第一次 lint exit 1；修复后类型检查 exit 2；再修复后首次完整测试 exit 1（32 passed/1 locator failure）。最后完整复验 exit 0，33/33，所有检查通过。增加素材缩略图断言后再执行一轮同等检查和 build，仍 exit 0。
+- 封面工具第一次 javac exit 1（FileStore 同名），改为精确导入后 exit 0，Generated 12 covers；读取生成的胶片与拱形双图作本地图片核对。
+- docker compose build backend frontend 与 up --no-build --wait：exit 0；UTF-8 执行新版种子，模板 12/版式 12，原有任务、素材、历史保留；更新前未完成数为 0。最后更新任务缩略图再重建前端并 healthy。
+- 容器 HTTP smoke exit 0/PASS。batch-smoke exit 0/PASS：三条 taskId 独立，初始两 RUNNING 一 QUEUED，最终 SUCCEEDED/FAILED/SUCCEEDED；失败阶段后跳过，同图异模板结果 hash 不同，个人统计增量正确。
+- 当前共 63 项测试（33+17+13），不把 Docker build 内重复运行的单元测试另计。实际命令、失败原因、演示路径与边界见 UI_UPDATE.md；原始输出见 evidence/ui-update-console.txt。
+- 未进行当前真实浏览器/手机自动化、未重跑云端 CI；未使用 Computer Use。用户个人审查、贡献和工时待确认。

@@ -1,6 +1,7 @@
 export type Stage = "MATERIAL_CHECK" | "GENERATING" | "ORGANIZING";
 export type Status = "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED";
 export type User = {id:string;name:string};
+export type UserSummary={totalTasks:number;activeTasks:number;succeededTasks:number;failedTasks:number;assetCount:number};
 export type Template = {
   id:string;title:string;category:string;description:string;requiredImageCount:number;
   coverUrl:string;layout:string;acceptedMimeTypes:string[];maxFileSizeBytes:number;

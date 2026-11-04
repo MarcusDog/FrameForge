@@ -10,6 +10,6 @@
   - city.jpg：https://images.unsplash.com/photo-1519501025264-65ba15a82390
   - birthday.jpg：https://images.unsplash.com/photo-1464349095431-e9a21285b5f3
   - weekend.jpg：https://images.unsplash.com/photo-1500534623283-312aade485b7
-- 六张模板封面由本工程 scripts/PrepareDemo.java 使用以上摄影和原创 Java2D 排版生成。重新生成：在工程根目录执行 java scripts/PrepareDemo.java。
+- 十二张模板封面由 scripts/PrepareDemo.java 调用生产 CollageRenderer 生成，与实际输出共享版式。重新生成需先构建 backend-test，然后在该 Java 容器中以 /workspace/backend/target/classes 为 classpath 编译和运行工具；完整已验证命令见 UI_UPDATE.md。原来的单文件 java scripts/PrepareDemo.java 命令已不适用。
 - 结果生成器不复制封面；读取用户本次上传的文件重新拼贴成 PNG。
 - 框架与依赖来自各自官方 npm/Maven 发行包；Maven Wrapper 由官方 wrapper 插件生成。未复用第三方业务脚手架或模板业务代码。

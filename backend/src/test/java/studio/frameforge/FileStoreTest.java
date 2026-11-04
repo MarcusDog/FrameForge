@@ -44,4 +44,27 @@ class FileStoreTest {
         assertEquals(Color.RED.getRGB(),decoded.getRGB(100,200));
         assertEquals(Color.BLUE.getRGB(),decoded.getRGB(750,200));
     }
+    @Test void twelveLayoutsHaveDistinctResultsAndIncludeEveryInputPhoto() throws Exception {
+        var layouts=java.util.Map.ofEntries(java.util.Map.entry("postcard",2),java.util.Map.entry("polaroid",3),
+            java.util.Map.entry("portrait",1),java.util.Map.entry("magazine",2),java.util.Map.entry("celebration",1),
+            java.util.Map.entry("editorial",1),java.util.Map.entry("filmstrip",3),java.util.Map.entry("minimal",2),
+            java.util.Map.entry("letter",1),java.util.Map.entry("mosaic",3),java.util.Map.entry("triptych",3),java.util.Map.entry("duo",2));
+        var assets=new java.util.ArrayList<Asset>();var colors=List.of(Color.RED,Color.BLUE,Color.GREEN);
+        for(int i=0;i<3;i++){
+            String path="uploads/color"+i+".png";files.write(path,png(100,100,colors.get(i)));
+            assets.add(new Asset("a"+i,"alice",path,"image/png",100,100,100,Instant.EPOCH));
+        }
+        var hashes=new java.util.HashSet<Integer>();
+        for(var entry:layouts.entrySet()){
+            var template=new Template(entry.getKey(),"t","c","d",entry.getValue(),"/cover",entry.getKey());
+            var image=new CollageRenderer(files).render(template,assets.subList(0,entry.getValue()));
+            assertTrue(hashes.add(java.util.Arrays.hashCode(image.getRGB(0,0,1200,900,null,0,1200))),"Duplicate layout: "+entry.getKey());
+            for(int i=0;i<entry.getValue();i++){
+                int visible=0;
+                for(int y=0;y<900;y+=8)for(int x=0;x<1200;x+=8)if(image.getRGB(x,y)==colors.get(i).getRGB())visible++;
+                assertTrue(visible>1000,"Missing input "+i+" in "+entry.getKey());
+            }
+        }
+        assertEquals(12,hashes.size());
+    }
 }
