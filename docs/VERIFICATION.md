@@ -125,3 +125,11 @@
 - 容器 HTTP smoke exit 0/PASS。batch-smoke exit 0/PASS：三条 taskId 独立，初始两 RUNNING 一 QUEUED，最终 SUCCEEDED/FAILED/SUCCEEDED；失败阶段后跳过，同图异模板结果 hash 不同，个人统计增量正确。
 - 当前共 63 项测试（33+17+13），不把 Docker build 内重复运行的单元测试另计。实际命令、失败原因、演示路径与边界见 UI_UPDATE.md；原始输出见 evidence/ui-update-console.txt。
 - 未进行当前真实浏览器/手机自动化、未重跑云端 CI；未使用 Computer Use。用户个人审查、贡献和工时待确认。
+
+## 新版 GitHub 与交付文档同步 / 2026-11-04
+
+- 业务源码相对 da3b2c6 未变；本轮只统一文档与 CI 的批量 smoke 执行/结果保存。原有 63 项结果保留实际执行日期，没有重复计算或虚构新运行。
+- git diff --check、文档本地链接、docker compose config --quiet 均通过。
+- git push origin refs/heads/github/main:refs/heads/main 成功，公开代码快照 c89371247b44d3236b1d3c2510da87979878cab3；原始附件/缓存未入公开树。
+- git diff --exit-code da3b2c6 github/main -- backend frontend database compose.yaml scripts .env.example 为 0；新映射见 evidence/github-ui-provenance-2026-11-04.json。
+- 本次 run 41765366854 已触发，三个任务 steps 为空，GitHub 仍返回账户计费锁定。实际 API 结果见 evidence/github-ui-run-2026-11-04.json；不得把本地通过写成远端通过。

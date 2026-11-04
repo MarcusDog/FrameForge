@@ -1,0 +1,24 @@
+{
+  "recordedDate": "2026-11-04",
+  "localTestedCommit": "da3b2c631a03c0d3a3ef12df6f0a0a65c7f753bc",
+  "publicationCommit": "c89371247b44d3236b1d3c2510da87979878cab3",
+  "gitDiffExitCode": 0,
+  "comparedPaths": [
+    "backend",
+    "frontend",
+    "database",
+    "compose.yaml",
+    "scripts",
+    ".env.example"
+  ],
+  "localVerifiedTests": {
+    "frontend": 33,
+    "javaUnit": 17,
+    "mysqlIntegration": 13
+  },
+  "remoteExecutionIsSeparate": true,
+  "excludedOriginalAttachments": [
+    "前端设计/",
+    "题目要求/"
+  ]
+}

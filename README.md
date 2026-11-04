@@ -2,7 +2,7 @@
 
 选择模板、上传照片、提交后台制作，然后继续浏览。Java 按 **素材检查 → 模拟生成 → 结果整理** 执行，MySQL 保存任务和真实时间线，Java2D 将本次上传的照片拼成可预览 PNG。无真实 AI 调用。
 
-当前版本：个人中心、批量独立任务、两条并行制作和 12 种版式。最近本地验证为 **63 项测试通过**；验收提交与远端 CI 状态见 [交付清单](docs/SUBMISSION.md)。
+当前版本：个人中心、批量独立任务、两条并行制作和 12 种版式。最近本地验证为 **63 项测试通过**；代码验收提交为 [c893712](https://github.com/MarcusDog/FrameForge/commit/c89371247b44d3236b1d3c2510da87979878cab3)；远端 CI 状态见 [交付清单](docs/SUBMISSION.md)。
 
 ## 快速启动
 
@@ -264,4 +264,4 @@ R-07/R-08/R-12 的专项案例见 docs/AI_WORKFLOW.md：两个 RUNNING 任务中
 
 12 个模板分别使用明信片、拍立得、圆形肖像、杂志、庆祝卡、满版海报、胶片、留白双图、信笺、拼图、三联画、拱形双图。封面与结果使用同一个 Java2D 生成器；旧结果保留，新任务使用新排版。已有数据库升级需以 UTF-8 客户端重新执行 002-seed.sql；该种子只 upsert 用户/模板，不删除任务或素材。
 
-本轮本地验证：33 前端 + 17 Java 单元 + 13 MySQL 集成，共 63 项；lint/typecheck/build、HTTP 业务闭环、两条同时 RUNNING / 一条 QUEUED 以及单任务失败隔离均通过。详细记录和原始失败/复验见 [UI_UPDATE.md](docs/UI_UPDATE.md)。历史 GitHub 验收快照与本轮本地增强分开记录，本轮未将云端 CI 写成通过。
+本轮本地验证：33 前端 + 17 Java 单元 + 13 MySQL 集成，共 63 项；lint/typecheck/build、HTTP 业务闭环、两条同时 RUNNING / 一条 QUEUED 以及单任务失败隔离均通过。详细记录和原始失败/复验见 [UI_UPDATE.md](docs/UI_UPDATE.md)。本轮功能已同步 GitHub；新旧验收快照与本地/云端结果分开记录。最新 CI 仍因账户计费锁定未启动任务，原始证据见 SUBMISSION.md。

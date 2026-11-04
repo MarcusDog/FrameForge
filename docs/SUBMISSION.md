@@ -70,12 +70,16 @@
 - 可供招聘方复核的代码验收提交：[6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd](https://github.com/MarcusDog/FrameForge/commit/6d3e27f9d923dbcc3b50574cef23e1d9bccc6efd)，本地容器验证通过，远端因账户计费锁定未执行。不是“云端通过的验收提交”。
 - [github-source-provenance.json](evidence/github-source-provenance.json) 记录 git diff exit 0，证明该公开快照的业务源码/依赖/Compose 与本地验收基线一致。后续提交只补交付证据与文档，最新入口取 main。
 
-## 2026-11-04 本地试用增强
+## 2026-11-04 本地试用增强（同步前记录）
 
-本地后来新增了个人中心、批量制作、两 worker 和 12 种版式，并完成 63 项测试及运行更新，见 UI_UPDATE.md。上述 GitHub SHA 与 source-provenance 文件是 2026-11-03 发布的历史证据，不指代本地新版；本轮尚未更新远端快照或重跑云端 CI，不能把历史一致性证明套用到新版。
+本地后来新增了个人中心、批量制作、两 worker 和 12 种版式，并完成 63 项测试及运行更新，见 UI_UPDATE.md。上述 GitHub SHA 与 source-provenance 文件是 2026-11-03 发布的历史证据，不指代本地新版；该阶段尚未更新远端快照或重跑云端 CI，不能把历史一致性证明套用到新版。
 
 ## 最新版本同步 / 2026-11-04
 
-本次应用户明确要求，把本地 da3b2c631a03c0d3a3ef12df6f0a0a65c7f753bc 已验证的界面、个人中心、批量任务和模板更新发布至远端。新版本地证据为 33+17+13 共 63 项，见 UI_UPDATE.md；本次只修正文档与补充 CI 的 batch-smoke 步骤，没有改变业务代码或重算测试通过记录。
+本次已按用户明确要求，把本地 da3b2c631a03c0d3a3ef12df6f0a0a65c7f753bc 已验证的界面、个人中心、批量任务和模板更新发布至远端。新版本地证据为 33+17+13 共 63 项，见 UI_UPDATE.md；本次只修正文档与补充 CI 的 batch-smoke 步骤，没有改变业务代码或重算测试通过记录。
 
-公开快照 SHA 与本次 push 的实际 CI 结果将在完成后记录于本节；旧 SHA/账户锁定记录只属于旧版本。原始附件、缓存和用户媒体继续留在本地。
+新版代码验收提交：[c89371247b44d3236b1d3c2510da87979878cab3](https://github.com/MarcusDog/FrameForge/commit/c89371247b44d3236b1d3c2510da87979878cab3)。代码、依赖、模板封面和配置与本地 da3b2c6 已验证版本的 git diff 为 0，完整路径与统计见 [新版源码一致性记录](evidence/github-ui-provenance-2026-11-04.json)。后续提交仅整理文档/证据，GitHub main 提供最新交付入口。
+
+本次 [Actions run 41765366854](https://github.com/MarcusDog/FrameForge/actions/runs/41765366854) 返回 failure；backend/frontend/compose 三个任务的 steps 均为空，原因仍为账户计费锁定，未实际执行测试。原始返回见 [本次 CI 记录](evidence/github-ui-run-2026-11-04.json)。本地 63 项通过不代表云端已通过。账户所有者解除锁定后，可对该 run 重新运行全部任务。没有为获得绿色状态修改触发器、删除测试或换自托管 runner。
+
+原始附件、缓存、个人上传文件继续留在本地；公开工程快照不携带本地原始附件历史。

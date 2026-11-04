@@ -188,3 +188,5 @@ AI 实现个人中心与 MySQL 统计接口，扩展现有 UploadForm 的批量�
 用户明确要求把本轮功能更新至 GitHub 和 README。AI 使用已验证的 da3b2c6、当前工作流及旧发布记录作为上下文，统一 README/DELIVERY/PLAN/REQUIREMENTS 的当前模板数、并发数、63 项统计和旧证据日期；历史日志不改写为本轮结果。CI 增加现有 batch-smoke 的容器执行与结果 artifact，检查新批量功能。
 
 本次没有改业务实现或测试断言，也没有重复执行已有的 63 项检查来制造新记录。实际执行文档链接检查、git diff --check、Compose config 和源码差异核对后，再导出不含原始附件/缓存的 GitHub 快照。发布 SHA、源码一致性与实际 CI 结果以 SUBMISSION.md 和新的原始 API 记录为准；没有把待推送或待运行提前写为成功。
+
+实际完成：代码快照 c893712 发布成功，Git 核对 backend/frontend/database/compose/scripts/.env.example 与本地 da3b2c6 完全一致；包括新界面、12 张封面和批量脚本。Actions run 41765366854 三任务均未启动，annotations 仍明确为账户计费锁定。保存新版 CI JSON 与源码映射，README/SUBMISSION 标明准确验收 SHA；未假称远端测试通过。
