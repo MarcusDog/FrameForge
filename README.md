@@ -1,323 +1,199 @@
 # FrameForge · 素材创作工作台
 
-选择模板、上传照片、提交后台制作，然后继续浏览。Java 按 **素材检查 → 模拟生成 → 结果整理** 执行，MySQL 保存任务和真实时间线，Java2D 将本次上传的照片拼成可预览 PNG。无真实 AI 调用。
+浏览模板、上传图片并提交制作；Java 在后台依次执行素材检查、模拟生成、结果整理，MySQL 保存任务、阶段和个人记录。结果由 Java2D 将本次上传图片拼为 PNG，不调用真实 AI 服务。
 
-当前版本：注册/登录与持久会话、头像/昵称个人中心、批量独立任务、两条并行制作和12种版式。**81项本地测试通过，真实浏览器两套验收通过**（手机尺寸/焦点、HTTP500与多任务/刷新、注册登录及界面批量制作）。证据与失败修复见 [ACCOUNTS_QA.md](docs/ACCOUNTS_QA.md)，代码验收 [49239ac](https://github.com/MarcusDog/FrameForge/commit/49239ac316f47d7ce0e3fb797de837251a1506c3)，云端真实结果见 [交付清单](docs/SUBMISSION.md)。01e5347及72项是历史；后续优先级见 [SCORECARD.md](docs/SCORECARD.md)。
+- 仓库：[MarcusDog/FrameForge](https://github.com/MarcusDog/FrameForge)
+- 业务代码验收 commit：[49239ac316f47d7ce0e3fb797de837251a1506c3](https://github.com/MarcusDog/FrameForge/commit/49239ac316f47d7ce0e3fb797de837251a1506c3)。后续交付文档更新不改变该业务基线；压缩包的完整快照 commit 见随包 RELEASE.json。
+- 最近功能验证：2026-11-04，本地容器内 **44 前端 + 17 Java 单元 + 20 真实 MySQL 集成，共81项通过**，lint/typecheck/build及两套真实 Chromium 检查通过。原始失败和复验见 [ACCOUNTS_QA](docs/ACCOUNTS_QA.md)、[控制台记录](docs/evidence/account-console.txt)。本轮材料整理未重跑这些功能检查。
+- GitHub Actions 配置已提供；业务验收对应云端任务因账户计费锁定未开始执行，不能视为云端通过。实际记录见 [SUBMISSION](docs/SUBMISSION.md)。
+- 提交材料逐项核对见 [SUBMISSION_READY](docs/SUBMISSION_READY.md)，R-01～R-14证据索引见 [REQUIREMENTS](docs/REQUIREMENTS.md)。
 
-## 快速启动
+## 容器启动与停止
 
-需要 Docker Desktop（Linux containers）和 Docker Compose。首次构建需联网下载官方镜像、npm/Maven 依赖；启动后素材与业务无需外部服务。
+需要 Docker Engine/Desktop（Linux containers）与 Compose。首次构建需联网取得公开镜像、npm/Maven依赖；正常业务、示例图片和模拟生成不依赖外部服务、AI Key或付费接口。
 
-在工程根目录运行：
+在工程根目录运行，构建与应用均在容器中执行，评估者无需在宿主机安装 Java、Node 或 Maven：
 
 ~~~sh
 docker compose up --build -d
 docker compose ps
 ~~~
 
-打开 http://localhost:3000 。后端健康检查：http://localhost:8080/actuator/health 。默认仅绑定本机回环地址，数据库不向宿主机发布端口。
-
-## 工程与交付验收入口（R-12～R-14）
-
-公开仓库：[MarcusDog/FrameForge](https://github.com/MarcusDog/FrameForge)。交付检查与不足清单见 [SUBMISSION.md](docs/SUBMISSION.md)，AI 使用说明与真实案例见 [AI_WORKFLOW.md](docs/AI_WORKFLOW.md)。
-
-| 要求 | 交付位置与核验方法 |
-|---|---|
-| R-12 CI 与关键测试 | [.github/workflows/ci.yml](.github/workflows/ci.yml) 在 push/PR 运行前端 lint、类型检查、44项测试和build；Java一次verify运行17单元+20MySQL集成并构建。Compose跑HTTP闭环、批量、资料及两套真实浏览器检查；保存报告/截图。云端是否实际运行独立记录 |
-| R-13 完整材料与 AI 工作流 | 前后端源码、npm锁文件、Maven Wrapper/BOM、九表SQL/种子与增量迁移、配置、素材、README。连接/API/演示/限制/回滚及真实AI失败/复验均记录；个人投入与人工审查待本人确认 |
-| R-14 容器交付 | 根目录 docker compose up --build 启动前端、Java、MySQL，初始化表与种子；数据卷保留数据库和媒体。评估者无需在宿主机直接运行工程脚本 |
-
-历史本地代码验收基线（2026-11-02）：e70c44a9d06fc380fa55ea4c4d06730abcc672e6。GitHub 发布快照与最终验收提交见 SUBMISSION.md；原始题目/设计附件保留本地，公开仓库包含必要的题目归档与工程，不上传依赖、构建缓存和用户上传文件。
-
-可直接使用默认演示配置；需要修改端口或参数时，将 .env.example 复制为 .env 后编辑。配置中均为本地示例密码，不含真实凭据。
-
-停止但保留数据库、素材和结果：
+前端 http://localhost:3000 ，Java健康检查 http://localhost:8080/actuator/health 。默认只绑定本机回环地址；MySQL不向宿主机发布端口。默认三服务为frontend、backend、mysql，按healthcheck等待数据库和后端就绪。
 
 ~~~sh
+# 停止应用，保留数据库、上传和结果卷
 docker compose down
 ~~~
 
-## 技术版本与结构
+不要用删除数据卷作为常规停止、升级或回滚方式。
 
-| 项目 | 固定版本 |
+## 技术版本、结构与连接
+
+| 项目 | 实际固定版本/实现 |
 |---|---|
-| Java 构建/运行 | 21（运行镜像 Temurin 21.0.10+7） |
-| Spring Boot | 3.5.16 |
-| MyBatis Spring Boot Starter | 3.0.5 |
+| Java构建/运行 | Java21；运行镜像Temurin21.0.10+7 |
+| Spring Boot / MyBatis Starter | 3.5.16 / 3.0.5 |
 | MySQL | 8.4.8 |
-| Maven / Wrapper 插件 | 3.9.14 / 3.3.4 |
+| Maven / Wrapper插件 | 3.9.14 / 3.3.4 |
 | Node.js | 24.11.1 |
-| Next.js / React | 16.4.3 / 19.3.1 |
-| TypeScript | 5.9.3 |
+| Next.js / React / TypeScript | 16.4.3 / 19.3.1 / 5.9.3 |
 | Vitest / React Testing Library | 4.0.18 / 16.3.0 |
-| Java 测试 | Boot BOM 管理的 JUnit 5、Mockito |
-| 样式与状态 | 原生 CSS、fetch、Hooks、Context |
+| Java测试 | Boot BOM管理的JUnit5与Mockito |
+| 状态/样式/异步执行 | fetch、Hooks、Context、原生CSS；Spring ThreadPoolTaskExecutor |
+| 可选浏览器QA | Playwright Core1.64.1；本次Chromium156.0.8078.79，Linux容器内运行 |
 
-npm 直接依赖使用精确版本，完整依赖树及完整性值见 frontend/package-lock.json。Java 由固定 Boot BOM、MyBatis 版本与 Maven Wrapper 管理，实际测试报告含解析版本。Dockerfile 与 Compose 固定镜像补丁标签。
+npm直接依赖使用精确版本，完整依赖树及校验值见frontend/package-lock.json。Java使用固定Boot BOM、MyBatis版本及Maven Wrapper；镜像固定补丁标签。QA容器的系统浏览器由Debian仓库安装，每次实际版本记录在报告中。
 
 ~~~text
-frontend/              Next App Router、页面、上传与 TaskFeed、行为测试
-backend/               Spring Boot、Service、MyBatis Mapper、JUnit/MySQL 集成测试
-database/              六张业务表、个人资料/凭据/会话增量表与 Alice/Bob、十二模板种子
-docs/                  原题、验收矩阵、技术选择、实际 AI 工作流与验证
-scripts/               HTTP 验收、Java2D 本地封面生成器
-.github/workflows/     push / pull_request CI
-compose.yaml           默认三服务；test profile 为独立测试服务
+frontend/            Next App Router、上传/任务追踪/账户页面、行为测试
+backend/             Spring Boot、Service、MyBatis Mapper、单元/集成测试
+database/            001结构、002种子、003资料、004账户会话
+scripts/             HTTP smoke、真实浏览器QA、Java2D封面工具
+docs/                原题、需求矩阵、AI工作流、决策、真实验证证据
+output/playwright/   按阶段保留的截图及浏览器JSON报告
+.github/workflows/   push / pull_request检查
+compose.yaml         默认三服务；test profile使用独立测试库
 ~~~
 
-## 连接、初始化与配置
+浏览器统一请求同源/api，Next rewrite转发到Java。Compose内前端连接http://backend:8080，Java连接mysql:3306/frameforge；Java负责业务、文件和数据库写入，Next不替代后端执行任务。时间以UTC存储/返回，界面按浏览器本地时区显示。
 
-浏览器只请求同源 /api。Next rewrite 转发到 Java；业务、文件处理和 MySQL 写入均在 Java。Compose 内前端使用 http://backend:8080，后端使用 mysql:3306/frameforge。
+## 配置、初始化和本地素材
 
-MySQL首次空卷依次执行001-schema、002-seed、003-user-profiles、004-accounts。原六张业务表之外有user_profile、account_credential、auth_session，共9表。已有卷不会重复初始化；缺少资料表的旧版先执行003，新增账户再执行004，之后启动新版。不能依赖重启自动重建，也不删除卷升级。
+无需真实凭据即可使用默认演示配置；可将.env.example复制为.env后修改。示例密码仅供本机演示。
 
-- mysql-data：MySQL 持久卷。
-- media-data：Java /data，保存 uploads 和 results。
-- maven-cache：测试容器复用 Maven 依赖，避免每次 --rm 后重新下载。
-- 演示摄影和生成封面已在 frontend/public/demo 随源码提供，样例图片可直接选取上传。
-- 时间以 UTC 保存及返回，页面按浏览器时区显示。
-- 任务和阶段字段在短事务中一致更新，查询事务读取同一快照。
-
-| 配置 | 默认值 | 作用 |
+| 配置 | 默认值 | 用途 |
 |---|---|---|
 | FRONTEND_PORT / BACKEND_PORT | 3000 / 8080 | 宿主机访问端口 |
-| DB_PASSWORD | frameforge-demo | 演示数据库应用用户密码 |
-| MYSQL_ROOT_PASSWORD | local-root-demo | 首次初始化 root 密码 |
-| SIMULATION_ENABLED | true | 启用开发演示控制 |
-| DEMO_ENABLED | true | 允许Alice/Bob演示入口；false时仅允许注册/密码登录 |
-| SECURE_COOKIE | false | HTTPS部署设为true；本机HTTP演示保持false |
-| TASK_QUEUE_CAPACITY | 20 | 工作线程之外的排队容量 |
-| TASK_WORKERS | 2 | 后台同时处理的任务数，支持 1～4；其余任务排队 |
-| DB_URL / DB_USER | 见 application.yml | Java 独立开发时的 JDBC 配置 |
-| STORAGE_PATH | ./.runtime/storage | 独立开发的文件目录；容器内为 /data |
-| JAVA_API_BASE_URL | 本地 localhost:8080；容器 backend:8080 | Next 构建时的 rewrite 目标，修改后需重建前端 |
+| DB_PASSWORD / MYSQL_ROOT_PASSWORD | frameforge-demo / local-root-demo | MySQL首次初始化的示例密码 |
+| SIMULATION_ENABLED | true | 开启失败/耗时演示控件；关闭后Java拒绝simulation覆盖参数 |
+| DEMO_ENABLED | true | 开启共享Alice/Bob入口；false仅允许注册/密码登录 |
+| SECURE_COOKIE | false | 本机HTTP用false；HTTPS部署设true |
+| TASK_WORKERS / TASK_QUEUE_CAPACITY | 2 / 20 | 1～4个工作线程，其余进入有界队列 |
+| DB_URL / DB_USER | 见application.yml | JDBC连接；Compose固定连接内部mysql服务 |
+| STORAGE_PATH | 容器/data | 上传和结果目录，挂载media-data |
+| JAVA_API_BASE_URL | 构建时http://backend:8080 | Next rewrite目标，修改需重建前端 |
 
-数据库密码在卷初始化后更改环境变量不会自动修改现有 MySQL 用户密码，需同步更改数据库用户配置。
+空数据库卷自动顺序执行001-schema.sql、002-seed.sql、003-user-profiles.sql、004-accounts.sql，创建9表、Alice/Bob和12个模板。mysql-data保存数据库，media-data保存uploads/results；测试库使用单独mysql-test与tmpfs，不复用演示库。已有卷不会重复初始化；修改环境变量不会自动修改已存在的MySQL用户密码。
 
-不使用容器开发时，需要 Java 21、Node 24.11.1 和已初始化的 MySQL：在 backend 执行 sh ./mvnw spring-boot:run（Windows 为 .\mvnw.cmd spring-boot:run）；在 frontend 执行 npm ci、npm run dev。最终验收优先采用下面的容器命令。
+封面和6张可上传示例均在frontend/public/demo，使用文件选择器选择frontend/public/demo/samples/*.jpg即可，无需远程图片服务。12种版式覆盖1/2/3张输入；封面由生产CollageRenderer生成，结果重新读取本次输入，不复制封面。来源及复用范围见 [ASSET_SOURCES](docs/ASSET_SOURCES.md)。
 
-## 演示步骤
+## 建议演示顺序
 
-1. 打开模板广场，选择 **Alice** 快速演示，或点击“创建账户”注册后进入本人空间；切换分类或搜索模板。
-2. 进入“旅行明信片”，按两个上传位选择 demo/samples 中不同图片；观察上传状态，尝试替换、移除。缺图、上传中和提交中不能提交。
-3. 点击“开始制作”。受理后立即恢复按钮，并出现任务；可以继续提交第二个任务或返回广场。
-4. 在右侧动态、“我的任务”或任务详情查看 Java 返回的阶段及真实耗时。完成后点击“预览作品”，可以用 Escape 关闭。
-5. 展开“演示控制”，选择“模拟生成”失败，提交新任务：素材检查完成、模拟生成失败、结果整理跳过，失败原因写入 MySQL。
-6. 将各阶段延迟调整为例如 2000 / 10000 / 2000 毫秒，连续创建多个任务：第一个处理中，后面的排队。三个阶段都可独立触发失败，行为不依赖随机数。
-7. 制作期间刷新、切换页面或关闭页面后重新打开：历史从 Java 恢复，未结束任务继续追踪，已结束任务不再自动查询。
-8. 切换 **Bob**：Alice 的素材、任务、结果均不可通过 Bob 身份读取。Bob 可以独立创作；切回 Alice 恢复其历史。
-9. 浏览器 Network 中观察：没有活跃任务时没有任务自动查询；查询网络异常保留旧快照并提供“恢复查询”，不会将任务改成业务失败。
+1. 选Alice快速体验，或到/register创建独立账户；模板广场切分类、查看封面和图片要求。
+2. 进入“旅行明信片”，上传两张示例图；尝试预览、替换、移除及非法文件。素材未就绪或提交中不能重复点击。
+3. 点击“开始制作”，获得任务ID后提交状态立即结束；继续浏览或提交下一次。任务由Java继续处理，关闭页面不影响后台。
+4. 动态/历史/详情展示当前阶段与服务端真实时间线。完成后预览PNG，Tab/Shift+Tab保持弹窗焦点，Escape关闭并返回触发按钮。
+5. 展开“演示控制”，指定“模拟生成”失败：素材检查成功、生成失败、整理跳过。三个阶段均可确定性触发失败。
+6. 将耗时调整为2000/10000/2000毫秒，连续提交多次；默认两任务并行，更多任务排队。也可从“我的任务→批量制作”一次选三张，为单图模板创建三个独立结果。
+7. 制作期间刷新、离开再返回，历史从Java/MySQL恢复并继续追踪。终态停止查询；无活跃任务不轮询。查询异常保留上次状态，点“恢复查询”继续，不会误标任务FAILED。
+8. 切换Bob，确认Alice记录不可读取；注册用户退出后到/login重新登录，恢复本人资料/历史。个人中心可保存头像、昵称、简介，刷新仍在。
 
-上传失败可用不符合类型的文件验证前端反馈；伪装扩展名的损坏图片会被 Java 内容校验拒绝。查询失败可在开发者工具暂时阻断单个任务查询，然后恢复并点“恢复查询”。
+失败阶段为MATERIAL_CHECK / GENERATING / ORGANIZING；默认耗时1000/4000/1000毫秒，每阶段允许0～30000整数。查询HTTP500与阶段失败是不同场景：前者只显示同步错误，后者由Java写入FAILED。真实浏览器网络注入/多任务恢复证据见ACCOUNTS_QA。
 
-模拟参数仅在开关开启时接受；关闭 SIMULATION_ENABLED 后页面隐藏控件，后端拒绝客户端提交的 simulation 覆盖项。
+## 主要API与字段
 
-## API 与字段
+成功JSON直接返回对象；错误统一为{code,message}，不返回SQL、堆栈或本机路径。私有接口读取Cookie，越权资源返回404；未登录401。图片为JPEG/PNG响应。
 
-JSON 成功响应直接返回对象；失败格式：
-
-~~~json
-{"code":"INVALID_INPUT","message":"可理解的原因"}
-~~~
-
-| 方法与路径 | 请求 | 响应 |
+| 方法与路径 | 请求 | 响应/说明 |
 |---|---|---|
-| GET /api/demo/users | 无 | [{id,name}] |
-| GET /api/demo/session | Cookie | {id,name}；未选用户 401 |
-| POST /api/demo/session | {userId:"alice"或"bob"} | 用户；设置 HttpOnly、SameSite=Lax Cookie |
-| POST /api/auth/register | {username,password,nickname} | HTTP201，{id,name}并自动登录；重复用户名409 |
-| POST /api/auth/login | {username,password} | {id,name}及HttpOnly会话Cookie；错误401，暂时锁定429 |
-| GET /api/auth/session | Cookie | 当前{id,name}，无会话/过期401；兼容GET /demo/session |
-| DELETE /api/auth/session | Cookie | {signedOut:true}，撤销会话；兼容DELETE /demo/session |
-| DELETE /api/demo/session | 无 | {signedOut:true}；过期 Cookie，保留资料和任务 |
-| GET /api/me/profile | Cookie | 当前用户 {userId,nickname,bio,avatarColor,avatarAssetId,avatarUrl,version,createdAt,updatedAt} |
-| PUT /api/me/profile | {nickname,bio,avatarColor,avatarAssetId,version} | 返回保存后的完整资料；过期版本 409，非本人头像 404 |
-| GET /api/config | 无 | {simulationEnabled} |
-| GET /api/me/summary | Cookie | 当前用户 {totalTasks,activeTasks,succeededTasks,failedTasks,assetCount}；从 MySQL 全量统计 |
-| GET /api/templates | 无 | 模板数组 |
-| GET /api/templates/{id} | 模板 ID | 模板详情，不存在 404 |
-| POST /api/assets | multipart 的 file | {id,previewUrl,mimeType,sizeBytes,width,height} |
-| GET /api/assets/{id}/content | Cookie | JPEG/PNG，校验归属 |
-| POST /api/tasks | 下方 JSON | HTTP 202，{taskId,task} |
-| GET /api/tasks | before 可选游标；limit 1～50，默认 20 | {items,nextCursor}，按创建顺序倒序 |
-| GET /api/tasks?active=true | Cookie | 当前用户全部未结束任务，不截断为第一页历史 |
-| GET /api/tasks/{id} | Cookie | 任务及阶段、素材元数据 |
-| GET /api/tasks/{id}/result | Cookie | 成功后的 PNG；未成功或无权限 404 |
+| GET /api/demo/users | 无 | [{id,name}]，只列Alice/Bob |
+| POST /api/demo/session | {userId} | {id,name}，仅允许Alice/Bob |
+| GET /api/auth/session | Cookie | {id,name}；兼容GET /api/demo/session |
+| DELETE /api/auth/session | Cookie | {signedOut:true}，撤销会话；兼容DELETE /api/demo/session |
+| POST /api/auth/register | {username,password,nickname} | 201、{id,name}并自动登录；重名409 |
+| POST /api/auth/login | {username,password} | {id,name}及HttpOnly Cookie；错误401，暂锁429 |
+| GET /api/config | 无 | {simulationEnabled,demoEnabled} |
+| GET /api/templates | 无 | 模板数组，前端按category筛选 |
+| GET /api/templates/{id} | 模板ID | 模板详情；不存在404 |
+| POST /api/assets | multipart的file | {id,previewUrl,mimeType,sizeBytes,width,height} |
+| GET /api/assets/{id}/content | Cookie | 校验归属后返回图片 |
+| POST /api/tasks | 下方JSON | 202、{taskId,task}，不等待完整执行 |
+| GET /api/tasks | before可选、limit默认20/范围1～50 | {items,nextCursor}，个人历史 |
+| GET /api/tasks?active=true | Cookie | 全部未结束任务，恢复追踪 |
+| GET /api/tasks/{id} | Cookie | 任务、阶段和素材快照 |
+| GET /api/tasks/{id}/result | Cookie | 成功PNG；未成功或无权限404 |
+| GET /api/me/summary | Cookie | {totalTasks,activeTasks,succeededTasks,failedTasks,assetCount} |
+| GET /api/me/profile | Cookie | {userId,nickname,bio,avatarColor,avatarAssetId,avatarUrl,version,createdAt,updatedAt} |
+| PUT /api/me/profile | {nickname,bio,avatarColor,avatarAssetId,version} | 完整资料；旧版本409，非本人头像404 |
 
-模板字段：id、title、category、description、coverUrl、layout、requiredImageCount、acceptedMimeTypes、maxFileSizeBytes。
-
-资料昵称去除首尾空白后 1～24 字符，简介最多 160 字符；avatarColor 为六位十六进制颜色，avatarAssetId 为本人上传素材 ID 或 null（移除头像）。先 GET 获取 version，每次成功 PUT 增加版本。409 时显式重新读取，避免旧页面覆盖新资料。createdAt 表示资料记录创建时间，不冒充原账户注册时间。
-
-任务提交示例：
+模板字段：id、title、category、description、requiredImageCount、coverUrl、layout、acceptedMimeTypes、maxFileSizeBytes。只接收JPEG/PNG，单张最大5MiB；同时验证真实格式、解码、单边8192/总像素2500万上限。提交再次验证数量、重复素材、归属和文件存在。
 
 ~~~json
 {
-  "templateId":"pet-portrait",
-  "assetIds":["先通过上传接口获得的素材 ID"],
-  "requestKey":"每次新制作的 UUID；同一次网络重试复用",
-  "simulation":{
-    "failAt":"GENERATING",
-    "checkMs":1000,
-    "generationMs":4000,
-    "organizeMs":1000
+  "templateId": "pet-portrait",
+  "assetIds": ["先上传取得的素材ID"],
+  "requestKey": "新制作使用新UUID，同一次网络重试复用",
+  "simulation": {
+    "failAt": null,
+    "checkMs": 1000,
+    "generationMs": 4000,
+    "organizeMs": 1000
   }
 }
 ~~~
 
-正常完成时 failAt 为 null，或省略 simulation。默认阶段耗时为 1000 / 4000 / 1000 毫秒，每阶段可设 0～30000。非法阶段、耗时和素材被拒绝。相同用户+requestKey+相同归一化参数返回同一任务；参数冲突返回 409。前端同步提交锁防连点；请求失败后保留提交键。
+相同用户+requestKey+相同参数返回同一任务；同键不同参数409。正常完成可省略simulation；failAt指定上文阶段。任务字段：id、templateId、templateTitle、coverUrl、status、currentStage、resultUrl、errorCode、errorMessage、version、createdAt、updatedAt、stages、assets。阶段字段：taskId、stage、status、startedAt、endedAt、durationMs、errorMessage。
 
-任务字段：id、templateId、templateTitle、coverUrl、status、currentStage、resultUrl、errorCode、errorMessage、version、createdAt、updatedAt、stages、assets。阶段字段：stage、status、startedAt、endedAt、durationMs、errorMessage。
+任务状态为QUEUED→RUNNING→SUCCEEDED/FAILED；阶段按MATERIAL_CHECK→GENERATING→ORGANIZING顺序，阶段状态为PENDING/RUNNING/SUCCEEDED/FAILED/SKIPPED。每步开始/结束独立持久化，失败后后续SKIPPED；PNG原子写入完成才公布结果URL。查询只读，终态不可回退。
 
-任务状态为 QUEUED / RUNNING / SUCCEEDED / FAILED。阶段依次为 MATERIAL_CHECK / GENERATING / ORGANIZING，阶段状态为 PENDING / RUNNING / SUCCEEDED / FAILED / SKIPPED。
+资料昵称1～24字符、简介最多160字符；avatarColor为六位十六进制颜色，avatarAssetId为本人上传ID或null。GET取得version后PUT，成功版本递增；冲突显式重载，避免覆盖。注册用户名4～32位字母/数字/下划线、忽略大小写，密码8～128字符；连续5次错误暂锁一分钟。
 
-## 异步正确性与边界
+## 后台执行、身份与边界
 
-- 提交事务写入任务、素材关联及三个阶段记录，AFTER_COMMIT 监听器向 Spring ThreadPoolTaskExecutor 投递；不会等待制作完成。
-- 默认两个工作线程、20 队列。拒绝时通过 REQUIRES_NEW 将已受理任务写为 FAILED / EXECUTOR_SATURATED；客户端仍收到任务 ID。没有 CallerRunsPolicy。
-- Worker 每个阶段开始和结束调用独立 Service 的短事务；等待、Java2D 和磁盘操作位于事务外。
-- 条件更新、行锁和 version 保证终态不回退、重复调度不重复执行；查询不推进任务。
-- 后续阶段在失败后标为 SKIPPED。GENERATING 读取用户图片，ORGANIZING 原子落盘后才公布结果 URL。
-- 上传同时限制 MIME、真实图片格式、解码、字节和像素；服务端随机文件名，原文件名不参与路径。单张不超过 5 MiB、单边 8192、总像素不超过 2500 万。
-- 前端任务快照与查询错误分开，响应按用户代次和 version 合并；终态停止轮询，失败查询暂停该任务直到手动恢复，其他任务继续。只有模板详情、任务和历史页面自动追踪，回到广场取消查询，返回后恢复。
-- GET 请求 15 秒、POST 上传和提交 60 秒超时，期限覆盖 JSON 响应体读取。超时保留业务快照，显示请求异常；不会将任务标记为失败。
-- 错误请求保留 HTTP 404/405/415 等客户端状态，必要响应头（如 Allow）保留；未预期异常仍返回 500 并记录服务端日志。
-- 浏览器刷新恢复与服务进程恢复不同：服务重启不续跑，启动清算遗留任务为 FAILED / SERVER_RESTARTED；正常关闭时被中断任务可为 SERVER_SHUTDOWN。
+- TaskService事务创建任务、素材关联、三阶段记录；AFTER_COMMIT向有界ThreadPoolTaskExecutor投递。拒绝通过独立事务落为FAILED/EXECUTOR_SATURATED，仍可查任务ID；不用CallerRunsPolicy阻塞请求。
+- Worker调用TaskStageService短事务更新边界；延迟、Java2D渲染和文件写入在阶段数据库事务之外。条件更新/行锁保护终态，version防旧响应覆盖。
+- 前端按taskId分开保存业务快照和请求错误；轮询仅在模板详情、我的任务、历史、任务详情、个人中心启用，回广场/离页/切换用户清理请求。GET/PUT等15秒、POST60秒截止，包含响应体读取。某任务同步失败不影响其他任务。
+- Alice/Bob是可主动切换的共享Demo身份；注册账户使用盐化密码派生与MySQL随机会话，HttpOnly/SameSite=Lax Cookie，7天有效、退出撤销。演示接口不能列出或冒充注册用户。全部素材/任务/结果按Java当前用户归属校验。
+- 浏览器刷新可以恢复追踪；服务重启不自动续跑。遗留任务启动时清算为FAILED/SERVER_RESTARTED，关闭中断可为SERVER_SHUTDOWN。单实例内存队列不提供崩溃级可靠消息投递；数据库/磁盘持续故障需先恢复环境再清算。
 
-## 用户身份与已知限制
+已完成原题核心闭环及材料；注册/资料、真实时间线、Java2D拼贴、批量并行、幂等与队列拒绝是增强。明确未实现：孤立上传文件回收、用户存储配额、EXIF自动旋转、完整生产认证（邮箱验证/找回密码/MFA/分布式限流）、多实例调度、自动续跑/重试/任务取消。历史列表存在有界N+1查询。未验收实体手机/iOS Safari、屏幕阅读器、生产发布与实际回滚、全无缓存安装；没有公网地址要求。更细证据分级见REQUIREMENTS。
 
-Alice/Bob 是数据库中的演示用户。Java 设置 ff_demo_user Cookie，素材、任务、历史和结果读取按当前用户校验；没有公开静态素材目录。跨用户读取返回 404。
-
-Alice/Bob是共享Demo身份；新注册账户使用用户名密码、独立资料及MySQL会话，演示API不能列出/选择注册用户。基础登录已有密码派生、错误计数、会话过期/撤销；尚无邮箱验证、找回密码、MFA、分布式限流，未作为生产认证系统验收。无集群协调、任务自动重试/断点续跑/取消。
-
-上传替换/移除仅改变本次表单引用，不删除服务端旧素材，避免影响历史任务；当前没有自动清理孤立文件和存储配额。单个结果采用中心裁剪，不自动旋转 EXIF，不提供视频或真实 AI。模拟延迟之外，实际耗时还包含解码、渲染和存储。
-
-任务受理与内存入队之间不提供崩溃级可靠消息保证；进程异常中止后由重启清算明确失败。数据库/磁盘持续故障时可能无法立即记录错误，需修复基础环境后重启清算。
-
-## 测试和 CI
-
-全部运行与评估可在容器中完成，测试数据库与演示数据库隔离：
+## 容器测试与CI
 
 ~~~sh
+docker compose config --quiet
 docker compose --profile test run --build --rm frontend-test
 docker compose --profile test run --build --rm backend-test
 ~~~
 
-前者顺序执行 lint、tsc、Vitest、Next build；后者运行 Maven verify 和 mysql-it 集成测试。退出码非零即为失败，不跳过检查。
+frontend-test依次运行lint、TypeScript、Vitest、Next build；backend-test在独立真实MySQL执行Maven verify（含JUnit/Mockito与mysql-it）并构建，不用H2替代。测试命令非零表示失败，不跳过检查。源码中的package.json、pom.xml与Dockerfile为实际执行入口。
 
-等价的单项开发命令：
-
-~~~sh
-# frontend
-npm run lint
-npm run typecheck
-npm run test -- --run
-npm run build
-# backend
-sh ./mvnw -B -ntp verify
-sh ./mvnw -B -ntp -Pmysql-it verify
-~~~
-
-mysql-it 必须配置指向专用测试库的 DB_URL / DB_USER / DB_PASSWORD；profile 会初始化表和种子。不配置真实 MySQL 时不要声称集成测试通过。
-
-完整 HTTP 闭环验收（工程根目录，PowerShell / bash 均可）：
+HTTP完整闭环在工程根目录执行（PowerShell/bash均可，默认DEMO_ENABLED=true）：
 
 ~~~sh
 docker run --rm --network frameforge_default --mount "type=bind,source=$PWD,target=/workspace,readonly" -w /workspace -e FRAMEFORGE_URL=http://frontend:3000 node:24.11.1-bookworm-slim node scripts/smoke.mjs
 ~~~
 
-脚本创建两个属于 Alice 的真实演示任务，验证同源 Cookie、封面、上传、多任务、成功 PNG、指定阶段失败、历史恢复和 Bob 越权拒绝。会增加演示记录，不删除已有数据。
+将脚本名换为scripts/batch-smoke.mjs、scripts/profile-smoke.mjs可分别验证两运行一排队/失败隔离、资料冲突/头像归属/退出；建议依次运行且无其他任务，脚本会增加真实测试记录。真实浏览器可选QA镜像、完整可复制命令与截图见ACCOUNTS_QA；没有要求评估者在宿主机运行npm/Maven/浏览器脚本。
 
-GitHub Actions 在 push / pull_request 时触发 frontend、backend、compose 三个任务。前端四项检查；Java 单元/构建及真实 MySQL 集成；Compose 启动和 HTTP smoke。远端 Actions 是否实际运行以仓库记录为准，本地配置存在不等于云端已通过。
+GitHub Actions在push/pull_request触发frontend、backend、compose三任务，保存测试报告、HTTP输出、浏览器报告/截图及容器日志。功能验收run41782261196因GitHub账户计费锁定，三个任务steps为空；云端未执行不代表本地失败，也不算云端通过，详见SUBMISSION原始API记录。
 
-2026-11-03 实际推送已触发 [GitHub Actions](https://github.com/MarcusDog/FrameForge/actions/runs/41603794341)，但账户因计费问题被锁定，三个任务均未启动，不能标记为远端通过。处理账户锁定后可重新运行；本地容器 54 项测试及构建已通过。验收代码提交与原始 API 证据见 [SUBMISSION.md](docs/SUBMISSION.md)。
+## 升级、部署与基本回滚
 
-## 部署与基本回滚
-
-本题不要求公网部署。目标机器准备 Docker 后复制源码和非敏感配置，配置持久卷备份，再执行 Compose 启动并运行 smoke。生产化前需替换 Demo 身份、配置 HTTPS 和正式凭据。
-
-更新前对 MySQL 做一致性备份，同时备份 media-data；将当前前后端镜像各自标记为 previous 后构建新镜像。健康检查和 smoke 通过后保留新版本。
-
-回滚应用时，将 previous 镜像重新标记为 Compose 当前镜像名，再执行 docker compose up -d --no-build。数据库结构无变化时保留数据卷；涉及结构或结果格式变化时，必须按对应版本恢复配套数据库与文件备份。不要以删除数据卷充当回滚。
-
-## 交付状态、AI 工作流与投入
-
-详细实现与证据见：
-
-- docs/REQUIREMENTS.md：R-01～R-14 实际验收矩阵。
-- docs/VERIFICATION.md：真实命令、成功、失败及复验结果。
-- docs/AI_WORKFLOW.md：M0～M4 的上下文、AI 修改与具体修复案例。
-- docs/DECISIONS.md：关键技术判断与取舍。
-- docs/ASSET_SOURCES.md：合法摄影来源与复用范围。
-
-本工程使用 Codex 开发。用户提供题目、约束、方案并确认视觉；AI 负责拆解、编写、测试、定位和修复。例如前端测试最初暴露 Mock 泛型返回类型不兼容，改为明确的 unknown 网络解析边界后重新执行严格类型、全部测试和构建，未关闭检查。个人手写代码、个人投入和人工审查均待本人确认。
-
-最终测试统计和验收提交在验证记录及最终交付报告中记录；没有可靠的纯编码工时记录，实际个人投入待本人确认。原始题目和设计参考保留本地。GitHub 源码发布与真实线上部署分别记录；本项目未进行公网服务部署。
-
-## 最终验收摘要
-
-R-01～R-14见REQUIREMENTS，最新记录见ACCOUNTS_QA：44前端+17单元+20真实MySQL共81项，lint/typecheck/build通过。最终真实Chromium检查通过，截图/网络记录位于output/playwright/2026-11-04-final；首轮失败保留在其他日期阶段目录。手机宽度是浏览器视口模拟，非实体手机/iOS Safari；人工贡献仍待确认。GitHub与云端结果见SUBMISSION。
-
-无界面验证截图及结果：output/playwright/gallery-desktop.png、gallery-mobile.png、studio-mobile.png、history-desktop.png、result-preview.png、browser-check.json。可选脚本 scripts/browser-check.cjs 复用已安装的 Playwright Core/Edge；用 FF_PLAYWRIGHT_MODULE 指定模块，TEMP/TMP 可设为工程 D 盘 .runtime/temp；不参与项目启动，不要求评估者在宿主机安装或执行它。
-
-已修复 MySQL 中文导入问题：种子显式 SET NAMES utf8mb4，表固定 utf8mb4。首次启动自动应用；已有旧演示库需要使用 UTF-8 客户端重新执行 002-seed.sql 更新十二条模板，保留任务/素材。Docker 主数据盘与构建缓存位置由 Docker Desktop 管理，安装目录在 D 盘并不代表数据也在 D 盘；本机已核对数据盘位于 D 盘。
-
-R-07/R-08/R-12 的专项案例见 docs/AI_WORKFLOW.md：两个 RUNNING 任务中 A 查询 HTTP 500、B 成功，A 保留状态并显示“状态同步失败，可重试”，点击“恢复查询”后继续；B 停止轮询，切换用户拒绝旧响应。首次状态逻辑与切换用户测试即通过，实际只统一两处文案；原始执行输出见 docs/evidence/r07-r08-console.txt。
-
-独立验收、五项新发现及最小修复见 docs/REVIEW.md；本轮详情页改为复用已知任务快照，加载错误绑定用户和任务，旧查询错误不能污染较新快照。个人投入和人工审查仍待本人确认。
-
-## 个人中心、批量制作与 12 种版式（2026-11-04）
-
-点击头像或侧栏“个人中心”：查看当前账户、全部/进行中/完成/失败任务、上传素材数与最近记录，可切换 Alice/Bob。统计来自 Java/MySQL 的当前用户数据，不以当前加载的历史页数代替总数；会话使用原有 HttpOnly Demo Cookie，仍不是生产认证。
-
-“我的任务”→“批量制作”可一次选多张：单图模板每张生成一个独立任务，双图/三图模板按要求张数组成一组。每批最多 5 个任务，上传最多同时 3 张；素材准备齐、分组完整才可提交。提交受理后开始追踪，不等待生成结束。部分受理失败时只重试未受理任务并复用原提交键，已受理任务不会重复创建。新一批通过重新选图开始。
-
-默认两个 Java worker 同时处理，其余排队；每个任务独立展示上传图片缩略图、编号、阶段、失败与结果。终态不再自动查询，离开任务/历史/模板详情/个人中心时清理请求；切换用户清空旧视图，迟到响应不能污染新用户。空闲个人中心不持续请求统计。
-
-12 个模板分别使用明信片、拍立得、圆形肖像、杂志、庆祝卡、满版海报、胶片、留白双图、信笺、拼图、三联画、拱形双图。封面与结果使用同一个 Java2D 生成器；旧结果保留，新任务使用新排版。已有数据库升级需以 UTF-8 客户端重新执行 002-seed.sql；该种子只 upsert 用户/模板，不删除任务或素材。
-
-本轮本地验证：33 前端 + 17 Java 单元 + 13 MySQL 集成，共 63 项；lint/typecheck/build、HTTP 业务闭环、两条同时 RUNNING / 一条 QUEUED 以及单任务失败隔离均通过。详细记录和原始失败/复验见 [UI_UPDATE.md](docs/UI_UPDATE.md)。本轮功能已同步 GitHub；新旧验收快照与本地/云端结果分开记录。最新 CI 仍因账户计费锁定未启动任务，原始证据见 SUBMISSION.md。
-
-## 个人资料更新与演示（后续增强）
-
-个人中心现在支持编辑昵称、简介，上传/移除头像，或选择五种默认头像颜色。保存成功后顶栏同步更新，刷新从 Java/MySQL 恢复。Alice/Bob 仍是稳定身份，昵称不改变任务归属。统计和最近记录继续使用服务端数据；退出账户清除当前 Cookie 和私人视图，重新选择后恢复历史。
-
-演示：选择 Alice → 个人中心 → 上传一张 JPEG/PNG 头像并填写昵称/简介 → 保存 → 刷新 → 切换 Bob，确认资料/作品独立 → 退出 → 重新选择 Alice。两个页面同时修改时，后保存的旧版本收到冲突提示，草稿保留，点击“重新加载资料”后再编辑。
-
-**已有数据卷升级**：先备份数据库与媒体，完成正在执行的任务，再执行增量迁移，然后构建/启动新版应用。以下是 bash 命令；不删除数据卷，不重复执行破坏性初始化：
-
-~~~sh
-docker compose exec -T mysql sh -c 'MYSQL_PWD=$MYSQL_PASSWORD mysql --default-character-set=utf8mb4 -uframeforge -Dframeforge' < database/003-user-profiles.sql
-docker compose up --build -d --wait
-~~~
-
-PowerShell 导入使用：
-
-~~~powershell
-Get-Content -Raw -Encoding utf8 database/003-user-profiles.sql | docker compose exec -T mysql sh -c 'MYSQL_PWD=$MYSQL_PASSWORD mysql --default-character-set=utf8mb4 -uframeforge -Dframeforge'
-docker compose up --build -d --wait
-~~~
-
-003 使用 CREATE IF NOT EXISTS / INSERT IGNORE，可重复执行而不覆盖已编辑资料。首次空卷自动执行，无需手工导入。回滚到前一版应用时可保留新增表；该增量没有修改旧六表，旧版应用会忽略它。头像上传复用现有资产，移除头像不删旧文件；没有新增自动清理或存储配额。
-
-同源 HTTP 资料验收（与前述 smoke 命令相同容器参数，将脚本改为 scripts/profile-smoke.mjs）：验证真实资料读写、版本冲突、头像归属、退出与记录保留，最后恢复原 Bob 资料。会保留一张新增测试头像素材；若检测到同时有人编辑，恢复会因版本冲突失败，避免覆盖人工修改。CI 的 Compose 任务已加入此脚本。完整记录与本轮 72 项测试见 [PROFILE_UPDATE.md](docs/PROFILE_UPDATE.md)。
-
-## 注册登录与当前浏览器验收
-
-打开 `/register`，填写用户名、昵称、密码与确认密码，注册成功自动进入个人中心。修改资料后刷新，选择模板批量上传三张并提交；退出再到 `/login` 登录，历史仍属于本人。演示入口仅限Alice/Bob，新注册用户不会出现在演示下拉列表中。用户名忽略大小写；错误密码返回401，连续5次错误后一分钟内返回429。没有邮箱发送或忘记密码按钮。
-
-已有资料版升级仅需004（更早版本先003）。在新版应用启动前导入：
+新环境使用空卷启动即可。已有旧卷先备份数据库和media-data；停用新提交并等待活动任务结束。资料表缺失先导入003，账户表缺失再导入004，然后重建/启动新应用。下列为已有MySQL服务上的004导入例子：
 
 ~~~sh
 docker compose exec -T mysql sh -c 'MYSQL_PWD=$MYSQL_PASSWORD mysql --default-character-set=utf8mb4 -uframeforge -Dframeforge' < database/004-accounts.sql
 docker compose up --build -d --wait
 ~~~
 
-PowerShell将首行替换为：
+PowerShell用以下导入行替换第一行：
 
 ~~~powershell
 Get-Content -Raw -Encoding utf8 database/004-accounts.sql | docker compose exec -T mysql sh -c 'MYSQL_PWD=$MYSQL_PASSWORD mysql --default-character-set=utf8mb4 -uframeforge -Dframeforge'
 ~~~
 
-旧卷需要先备份；004只新增表，不删除历史。**有注册用户数据时，不能直接回滚到允许任意用户ID切换的旧Demo代码**：须保留当前Demo仅限Alice/Bob的归属限制，或在维护窗口恢复配套旧数据库/媒体备份；避免旧演示接口暴露新账户。当前没有执行生产回滚。
+003/004为可重复的增量，003不覆盖已编辑资料；两者不删原任务/素材。目标机器部署需保留配置和备份、启动后检查健康和smoke；升级前给旧镜像保留previous标签。回滚使用匹配旧镜像并执行docker compose up -d --no-build；结构变化需配套恢复数据库/媒体备份。已有注册数据时不能直接回滚到任意ID可切换的旧Demo代码，必须保留当前演示身份限制或恢复配套旧备份。未执行生产发布或回滚，不提供虚构截图。
 
-当前资料/任务页面已完成320/375/390px宽度和真实键盘验收，375px实际操作注册、三图批量、刷新、退出、错误/正确密码登录。创作动态以进行中优先，最近记录独立滚动，紧凑摘要保留查询失败和恢复按钮。真实浏览器的A查询500/B成功、A恢复、终态停轮询及切换用户迟到响应也通过。详见 [ACCOUNTS_QA](docs/ACCOUNTS_QA.md)，包含可复制容器命令、截图和首轮真实失败。CI已加入相同脚本，云端实际状态仍独立核对。
+## AI工作流、本人贡献与实际投入
+
+使用Codex辅助开发。按M0分析/矩阵、M1后端、M2前端、M3测试修复、M4交付推进；向AI提供原题、现有文件/API、约束和失败输出，生成/修改后执行真实容器检查，再按根因做最小修复。完整过程与失败证据见 [AI_WORKFLOW](docs/AI_WORKFLOW.md)、[PLAN](docs/PLAN.md)、[DECISIONS](docs/DECISIONS.md)、[VERIFICATION](docs/VERIFICATION.md)。
+
+具体例子：真实Chromium完成注册后，HTTP容器地址上的界面批量制作报crypto.randomUUID不可用；AI定位安全上下文差异，改用getRandomValues生成提交键，补无randomUUID测试；重新运行完整前端检查及真实三图批量/刷新/登录恢复均通过。首轮错误和复验分别保留，没有删除断言、关闭检查或冒称第一次全通过。
+
+本人于2026-11-04确认：实际投入约12小时，参与需求分析、方案选择、人工试用、代码修改与审查，以及部分代码撰写。AI完成实现/测试/修复/文档等辅助工作；具体手写文件和比例未单独统计，不把AI修改全部归为本人独立编写，也不把AI审查冒称人工审查。
+
+## 来源与复用
+
+未套用第三方业务工程或商业脚手架。框架/工具使用官方npm/Maven发行包，Maven Wrapper由官方插件生成；主要复用范围是框架、测试与构建能力。示例6张摄影来源、许可页面和文件映射见ASSET_SOURCES；Java2D生成封面与结果。原始题目/设计由用户提供用于要求和布局参考，原附件留本地，公开/压缩包保留docs/EXAM_SPEC.md归档，不包含私人对话、账户凭据、依赖缓存或用户上传文件。

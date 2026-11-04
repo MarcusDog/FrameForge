@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-11-04T07:31:18.290Z",
+  "kind": "submission-material-review",
+  "requiredFileCount": 27,
+  "missing": [],
+  "brokenLocalLinks": [],
+  "browserReports": [
+    {
+      "file": "browser-regression.json",
+      "result": "PASS",
+      "time": "2026-11-04T05:47:26.609Z"
+    },
+    {
+      "file": "browser-account.json",
+      "result": "PASS",
+      "time": "2026-11-04T05:47:45.342Z"
+    }
+  ],
+  "userReportedEffort": {
+    "hours": 12,
+    "contributions": [
+      "需求分析",
+      "方案选择",
+      "人工试用",
+      "代码修改与审查",
+      "部分代码撰写"
+    ],
+    "source": "2026-11-04 用户本人回复；未作逐行比例审计"
+  },
+  "testsRerunInThisMaterialReview": false
+}

@@ -16,7 +16,7 @@
 | R-10 | Demo隔离；资料/头像/统计/版本冲突；增强注册、登录、独立MySQL会话/退出 | AuthService/AuthMapper、003/004、TaskFlowIT、auth/account测试、profile-smoke、browser-account | 组件/真实MySQL/HTTP/浏览器通过；完整生产认证不在本轮范围 |
 | R-11 | 浅色工作台、语义/焦点/手机尺寸、紧凑动态与独立滚动 | 真Chromium320/375/390px；Tab/Shift+Tab/Escape；制作/动态774/723px；本轮截图 | 实际通过；非实体手机/iOS/屏幕阅读器验收 |
 | R-12 | push/PR前端四项、Java/MySQL、Compose HTTP与真实浏览器 | 最新44前端+17单元+20MySQL共81项，两套浏览器脚本；CI新增相同执行与artifact | 本地通过；云端实际结论独立记录，见SUBMISSION |
-| R-13 | 源码、锁文件、SQL、完整 README、真实 AI 工作流/决策/修复/限制/工作量 | README、AI_WORKFLOW、DECISIONS、VERIFICATION、DELIVERY、REVIEW 与原始输出 | 材料已核对；个人投入/贡献/人工审查待本人确认 |
+| R-13 | 源码、锁文件、SQL、完整README、AI工作流/修复/限制/投入 | README、SUBMISSION_READY、AI_WORKFLOW、VERIFICATION及原始输出 | 已核对并准备归档；本人自述约12小时及部分代码/试用/审查贡献，未作逐行比例统计 |
 | R-14 | 前后端Dockerfile、三服务Compose、卷/healthcheck/配置；可选浏览器QA镜像 | 本轮config/up健康、三HTTP脚本、新tmpfs MySQL四SQL自动初始化9表/2用户/12模板 | 已实现并验证；全无缓存安装未验证 |
 
 ## 增强项与限制
@@ -24,9 +24,9 @@
 - 已实现增强：真实阶段时间线、Java2D 输入照片拼贴、提交键幂等、队列拒绝明确失败、重启清算、无界面浏览器证据。
 - 不要求且不实现：真实 AI、生产认证、支付/会员、视频、MQ/Redis、任务自动重试/断点续跑、多实例调度。
 - 自动恢复的是浏览器中的任务追踪；服务重启采用明确失败清算，不声称自动续跑。
-- 不声称已经公网部署、远端 CI 通过、人工手写代码或人工审查通过。
+- 不声称已经公网部署、远端CI通过或全部代码均人工独立编写/完成完整人工验收；本人已确认部分代码撰写和修改/审查。
 
-本表为当前实现索引；REVIEW.md是历史独立审查，最新补验以ACCOUNTS_QA为准。当前浏览器异步/刷新/焦点/宽度及注册批量已运行，分类和单图替换交互未在本轮重做；实体手机/人工审查/个人投入待确认。GitHub云端与本地检查仍分开记录。
+本表为当前实现索引；REVIEW.md是历史审查，功能补验以ACCOUNTS_QA为准。当前浏览器异步/刷新/焦点/宽度及注册批量已运行；分类和单图替换交互未在本轮重做，实体手机/全面人工验收未确认。本人已自述约12小时及部分代码/试用/审查贡献，见AI_WORKFLOW；GitHub云端与本地检查仍分开。
 
 2026-11-03 GitHub 发布与新增材料入口见 SUBMISSION.md；它补充 REVIEW 的历史结论：远端工作流已触发，但账户计费锁定导致任务未启动，仍没有远端测试通过记录。
 
