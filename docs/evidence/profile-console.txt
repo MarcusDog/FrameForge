@@ -1,0 +1,1542 @@
+Formatting note: console line endings normalized and trailing whitespace removed for Git hygiene; commands, messages, errors and results unchanged. Raw originals remain in .runtime/logs.
+FrameForge personal profile validation | 2026-11-04 Asia/Shanghai
+Docker executable: D:/Docker/docker/resources/bin/docker.exe
+Project: D:/求职/小影科技/ai全栈工程师
+All builds/tests/app scripts executed in existing Docker containers.
+
+
+COMMAND/RESULT: docker compose --profile test run --rm --build frontend-test ; exit 1 (lint)
+RAW OUTPUT: profile-frontend-first.txt
+ Image frameforge-frontend-test Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 617B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 102B done
+#4 DONE 0.0s
+
+#5 [deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#5 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 64.18kB 0.0s done
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [deps 3/4] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#9 CACHED
+
+#10 [test 1/1] COPY . .
+#10 DONE 0.2s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.6s done
+#11 exporting manifest sha256:31760e2db973adba4ca7d8e858f869a526c4772ca44dd91fcc987a4ef51e59f8 0.0s done
+#11 exporting config sha256:2fa558f5d9ce816ae96f5616487b428f510894882f8915a372f288bef80dc164 0.0s done
+#11 exporting attestation manifest sha256:6ef6a56a779e0e58ae32f888d5baec3a157973826f5ef79576d88763d3ec6379 0.0s done
+#11 exporting manifest list sha256:163e4516c6472c85a3aa22981a0744c687a58e5715fde407fd99675c5b497a1a 0.0s done
+#11 naming to docker.io/library/frameforge-frontend-test:latest done
+#11 unpacking to docker.io/library/frameforge-frontend-test:latest 0.1s done
+#11 DONE 0.8s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ Image frameforge-frontend-test Built
+ Container frameforge-frontend-test-run-e7719039a155 Creating
+ Container frameforge-frontend-test-run-e7719039a155 Created
+
+> frameforge-frontend@1.0.0 lint
+> eslint . --max-warnings=0
+
+
+/app/src/components/providers.tsx
+  32:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/app/src/components/providers.tsx:32:5
+  30 |     if(!user)return;
+  31 |     const owner=user.id,generation=epoch.current,controller=new AbortController();
+> 32 |     setProfile(previous=>({owner,value:previous?.owner===owner?previous.value:null,error:null,loading:true}));
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  33 |     void api<UserProfile>("/me/profile",{signal:controller.signal}).then(value=>{
+  34 |       if(!controller.signal.aborted&&generation===epoch.current)setProfile({owner,value,error:null,loading:false});
+  35 |     }).catch(error=>{  react-hooks/set-state-in-effect
+
+✖ 1 problem (1 error, 0 warnings)
+
+npm notice
+npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+npm notice To update run: npm install -g npm@11.21.1
+npm notice
+
+
+
+COMMAND/RESULT: same frontend command after minimal repair ; exit 0
+RAW OUTPUT: profile-frontend-second.txt
+ Image frameforge-frontend-test Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 617B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 102B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 9.56kB 0.0s done
+#5 DONE 0.0s
+
+#6 [deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#6 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [deps 3/4] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#9 CACHED
+
+#10 [test 1/1] COPY . .
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.6s done
+#11 exporting manifest sha256:b61aa443165202dad22969eabba83eb98679e62da3718c9b1bc9526240844eb2 0.0s done
+#11 exporting config sha256:7b2a4a0ca766af35beb6f97b731668959fa2cb7b6ce61f21cbfc5b44bd098f19 0.0s done
+#11 exporting attestation manifest sha256:c7d91d58c2a27af6807e133191ea7b66ea7389708a37f81839d329cb091fa021 0.0s done
+#11 exporting manifest list sha256:a7174fa8ad74724462b62a2df6696cd7f5a3528f51601cf6dce0f42c7ad56c17 0.0s done
+#11 naming to docker.io/library/frameforge-frontend-test:latest done
+#11 unpacking to docker.io/library/frameforge-frontend-test:latest 0.1s done
+#11 DONE 0.8s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ Image frameforge-frontend-test Built
+ Container frameforge-frontend-test-run-8b3671309df9 Creating
+ Container frameforge-frontend-test-run-8b3671309df9 Created
+
+> frameforge-frontend@1.0.0 lint
+> eslint . --max-warnings=0
+
+npm notice
+npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+npm notice To update run: npm install -g npm@11.21.1
+npm notice
+
+> frameforge-frontend@1.0.0 typecheck
+> tsc --noEmit
+
+
+> frameforge-frontend@1.0.0 test
+> vitest --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/api.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/components/providers.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 176[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 502[2mms[22m[39m
+   [33m[2m✓[22m[39m renders RUNNING A with a retryable sync error while B succeeds and stops polling [33m 333[2mms[22m[39m
+ [32m✓[39m src/components/studio.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 544[2mms[22m[39m
+ [32m✓[39m src/components/account.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1071[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m39 passed[39m[22m[90m (39)[39m
+[2m   Start at [22m 05:08:07
+[2m   Duration [22m 2.64s[2m (transform 1.04s, setup 847ms, import 1.65s, tests 2.33s, environment 5.19s)[22m
+
+
+> frameforge-frontend@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 105ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.3s
+  Running TypeScript ...
+  Finished TypeScript in 2.6s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/6) ...
+  Generating static pages using 7 workers (1/6)
+  Generating static pages using 7 workers (2/6)
+  Generating static pages using 7 workers (4/6)
+✓ Generating static pages using 7 workers (6/6) in 202ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /account
+├ ○ /history
+├ ○ /tasks
+├ ƒ /tasks/[id]
+└ ƒ /templates/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+
+COMMAND/RESULT: same frontend command after final header/feedback change ; exit 0
+RAW OUTPUT: profile-frontend-final.txt
+ Image frameforge-frontend-test Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 617B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 102B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 46.60kB 0.0s done
+#5 DONE 0.0s
+
+#6 [deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#6 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [deps 3/4] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#9 CACHED
+
+#10 [test 1/1] COPY . .
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.4s done
+#11 exporting manifest sha256:e52531250cc5aaed539ec6e0bf8140d57798ce89be25cbc52272f893cf38d5dc 0.0s done
+#11 exporting config sha256:f3bf3a32b7087e3e02ae17becb6cdb912f8168ffaa53b37d166b75933a266209 0.0s done
+#11 exporting attestation manifest sha256:35a0ecac0deb5eb3d236c3d4217887a423ef74c66d461a8cc755b588b11cde0d 0.0s done
+#11 exporting manifest list sha256:b0e9a7adb9a45550bd39dae762217f9b1fdf9ec61a8bd92c55b9c26e56fdafd9 0.0s done
+#11 naming to docker.io/library/frameforge-frontend-test:latest done
+#11 unpacking to docker.io/library/frameforge-frontend-test:latest 0.1s done
+#11 DONE 0.6s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ Image frameforge-frontend-test Built
+ Container frameforge-frontend-test-run-66b4607ca029 Creating
+ Container frameforge-frontend-test-run-66b4607ca029 Created
+
+> frameforge-frontend@1.0.0 lint
+> eslint . --max-warnings=0
+
+npm notice
+npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+npm notice To update run: npm install -g npm@11.21.1
+npm notice
+
+> frameforge-frontend@1.0.0 typecheck
+> tsc --noEmit
+
+
+> frameforge-frontend@1.0.0 test
+> vitest --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/api.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/providers.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 180[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 453[2mms[22m[39m
+ [32m✓[39m src/components/studio.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 512[2mms[22m[39m
+ [32m✓[39m src/components/account.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1053[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m39 passed[39m[22m[90m (39)[39m
+[2m   Start at [22m 05:10:53
+[2m   Duration [22m 2.23s[2m (transform 793ms, setup 554ms, import 1.39s, tests 2.25s, environment 3.62s)[22m
+
+
+> frameforge-frontend@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 40ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.3s
+  Running TypeScript ...
+  Finished TypeScript in 2.6s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/6) ...
+  Generating static pages using 7 workers (1/6)
+  Generating static pages using 7 workers (2/6)
+  Generating static pages using 7 workers (4/6)
+✓ Generating static pages using 7 workers (6/6) in 221ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /account
+├ ○ /history
+├ ○ /tasks
+├ ƒ /tasks/[id]
+└ ƒ /templates/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+
+COMMAND/RESULT: docker compose --profile test run --rm --build backend-test ; exit 0
+RAW OUTPUT: profile-backend-first.txt
+ Container frameforge-mysql-test-1 Starting
+ Container frameforge-mysql-test-1 Started
+ Image frameforge-backend-test Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 602B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 898B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/maven:3.9.14-eclipse-temurin-21
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 143B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 DONE 0.0s
+
+#6 [build 1/8] FROM docker.io/library/maven:3.9.14-eclipse-temurin-21@sha256:98819eb3745bd2007c3f1a19b59085c1fa3929aecb7dbfa431dfcf5a4f18ce3c
+#6 resolve docker.io/library/maven:3.9.14-eclipse-temurin-21@sha256:98819eb3745bd2007c3f1a19b59085c1fa3929aecb7dbfa431dfcf5a4f18ce3c
+#6 resolve docker.io/library/maven:3.9.14-eclipse-temurin-21@sha256:98819eb3745bd2007c3f1a19b59085c1fa3929aecb7dbfa431dfcf5a4f18ce3c 0.0s done
+#6 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 35.56kB 0.0s done
+#5 DONE 0.0s
+
+#7 [build 2/8] WORKDIR /workspace/backend
+#7 CACHED
+
+#8 [build 3/8] COPY backend/pom.xml backend/mvnw backend/mvnw.cmd ./
+#8 CACHED
+
+#9 [build 4/8] COPY backend/.mvn .mvn
+#9 CACHED
+
+#10 [build 5/8] RUN chmod +x mvnw
+#10 CACHED
+
+#11 [build 6/8] COPY backend/src src
+#11 DONE 0.1s
+
+#12 [build 7/8] COPY database /workspace/database
+#12 DONE 0.1s
+
+#13 [build 8/8] RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -ntp verify
+#13 2.243 [INFO] Scanning for projects...
+#13 2.601 [INFO]
+#13 2.601 [INFO] --------------------< studio.frameforge:frameforge >--------------------
+#13 2.601 [INFO] Building frameforge 1.0.0
+#13 2.601 [INFO]   from pom.xml
+#13 2.601 [INFO] --------------------------------[ jar ]---------------------------------
+#13 3.204 [INFO]
+#13 3.204 [INFO] --- resources:3.3.1:resources (default-resources) @ frameforge ---
+#13 3.423 [INFO] Copying 1 resource from src/main/resources to target/classes
+#13 3.439 [INFO] Copying 0 resource from src/main/resources to target/classes
+#13 3.441 [INFO]
+#13 3.441 [INFO] --- compiler:3.14.1:compile (default-compile) @ frameforge ---
+#13 3.582 [INFO] Recompiling the module because of changed source code.
+#13 3.597 [INFO] Compiling 16 source files with javac [debug parameters release 21] to target/classes
+#13 5.151 [INFO]
+#13 5.151 [INFO] --- resources:3.3.1:testResources (default-testResources) @ frameforge ---
+#13 5.158 [INFO] skip non existing resourceDirectory /workspace/backend/src/test/resources
+#13 5.159 [INFO]
+#13 5.159 [INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ frameforge ---
+#13 5.171 [INFO] Recompiling the module because of changed dependency.
+#13 5.172 [INFO] Compiling 5 source files with javac [debug parameters release 21] to target/test-classes
+#13 5.955 [INFO]
+#13 5.958 [INFO] --- surefire:3.5.6:test (default-test) @ frameforge ---
+#13 6.137 [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+#13 6.187 [INFO]
+#13 6.187 [INFO] -------------------------------------------------------
+#13 6.187 [INFO]  T E S T S
+#13 6.189 [INFO] -------------------------------------------------------
+#13 6.998 [INFO] Running studio.frameforge.FileStoreTest
+#13 8.049 [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.035 s -- in studio.frameforge.FileStoreTest
+#13 8.050 [INFO] Running studio.frameforge.TaskDispatcherTest
+#13 8.104 Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+#13 8.325 OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+#13 8.402 WARNING: A Java agent has been loaded dynamically (/root/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar)
+#13 8.402 WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+#13 8.402 WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+#13 8.402 WARNING: Dynamic loading of agents will be disallowed by default in a future release
+#13 9.195 [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.156 s -- in studio.frameforge.TaskDispatcherTest
+#13 9.195 [INFO] Running studio.frameforge.TaskWorkerTest
+#13 9.462 05:07:40.005 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+#13 9.462 05:07:40.008 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+#13 9.462 05:07:40.008 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+#13 9.463 05:07:40.009 [main] ERROR studio.frameforge.TaskWorker -- task=id stage=GENERATING failed
+#13 9.463 java.io.IOException: private/path
+#13 9.463 	at studio.frameforge.CollageRenderer.render(CollageRenderer.java:17)
+#13 9.463 	at studio.frameforge.TaskWorker.run(TaskWorker.java:40)
+#13 9.463 	at studio.frameforge.TaskWorkerTest.realImageErrorIsPersistedAndStopsOrganizing(TaskWorkerTest.java:67)
+#13 9.463 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+#13 9.463 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+#13 9.463 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:775)
+#13 9.463 	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:479)
+#13 9.463 	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+#13 9.463 	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+#13 9.463 	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:161)
+#13 9.463 	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:152)
+#13 9.463 	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:91)
+#13 9.463 	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:112)
+#13 9.463 	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:94)
+#13 9.463 	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+#13 9.463 	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+#13 9.463 	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+#13 9.463 	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+#13 9.463 	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:93)
+#13 9.463 	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:87)
+#13 9.463 	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:216)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+#13 9.463 	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:212)
+#13 9.463 	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:137)
+#13 9.463 	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:156)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+#13 9.463 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+#13 9.463 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+#13 9.463 	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+#13 9.463 	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:201)
+#13 9.463 	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:170)
+#13 9.463 	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:94)
+#13 9.463 	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:59)
+#13 9.463 	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:142)
+#13 9.463 	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:58)
+#13 9.463 	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
+#13 9.463 	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
+#13 9.463 	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+#13 9.463 	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39)
+#13 9.463 	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+#13 9.463 	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38)
+#13 9.463 	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+#13 9.463 	at org.apache.maven.surefire.junitplatform.LauncherAdapter.executeWithoutCancellationToken(LauncherAdapter.java:60)
+#13 9.463 	at org.apache.maven.surefire.junitplatform.LauncherAdapter.execute(LauncherAdapter.java:52)
+#13 9.463 	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:203)
+#13 9.463 	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:168)
+#13 9.463 	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:136)
+#13 9.463 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+#13 9.463 	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+#13 9.463 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+#13 9.463 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+#13 9.510 05:07:40.056 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+#13 9.519 05:07:40.068 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+#13 9.519 05:07:40.069 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+#13 9.519 05:07:40.069 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+#13 9.531 05:07:40.080 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+#13 9.531 05:07:40.080 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+#13 9.531 05:07:40.080 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+#13 9.531 05:07:40.081 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=end
+#13 9.531 05:07:40.081 [main] INFO studio.frameforge.TaskWorker -- task=id stage=ORGANIZING boundary=start
+#13 9.548 05:07:40.093 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+#13 9.548 05:07:40.093 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+#13 9.548 05:07:40.093 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+#13 9.548 05:07:40.094 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=end
+#13 9.548 05:07:40.094 [main] INFO studio.frameforge.TaskWorker -- task=id stage=ORGANIZING boundary=start
+#13 9.548 05:07:40.094 [main] INFO studio.frameforge.TaskWorker -- task=id stage=ORGANIZING boundary=end
+#13 9.558 [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.358 s -- in studio.frameforge.TaskWorkerTest
+#13 9.558 [INFO] Running studio.frameforge.TaskServiceTest
+#13 9.764 [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.206 s -- in studio.frameforge.TaskServiceTest
+#13 9.822 [INFO]
+#13 9.822 [INFO] Results:
+#13 9.823 [INFO]
+#13 9.823 [INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
+#13 9.823 [INFO]
+#13 9.826 [INFO]
+#13 9.826 [INFO] --- jar:3.4.2:jar (default-jar) @ frameforge ---
+#13 10.06 [INFO] Building jar: /workspace/backend/target/frameforge-1.0.0.jar
+#13 10.12 [INFO]
+#13 10.12 [INFO] --- spring-boot:3.5.16:repackage (repackage) @ frameforge ---
+#13 10.57 [INFO] Replacing main artifact /workspace/backend/target/frameforge-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+#13 10.57 [INFO] The original artifact has been renamed to /workspace/backend/target/frameforge-1.0.0.jar.original
+#13 10.57 [INFO] ------------------------------------------------------------------------
+#13 10.57 [INFO] BUILD SUCCESS
+#13 10.57 [INFO] ------------------------------------------------------------------------
+#13 10.57 [INFO] Total time:  8.362 s
+#13 10.58 [INFO] Finished at: 2026-11-04T05:07:41Z
+#13 10.58 [INFO] ------------------------------------------------------------------------
+#13 DONE 10.7s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 0.9s done
+#14 exporting manifest sha256:89dec716a43ce9c8042fe9f2e98b834349abbe9e66f3a694a682a7ad1217876a 0.0s done
+#14 exporting config sha256:4ef78047eaa2ca843d42233664be97f81187ca87c99b08b014c7b51ccbc24f28 0.0s done
+#14 exporting attestation manifest sha256:6ac5184367411c5616d6df0ce4ce504403b3adef0fd34fbcab353c4700cb752f 0.0s done
+#14 exporting manifest list sha256:55d5af1c0998d3c004e42463c8ae59e0c63a00e0497aed6d9800b93e280c0f4b 0.0s done
+#14 naming to docker.io/library/frameforge-backend-test:latest done
+#14 unpacking to docker.io/library/frameforge-backend-test:latest
+#14 unpacking to docker.io/library/frameforge-backend-test:latest 0.2s done
+#14 DONE 1.3s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.0s
+ Image frameforge-backend-test Built
+ Container frameforge-mysql-test-1 Waiting
+ Container frameforge-mysql-test-1 Healthy
+ Container frameforge-backend-test-run-6777e6493e78 Creating
+ Container frameforge-backend-test-run-6777e6493e78 Created
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------------< studio.frameforge:frameforge >--------------------
+[INFO] Building frameforge 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ frameforge ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.1:compile (default-compile) @ frameforge ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ frameforge ---
+[INFO] skip non existing resourceDirectory /workspace/backend/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ frameforge ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- surefire:3.5.6:test (default-test) @ frameforge ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running studio.frameforge.FileStoreTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.033 s -- in studio.frameforge.FileStoreTest
+[INFO] Running studio.frameforge.TaskDispatcherTest
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/root/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.142 s -- in studio.frameforge.TaskDispatcherTest
+[INFO] Running studio.frameforge.TaskWorkerTest
+05:07:49.723 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+05:07:49.726 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+05:07:49.726 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+05:07:49.727 [main] ERROR studio.frameforge.TaskWorker -- task=id stage=GENERATING failed
+java.io.IOException: private/path
+	at studio.frameforge.CollageRenderer.render(CollageRenderer.java:17)
+	at studio.frameforge.TaskWorker.run(TaskWorker.java:40)
+	at studio.frameforge.TaskWorkerTest.realImageErrorIsPersistedAndStopsOrganizing(TaskWorkerTest.java:67)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:775)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:479)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:161)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:152)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:91)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:112)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:94)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:93)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:87)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:216)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:212)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:137)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:156)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:201)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:170)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:94)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:59)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:142)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:58)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.apache.maven.surefire.junitplatform.LauncherAdapter.executeWithoutCancellationToken(LauncherAdapter.java:60)
+	at org.apache.maven.surefire.junitplatform.LauncherAdapter.execute(LauncherAdapter.java:52)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:203)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:168)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:136)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+05:07:49.783 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+05:07:49.795 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+05:07:49.796 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+05:07:49.796 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+05:07:49.803 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+05:07:49.804 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+05:07:49.804 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+05:07:49.805 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=end
+05:07:49.805 [main] INFO studio.frameforge.TaskWorker -- task=id stage=ORGANIZING boundary=start
+05:07:49.817 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=start
+05:07:49.818 [main] INFO studio.frameforge.TaskWorker -- task=id stage=MATERIAL_CHECK boundary=end
+05:07:49.818 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=start
+05:07:49.818 [main] INFO studio.frameforge.TaskWorker -- task=id stage=GENERATING boundary=end
+05:07:49.818 [main] INFO studio.frameforge.TaskWorker -- task=id stage=ORGANIZING boundary=start
+05:07:49.819 [main] INFO studio.frameforge.TaskWorker -- task=id stage=ORGANIZING boundary=end
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.385 s -- in studio.frameforge.TaskWorkerTest
+[INFO] Running studio.frameforge.TaskServiceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.203 s -- in studio.frameforge.TaskServiceTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jar:3.4.2:jar (default-jar) @ frameforge ---
+[INFO]
+[INFO] --- spring-boot:3.5.16:repackage (repackage) @ frameforge ---
+[INFO] Replacing main artifact /workspace/backend/target/frameforge-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /workspace/backend/target/frameforge-1.0.0.jar.original
+[INFO]
+[INFO] --- failsafe:3.5.6:integration-test (default) @ frameforge ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running studio.frameforge.TaskFlowIT
+05:07:51.352 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [studio.frameforge.TaskFlowIT]: TaskFlowIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:07:51.524 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration studio.frameforge.FrameForgeApplication for test class studio.frameforge.TaskFlowIT
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-11-04T05:07:52.034Z  INFO 261 --- [           main] studio.frameforge.TaskFlowIT             : Starting TaskFlowIT using Java 21.0.10 with PID 261 (started by root in /workspace/backend)
+2026-11-04T05:07:52.035Z  INFO 261 --- [           main] studio.frameforge.TaskFlowIT             : No active profile set, falling back to 1 default profile: "default"
+2026-11-04T05:07:53.307Z  INFO 261 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2026-11-04T05:07:53.322Z  INFO 261 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-04T05:07:53.323Z  INFO 261 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-11-04T05:07:53.358Z  INFO 261 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-04T05:07:53.359Z  INFO 261 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1308 ms
+2026-11-04T05:07:53.557Z  INFO 261 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-04T05:07:53.949Z  INFO 261 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@308a9264
+2026-11-04T05:07:53.951Z  INFO 261 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/root/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-11-04T05:07:55.475Z  INFO 261 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-11-04T05:07:55.655Z  INFO 261 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 43339 (http) with context path '/'
+2026-11-04T05:07:55.680Z  INFO 261 --- [           main] studio.frameforge.TaskFlowIT             : Started TaskFlowIT in 3.995 seconds (process running for 4.994)
+2026-11-04T05:07:56.152Z  INFO 261 --- [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-04T05:07:56.152Z  INFO 261 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-04T05:07:56.154Z  INFO 261 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-11-04T05:07:56.534Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f171e54-ed70-444c-a608-8388325ccf74 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:56.554Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f171e54-ed70-444c-a608-8388325ccf74 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:56.564Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f171e54-ed70-444c-a608-8388325ccf74 stage=GENERATING boundary=start
+2026-11-04T05:07:56.642Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f171e54-ed70-444c-a608-8388325ccf74 stage=GENERATING boundary=end
+2026-11-04T05:07:56.651Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f171e54-ed70-444c-a608-8388325ccf74 stage=ORGANIZING boundary=start
+2026-11-04T05:07:56.722Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f171e54-ed70-444c-a608-8388325ccf74 stage=ORGANIZING boundary=end
+2026-11-04T05:07:56.796Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=2b132e80-26c2-47c9-9a04-c5ea74cf2bd3 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:56.803Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=2b132e80-26c2-47c9-9a04-c5ea74cf2bd3 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:56.810Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=2b132e80-26c2-47c9-9a04-c5ea74cf2bd3 stage=GENERATING boundary=start
+2026-11-04T05:07:56.844Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=2b132e80-26c2-47c9-9a04-c5ea74cf2bd3 stage=GENERATING boundary=end
+2026-11-04T05:07:56.853Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=2b132e80-26c2-47c9-9a04-c5ea74cf2bd3 stage=ORGANIZING boundary=start
+2026-11-04T05:07:56.887Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=2b132e80-26c2-47c9-9a04-c5ea74cf2bd3 stage=ORGANIZING boundary=end
+2026-11-04T05:07:56.992Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=e968d2ad-2829-4531-b28c-df7f9ee81ec4 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:57.000Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=e968d2ad-2829-4531-b28c-df7f9ee81ec4 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:57.010Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=e968d2ad-2829-4531-b28c-df7f9ee81ec4 stage=GENERATING boundary=start
+2026-11-04T05:07:57.140Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=e968d2ad-2829-4531-b28c-df7f9ee81ec4 stage=GENERATING boundary=end
+2026-11-04T05:07:57.146Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=e968d2ad-2829-4531-b28c-df7f9ee81ec4 stage=ORGANIZING boundary=start
+2026-11-04T05:07:57.186Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=e968d2ad-2829-4531-b28c-df7f9ee81ec4 stage=ORGANIZING boundary=end
+2026-11-04T05:07:57.197Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7605f862-988a-4e75-9bc7-0a03773400b0 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:57.204Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7605f862-988a-4e75-9bc7-0a03773400b0 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:57.216Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7605f862-988a-4e75-9bc7-0a03773400b0 stage=GENERATING boundary=start
+2026-11-04T05:07:57.258Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7605f862-988a-4e75-9bc7-0a03773400b0 stage=GENERATING boundary=end
+2026-11-04T05:07:57.265Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7605f862-988a-4e75-9bc7-0a03773400b0 stage=ORGANIZING boundary=start
+2026-11-04T05:07:57.309Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7605f862-988a-4e75-9bc7-0a03773400b0 stage=ORGANIZING boundary=end
+2026-11-04T05:07:57.405Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=303482ee-e77c-4723-a315-4fee72e00b25 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:57.502Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=5e4c3688-c530-497b-8376-8ad8ec4e3729 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:57.508Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=5e4c3688-c530-497b-8376-8ad8ec4e3729 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:57.516Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=5e4c3688-c530-497b-8376-8ad8ec4e3729 stage=GENERATING boundary=start
+2026-11-04T05:07:57.596Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4722efde-d57a-494e-bf08-d6cdf5e6b0c1 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:57.602Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4722efde-d57a-494e-bf08-d6cdf5e6b0c1 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:57.609Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4722efde-d57a-494e-bf08-d6cdf5e6b0c1 stage=GENERATING boundary=start
+2026-11-04T05:07:57.638Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4722efde-d57a-494e-bf08-d6cdf5e6b0c1 stage=GENERATING boundary=end
+2026-11-04T05:07:57.643Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4722efde-d57a-494e-bf08-d6cdf5e6b0c1 stage=ORGANIZING boundary=start
+2026-11-04T05:07:57.710Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f43cc21-aa09-44e1-96bb-f08fb04852b1 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:57.716Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f43cc21-aa09-44e1-96bb-f08fb04852b1 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:57.723Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f43cc21-aa09-44e1-96bb-f08fb04852b1 stage=GENERATING boundary=start
+2026-11-04T05:07:57.755Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f43cc21-aa09-44e1-96bb-f08fb04852b1 stage=GENERATING boundary=end
+2026-11-04T05:07:57.763Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f43cc21-aa09-44e1-96bb-f08fb04852b1 stage=ORGANIZING boundary=start
+2026-11-04T05:07:57.797Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=7f43cc21-aa09-44e1-96bb-f08fb04852b1 stage=ORGANIZING boundary=end
+2026-11-04T05:07:58.047Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4d9441b8-acca-4de7-91b0-c232c325472b stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:58.053Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4d9441b8-acca-4de7-91b0-c232c325472b stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:58.058Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4d9441b8-acca-4de7-91b0-c232c325472b stage=GENERATING boundary=start
+2026-11-04T05:07:58.086Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4d9441b8-acca-4de7-91b0-c232c325472b stage=GENERATING boundary=end
+2026-11-04T05:07:58.095Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4d9441b8-acca-4de7-91b0-c232c325472b stage=ORGANIZING boundary=start
+2026-11-04T05:07:58.129Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=4d9441b8-acca-4de7-91b0-c232c325472b stage=ORGANIZING boundary=end
+2026-11-04T05:07:58.232Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=f21a4c66-41df-4ca0-bccc-d063a27b03cc stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:58.242Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=f21a4c66-41df-4ca0-bccc-d063a27b03cc stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:58.255Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=f21a4c66-41df-4ca0-bccc-d063a27b03cc stage=GENERATING boundary=start
+2026-11-04T05:07:58.292Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=f21a4c66-41df-4ca0-bccc-d063a27b03cc stage=GENERATING boundary=end
+2026-11-04T05:07:58.300Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=f21a4c66-41df-4ca0-bccc-d063a27b03cc stage=ORGANIZING boundary=start
+2026-11-04T05:07:58.344Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=f21a4c66-41df-4ca0-bccc-d063a27b03cc stage=ORGANIZING boundary=end
+2026-11-04T05:07:58.606Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=fd762e72-4b65-4b33-b571-6102a5cfb8c9 stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:58.614Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=fd762e72-4b65-4b33-b571-6102a5cfb8c9 stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:58.621Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=fd762e72-4b65-4b33-b571-6102a5cfb8c9 stage=GENERATING boundary=start
+2026-11-04T05:07:58.646Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=fd762e72-4b65-4b33-b571-6102a5cfb8c9 stage=GENERATING boundary=end
+2026-11-04T05:07:58.653Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=fd762e72-4b65-4b33-b571-6102a5cfb8c9 stage=ORGANIZING boundary=start
+2026-11-04T05:07:58.693Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=fd762e72-4b65-4b33-b571-6102a5cfb8c9 stage=ORGANIZING boundary=end
+2026-11-04T05:07:58.849Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=d64b981e-e080-40c1-b043-27afc1233e0c stage=MATERIAL_CHECK boundary=start
+2026-11-04T05:07:58.856Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=d64b981e-e080-40c1-b043-27afc1233e0c stage=MATERIAL_CHECK boundary=end
+2026-11-04T05:07:58.862Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=d64b981e-e080-40c1-b043-27afc1233e0c stage=GENERATING boundary=start
+2026-11-04T05:07:58.906Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=d64b981e-e080-40c1-b043-27afc1233e0c stage=GENERATING boundary=end
+2026-11-04T05:07:58.918Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=d64b981e-e080-40c1-b043-27afc1233e0c stage=ORGANIZING boundary=start
+2026-11-04T05:07:58.959Z  INFO 261 --- [eforge-worker-1] studio.frameforge.TaskWorker             : task=d64b981e-e080-40c1-b043-27afc1233e0c stage=ORGANIZING boundary=end
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.851 s -- in studio.frameforge.TaskFlowIT
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- failsafe:3.5.6:verify (default) @ frameforge ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  14.518 s
+[INFO] Finished at: 2026-11-04T05:07:59Z
+[INFO] ------------------------------------------------------------------------
+
+
+COMMAND/RESULT: SELECT active/tasks/assets before migration ; exit 0
+RAW OUTPUT: profile-before-migration.txt
+0
+27
+17
+
+
+COMMAND/RESULT: docker compose build backend frontend ; exit 0
+RAW OUTPUT: profile-runtime-build.txt
+ Image frameforge-backend Building
+ Image frameforge-frontend Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.17kB 0.0s done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B done
+#2 DONE 0.0s
+
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 898B done
+#3 DONE 0.0s
+
+#4 [backend internal] load metadata for docker.io/library/maven:3.9.14-eclipse-temurin-21
+#4 DONE 0.1s
+
+#5 [backend internal] load metadata for docker.io/library/eclipse-temurin:21.0.10_7-jre-jammy
+#5 DONE 0.1s
+
+#6 [frontend internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#6 DONE 0.1s
+
+#7 [frontend internal] load .dockerignore
+#7 transferring context: 102B done
+#7 DONE 0.0s
+
+#8 [backend internal] load .dockerignore
+#8 transferring context: 143B done
+#8 DONE 0.0s
+
+#9 [backend runtime 1/5] FROM docker.io/library/eclipse-temurin:21.0.10_7-jre-jammy@sha256:fa4854e6057665066cb79953616671c20f32b96a85d6dd8b78db0762203924c4
+#9 resolve docker.io/library/eclipse-temurin:21.0.10_7-jre-jammy@sha256:fa4854e6057665066cb79953616671c20f32b96a85d6dd8b78db0762203924c4 0.0s done
+#9 DONE 0.0s
+
+#10 [frontend deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#10 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#10 DONE 0.0s
+
+#11 [backend build 1/8] FROM docker.io/library/maven:3.9.14-eclipse-temurin-21@sha256:98819eb3745bd2007c3f1a19b59085c1fa3929aecb7dbfa431dfcf5a4f18ce3c
+#11 resolve docker.io/library/maven:3.9.14-eclipse-temurin-21@sha256:98819eb3745bd2007c3f1a19b59085c1fa3929aecb7dbfa431dfcf5a4f18ce3c 0.0s done
+#11 DONE 0.0s
+
+#12 [frontend internal] load build context
+#12 transferring context: 3.06kB done
+#12 DONE 0.0s
+
+#13 [backend internal] load build context
+#13 transferring context: 2.57kB done
+#13 DONE 0.0s
+
+#14 [frontend deps 2/4] WORKDIR /app
+#14 CACHED
+
+#15 [frontend deps 3/4] COPY package.json package-lock.json ./
+#15 CACHED
+
+#16 [frontend deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#16 CACHED
+
+#17 [frontend test 1/1] COPY . .
+#17 CACHED
+
+#18 [backend build 5/8] RUN chmod +x mvnw
+#18 CACHED
+
+#19 [backend build 3/8] COPY backend/pom.xml backend/mvnw backend/mvnw.cmd ./
+#19 CACHED
+
+#20 [backend build 2/8] WORKDIR /workspace/backend
+#20 CACHED
+
+#21 [backend build 4/8] COPY backend/.mvn .mvn
+#21 CACHED
+
+#22 [backend build 7/8] COPY database /workspace/database
+#22 CACHED
+
+#23 [backend build 6/8] COPY backend/src src
+#23 CACHED
+
+#24 [backend build 8/8] RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -ntp verify
+#24 CACHED
+
+#25 [backend runtime 3/5] RUN groupadd --gid 10001 app && useradd --uid 10001 --gid app --no-create-home app && mkdir /data && chown app:app /data
+#25 CACHED
+
+#26 [backend runtime 2/5] RUN apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core curl && rm -rf /var/lib/apt/lists/*
+#26 CACHED
+
+#27 [backend runtime 4/5] WORKDIR /app
+#27 CACHED
+
+#28 [frontend build 1/1] RUN npm run build
+#28 ...
+
+#29 [backend runtime 5/5] COPY --from=build /workspace/backend/target/frameforge-1.0.0.jar app.jar
+#29 DONE 0.1s
+
+#30 [backend] exporting to image
+#30 exporting layers
+#30 exporting layers 0.9s done
+#30 exporting manifest sha256:f918efb3f1c1f9dfad1ece12c366fae3f1ab2f7b3add10ca366313b77c3a9625 0.0s done
+#30 exporting config sha256:532b08ea76f70659566ab20bee63c447fce784bbf231cae3d34248151b6febed 0.0s done
+#30 exporting attestation manifest sha256:258b767e609de226729e608102702c4885ccf10a8bdc9ade62322a2fdb4a2c65 0.0s done
+#30 exporting manifest list sha256:527949b87310323ea7b80886de044b7b8fadcdc835cfb0c168398f58ae8c45e4 0.0s done
+#30 naming to docker.io/library/frameforge-backend:latest done
+#30 unpacking to docker.io/library/frameforge-backend:latest
+#30 unpacking to docker.io/library/frameforge-backend:latest 0.2s done
+#30 DONE 1.2s
+
+#31 [backend] resolving provenance for metadata file
+#31 DONE 0.0s
+
+#28 [frontend build 1/1] RUN npm run build
+#28 1.020
+#28 1.020 > frameforge-frontend@1.0.0 build
+#28 1.020 > next build
+#28 1.020
+#28 1.642 ▲ Next.js 16.4.3 (Turbopack)
+#28 1.774 ✓ Running next.config.ts took 131ms
+#28 1.791
+#28 1.827   Creating an optimized production build ...
+#28 4.608 ✓ Compiled successfully in 2.8s
+#28 4.610   Running TypeScript ...
+#28 7.688   Finished TypeScript in 3.1s ...
+#28 7.692   Collecting page data using 7 workers ...
+#28 8.611   Generating static pages using 7 workers (0/6) ...
+#28 8.836   Generating static pages using 7 workers (1/6)
+#28 8.837   Generating static pages using 7 workers (2/6)
+#28 8.842   Generating static pages using 7 workers (4/6)
+#28 8.842 ✓ Generating static pages using 7 workers (6/6) in 232ms
+#28 8.848   Finalizing page optimization ...
+#28 9.117
+#28 9.119 Route (app)
+#28 9.119 ┌ ○ /
+#28 9.119 ├ ○ /_not-found
+#28 9.119 ├ ○ /account
+#28 9.119 ├ ○ /history
+#28 9.119 ├ ○ /tasks
+#28 9.119 ├ ƒ /tasks/[id]
+#28 9.119 └ ƒ /templates/[id]
+#28 9.119
+#28 9.119
+#28 9.119 ○  (Static)   prerendered as static content
+#28 9.119 ƒ  (Dynamic)  server-rendered on demand
+#28 9.119
+#28 9.249 npm notice
+#28 9.249 npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+#28 9.249 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+#28 9.249 npm notice To update run: npm install -g npm@11.21.1
+#28 9.249 npm notice
+#28 DONE 9.4s
+
+#14 [frontend deps 2/4] WORKDIR /app
+#14 CACHED
+
+#32 [frontend runtime 3/5] COPY --from=build --chown=node:node /app/.next/standalone ./
+#32 DONE 0.6s
+
+#33 [frontend runtime 4/5] COPY --from=build --chown=node:node /app/.next/static ./.next/static
+#33 DONE 0.1s
+
+#34 [frontend runtime 5/5] COPY --from=build --chown=node:node /app/public ./public
+#34 DONE 0.1s
+
+#35 [frontend] exporting to image
+#35 exporting layers
+#35 exporting layers 2.0s done
+#35 exporting manifest sha256:72f52f933ec2f972d51238e06f50ca4f68f93f97cf7f071e2fcc86981cda111e 0.0s done
+#35 exporting config sha256:d0a17eaac76a3136ee3eb851a0c3696cbe18b7b3e6ef7e54068d7f7db975a66d 0.0s done
+#35 exporting attestation manifest sha256:3c4928030c74a9b235397a0a0dd92dd30a188b2bcf079b4aad88f8ce1b1ed9da 0.0s done
+#35 exporting manifest list sha256:ceae0135523d6042d8014275db2783fbc604452bc19ed8b0514c098d53aaaa77 0.0s done
+#35 naming to docker.io/library/frameforge-frontend:latest done
+#35 unpacking to docker.io/library/frameforge-frontend:latest
+#35 unpacking to docker.io/library/frameforge-frontend:latest 0.8s done
+#35 DONE 2.9s
+
+#36 [frontend] resolving provenance for metadata file
+#36 DONE 0.0s
+ Image frameforge-backend Built
+ Image frameforge-frontend Built
+
+
+COMMAND/RESULT: UTF-8 import 003 then docker compose up -d --wait --wait-timeout 120 ; exit 0
+RAW OUTPUT: profile-startup.txt
+ Container frameforge-mysql-1 Running
+ Container frameforge-backend-1 Recreate
+ Container frameforge-backend-1 Recreated
+ Container frameforge-frontend-1 Recreate
+ Container frameforge-frontend-1 Recreated
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-backend-1 Starting
+ Container frameforge-backend-1 Started
+ Container frameforge-backend-1 Waiting
+ Container frameforge-backend-1 Healthy
+ Container frameforge-frontend-1 Starting
+ Container frameforge-frontend-1 Started
+ Container frameforge-backend-1 Waiting
+ Container frameforge-frontend-1 Waiting
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-backend-1 Healthy
+ Container frameforge-frontend-1 Healthy
+
+
+COMMAND/RESULT: Node container: node scripts/profile-smoke.mjs ; exit 0
+RAW OUTPUT: profile-smoke.txt
+{
+  "result": "PASS",
+  "profileUser": "bob",
+  "version": 1,
+  "persistedNickname": true,
+  "ownedAvatar": true,
+  "conflict409": true,
+  "foreignAvatar404": true,
+  "logout401": true,
+  "historyPreserved": true
+}
+{"profileRestored":true,"uploadedTestAssetRetained":true}
+
+
+COMMAND/RESULT: docker compose build frontend ; exit 0
+RAW OUTPUT: profile-final-runtime-build.txt
+ Image frameforge-frontend Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.16kB 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 102B done
+#4 DONE 0.0s
+
+#5 [deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#5 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 3.06kB done
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#8 CACHED
+
+#9 [deps 3/4] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [test 1/1] COPY . .
+#10 CACHED
+
+#11 [build 1/1] RUN npm run build
+#11 0.508
+#11 0.508 > frameforge-frontend@1.0.0 build
+#11 0.508 > next build
+#11 0.508
+#11 0.894 ▲ Next.js 16.4.3 (Turbopack)
+#11 0.946 ✓ Running next.config.ts took 51ms
+#11 0.961
+#11 0.988   Creating an optimized production build ...
+#11 3.430 ✓ Compiled successfully in 2.4s
+#11 3.436   Running TypeScript ...
+#11 6.149   Finished TypeScript in 2.7s ...
+#11 6.152   Collecting page data using 7 workers ...
+#11 6.777   Generating static pages using 7 workers (0/6) ...
+#11 6.997   Generating static pages using 7 workers (1/6)
+#11 6.999   Generating static pages using 7 workers (2/6)
+#11 7.003   Generating static pages using 7 workers (4/6)
+#11 7.004 ✓ Generating static pages using 7 workers (6/6) in 227ms
+#11 7.010   Finalizing page optimization ...
+#11 7.290
+#11 7.292 Route (app)
+#11 7.292 ┌ ○ /
+#11 7.292 ├ ○ /_not-found
+#11 7.292 ├ ○ /account
+#11 7.292 ├ ○ /history
+#11 7.292 ├ ○ /tasks
+#11 7.292 ├ ƒ /tasks/[id]
+#11 7.292 └ ƒ /templates/[id]
+#11 7.292
+#11 7.292
+#11 7.292 ○  (Static)   prerendered as static content
+#11 7.292 ƒ  (Dynamic)  server-rendered on demand
+#11 7.292
+#11 7.436 npm notice
+#11 7.436 npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+#11 7.436 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+#11 7.436 npm notice To update run: npm install -g npm@11.21.1
+#11 7.436 npm notice
+#11 DONE 7.5s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#12 [runtime 3/5] COPY --from=build --chown=node:node /app/.next/standalone ./
+#12 DONE 0.6s
+
+#13 [runtime 4/5] COPY --from=build --chown=node:node /app/.next/static ./.next/static
+#13 DONE 0.1s
+
+#14 [runtime 5/5] COPY --from=build --chown=node:node /app/public ./public
+#14 DONE 0.1s
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 2.0s done
+#15 exporting manifest sha256:fea639624945d48f93bd117533997d51670c6fcf0a4129dd0c39d32678b76473 0.0s done
+#15 exporting config sha256:44040ce31e09e1c3d684d8013f39a50cff0aa9903e2a702f624e990167159dc1 0.0s done
+#15 exporting attestation manifest sha256:de174250c747c7bd1295417581566b5f00ddcb1eb5986a498d8a6f0c03047cf5 0.0s done
+#15 exporting manifest list sha256:0153757e69f03c680161bdd5ec078e1ed1b267d66b574b73501433029c505ae8 0.0s done
+#15 naming to docker.io/library/frameforge-frontend:latest done
+#15 unpacking to docker.io/library/frameforge-frontend:latest
+#15 unpacking to docker.io/library/frameforge-frontend:latest 0.8s done
+#15 DONE 2.9s
+
+#16 resolving provenance for metadata file
+#16 DONE 0.0s
+ Image frameforge-frontend Built
+
+
+COMMAND/RESULT: docker compose up -d --no-build --wait --wait-timeout 120 ; exit 0
+RAW OUTPUT: profile-final-startup.txt
+ Container frameforge-mysql-1 Running
+ Container frameforge-backend-1 Running
+ Container frameforge-frontend-1 Recreate
+ Container frameforge-frontend-1 Recreated
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-backend-1 Waiting
+ Container frameforge-backend-1 Healthy
+ Container frameforge-frontend-1 Starting
+ Container frameforge-frontend-1 Started
+ Container frameforge-frontend-1 Waiting
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-backend-1 Waiting
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-backend-1 Healthy
+ Container frameforge-frontend-1 Healthy
+
+
+COMMAND/RESULT: Node container: smoke.mjs && batch-smoke.mjs && profile-smoke.mjs ; exit 0
+RAW OUTPUT: profile-final-smoke.txt
+{
+  "result": "PASS",
+  "base": "http://frontend:3000",
+  "templates": 12,
+  "successId": "70d973c6-a894-433d-a194-9b014a2c7364",
+  "failureId": "498fc334-294e-46c6-b7e6-bb381987843e",
+  "checks": [
+    "UTF-8 seed",
+    "local covers",
+    "cookie forwarding",
+    "upload",
+    "multi-task",
+    "three stages",
+    "failure stop",
+    "PNG result",
+    "history recovery",
+    "user isolation",
+    "HTTP client errors"
+  ]
+}
+{
+  "result": "PASS",
+  "taskIds": [
+    "e9bf3fa5-428e-4761-a1f7-8b3df4b9ff5b",
+    "8f09f3aa-82da-4a1d-abe0-6128d98fe932",
+    "01f600e9-7db5-40dc-87e7-517aff8951fd"
+  ],
+  "concurrent": [
+    {
+      "id": "e9bf3fa5-428e-4761-a1f7-8b3df4b9ff5b",
+      "status": "QUEUED"
+    },
+    {
+      "id": "8f09f3aa-82da-4a1d-abe0-6128d98fe932",
+      "status": "RUNNING"
+    },
+    {
+      "id": "01f600e9-7db5-40dc-87e7-517aff8951fd",
+      "status": "RUNNING"
+    }
+  ],
+  "final": [
+    {
+      "id": "e9bf3fa5-428e-4761-a1f7-8b3df4b9ff5b",
+      "status": "SUCCEEDED"
+    },
+    {
+      "id": "8f09f3aa-82da-4a1d-abe0-6128d98fe932",
+      "status": "FAILED"
+    },
+    {
+      "id": "01f600e9-7db5-40dc-87e7-517aff8951fd",
+      "status": "SUCCEEDED"
+    }
+  ],
+  "distinctResultHashes": [
+    "d8595f3b3fd4edbc353cef9af348b38282f1d4e23ce6975f7c4406105d223942",
+    "b8be796eefb012ff5ee1f67a245ec28e2e4afae1ec7ce09b09e913610cb74382"
+  ],
+  "templateCount": 12,
+  "personalSummary": {
+    "totalTasks": 32,
+    "activeTasks": 0,
+    "succeededTasks": 18,
+    "failedTasks": 14,
+    "assetCount": 19
+  }
+}
+{
+  "result": "PASS",
+  "profileUser": "bob",
+  "version": 3,
+  "persistedNickname": true,
+  "ownedAvatar": true,
+  "conflict409": true,
+  "foreignAvatar404": true,
+  "logout401": true,
+  "historyPreserved": true
+}
+{"profileRestored":true,"uploadedTestAssetRetained":true}
+
+
+COMMAND/RESULT: Before repeat 003: profile versions/task/asset counts ; exit 0
+RAW OUTPUT: profile-migration-replay-before.txt
+user_id	nickname	version
+alice	Alice	0
+bob	Bob	4
+tasks
+32
+assets
+21
+
+
+COMMAND/RESULT: After repeat 003: same profile versions/task/asset counts ; exit 0
+RAW OUTPUT: profile-migration-replay-after.txt
+user_id	nickname	version
+alice	Alice	0
+bob	Bob	4
+tasks
+32
+assets
+21
+
+COMMAND/RESULT: After final diff review: frontend lint/typecheck/39 tests/build ; exit 0
+RAW OUTPUT (whitespace normalized): profile-review-frontend.txt
+ Image frameforge-frontend-test Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 617B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 102B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 16.89kB 0.0s done
+#5 DONE 0.0s
+
+#6 [deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#6 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [deps 3/4] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#9 CACHED
+
+#10 [test 1/1] COPY . .
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.4s done
+#11 exporting manifest sha256:2bae58b085c164a556b787d4aeea3397d165f7d632b827509ecb56646597834d 0.0s done
+#11 exporting config sha256:e23450afa277864de721dfe81f44f27ca969750670f6f7e3861769e3680a574a 0.0s done
+#11 exporting attestation manifest sha256:67e28eda29ef7e7dd6789e61ad00ec2a45f9c1f280e2b325bfc3c4265c4ce354 0.0s done
+#11 exporting manifest list sha256:299431045583a6d528139f4d536c1097871ccbaf3058b3e886a3fcd4626df8ad 0.0s done
+#11 naming to docker.io/library/frameforge-frontend-test:latest done
+#11 unpacking to docker.io/library/frameforge-frontend-test:latest 0.1s done
+#11 DONE 0.6s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ Image frameforge-frontend-test Built
+ Container frameforge-frontend-test-run-cd503788e75f Creating
+ Container frameforge-frontend-test-run-cd503788e75f Created
+
+> frameforge-frontend@1.0.0 lint
+> eslint . --max-warnings=0
+
+npm notice
+npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+npm notice To update run: npm install -g npm@11.21.1
+npm notice
+
+> frameforge-frontend@1.0.0 typecheck
+> tsc --noEmit
+
+
+> frameforge-frontend@1.0.0 test
+> vitest --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/app[39m
+
+ [32m✓[39m src/lib/api.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/task-feed.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/providers.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 173[2mms[22m[39m
+ [32m✓[39m src/components/task-sync.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 441[2mms[22m[39m
+ [32m✓[39m src/components/studio.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 520[2mms[22m[39m
+ [32m✓[39m src/components/account.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1086[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m39 passed[39m[22m[90m (39)[39m
+[2m   Start at [22m 05:17:19
+[2m   Duration [22m 2.23s[2m (transform 727ms, setup 531ms, import 1.35s, tests 2.26s, environment 3.60s)[22m
+
+
+> frameforge-frontend@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 45ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.2s
+  Running TypeScript ...
+  Finished TypeScript in 2.5s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/6) ...
+  Generating static pages using 7 workers (1/6)
+  Generating static pages using 7 workers (2/6)
+  Generating static pages using 7 workers (4/6)
+✓ Generating static pages using 7 workers (6/6) in 209ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /account
+├ ○ /history
+├ ○ /tasks
+├ ƒ /tasks/[id]
+└ ƒ /templates/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+COMMAND/RESULT: After final diff review: docker compose build frontend ; exit 0
+RAW OUTPUT (whitespace normalized): profile-reviewed-runtime-build.txt
+ Image frameforge-frontend Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.16kB 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 844B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24.11.1-bookworm-slim
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 102B done
+#4 DONE 0.0s
+
+#5 [deps 1/4] FROM docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57
+#5 resolve docker.io/library/node:24.11.1-bookworm-slim@sha256:48abc13a19400ca3985071e287bd405a1d99306770eb81d61202fb6b65cf0b57 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 3.06kB done
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [deps 3/4] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [deps 4/4] RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+#9 CACHED
+
+#10 [test 1/1] COPY . .
+#10 CACHED
+
+#11 [build 1/1] RUN npm run build
+#11 0.538
+#11 0.538 > frameforge-frontend@1.0.0 build
+#11 0.538 > next build
+#11 0.538
+#11 0.957 ▲ Next.js 16.4.3 (Turbopack)
+#11 1.008 ✓ Running next.config.ts took 50ms
+#11 1.023
+#11 1.051   Creating an optimized production build ...
+#11 3.400 ✓ Compiled successfully in 2.3s
+#11 3.409   Running TypeScript ...
+#11 6.122   Finished TypeScript in 2.7s ...
+#11 6.125   Collecting page data using 7 workers ...
+#11 6.775   Generating static pages using 7 workers (0/6) ...
+#11 6.988   Generating static pages using 7 workers (1/6)
+#11 6.988   Generating static pages using 7 workers (2/6)
+#11 6.995   Generating static pages using 7 workers (4/6)
+#11 6.996 ✓ Generating static pages using 7 workers (6/6) in 221ms
+#11 7.001   Finalizing page optimization ...
+#11 7.284
+#11 7.287 Route (app)
+#11 7.287 ┌ ○ /
+#11 7.287 ├ ○ /_not-found
+#11 7.287 ├ ○ /account
+#11 7.287 ├ ○ /history
+#11 7.287 ├ ○ /tasks
+#11 7.287 ├ ƒ /tasks/[id]
+#11 7.287 └ ƒ /templates/[id]
+#11 7.287
+#11 7.287
+#11 7.287 ○  (Static)   prerendered as static content
+#11 7.287 ƒ  (Dynamic)  server-rendered on demand
+#11 7.287
+#11 7.425 npm notice
+#11 7.425 npm notice New minor version of npm available! 11.6.2 -> 11.21.1
+#11 7.425 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1
+#11 7.425 npm notice To update run: npm install -g npm@11.21.1
+#11 7.425 npm notice
+#11 DONE 7.5s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#12 [runtime 3/5] COPY --from=build --chown=node:node /app/.next/standalone ./
+#12 DONE 0.5s
+
+#13 [runtime 4/5] COPY --from=build --chown=node:node /app/.next/static ./.next/static
+#13 DONE 0.1s
+
+#14 [runtime 5/5] COPY --from=build --chown=node:node /app/public ./public
+#14 DONE 0.1s
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 2.0s done
+#15 exporting manifest sha256:9985ebec01de043f5e57b733202ddedb3a93094a3946bee2f79646dbd149499d 0.0s done
+#15 exporting config sha256:1ba8c21244bb082589ed04d9239f7388d49e134b9ab0caa625a978bd5559ffa1 0.0s done
+#15 exporting attestation manifest sha256:4ae41674e79a61148ad76ce5c67840466dd7cf3fc96589f02470f3b2d21a4a8e 0.0s done
+#15 exporting manifest list sha256:0a2a8a75c1a4a3ea3b187055274ac33481a6c8565c50aea4cc3c47d3d2a72ffe 0.0s done
+#15 naming to docker.io/library/frameforge-frontend:latest done
+#15 unpacking to docker.io/library/frameforge-frontend:latest
+#15 unpacking to docker.io/library/frameforge-frontend:latest 0.8s done
+#15 DONE 2.9s
+
+#16 resolving provenance for metadata file
+#16 DONE 0.0s
+ Image frameforge-frontend Built
+
+COMMAND/RESULT: After final diff review: docker compose up -d --no-build --wait --wait-timeout 120 ; exit 0
+RAW OUTPUT (whitespace normalized): profile-reviewed-startup.txt
+ Container frameforge-backend-1 Running
+ Container frameforge-mysql-1 Running
+ Container frameforge-frontend-1 Recreate
+ Container frameforge-frontend-1 Recreated
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-backend-1 Waiting
+ Container frameforge-backend-1 Healthy
+ Container frameforge-frontend-1 Starting
+ Container frameforge-frontend-1 Started
+ Container frameforge-mysql-1 Waiting
+ Container frameforge-backend-1 Waiting
+ Container frameforge-frontend-1 Waiting
+ Container frameforge-backend-1 Healthy
+ Container frameforge-mysql-1 Healthy
+ Container frameforge-frontend-1 Healthy

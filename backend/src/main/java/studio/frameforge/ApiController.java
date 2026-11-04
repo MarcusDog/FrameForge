@@ -19,10 +19,11 @@ public class ApiController {
     private final AssetService assets;
     private final TaskService tasks;
     private final FileStore files;
+    private final ProfileService profiles;
     private final boolean simulationEnabled;
-    public ApiController(StoreMapper store,AssetService assets,TaskService tasks,FileStore files,
+    public ApiController(StoreMapper store,AssetService assets,TaskService tasks,FileStore files,ProfileService profiles,
                          @Value("${frameforge.simulation-enabled}") boolean enabled) {
-        this.store=store;this.assets=assets;this.tasks=tasks;this.files=files;this.simulationEnabled=enabled;
+        this.store=store;this.assets=assets;this.tasks=tasks;this.files=files;this.profiles=profiles;this.simulationEnabled=enabled;
     }
     private String user(HttpServletRequest request) {
         if(request.getCookies()!=null) for(var cookie:request.getCookies()) {
@@ -33,6 +34,14 @@ public class ApiController {
     @GetMapping("/demo/users") public List<DemoUser> users() { return store.users(); }
     @GetMapping("/demo/session") public DemoUser session(HttpServletRequest request) { return store.user(user(request)); }
     @GetMapping("/me/summary") public UserSummary summary(HttpServletRequest request) { return store.summary(user(request)); }
+    @GetMapping("/me/profile") public UserProfile profile(HttpServletRequest request) { return profiles.get(user(request)); }
+    @PutMapping("/me/profile") public UserProfile profile(@Valid @RequestBody ProfileRequest body,HttpServletRequest request) throws IOException {
+        return profiles.update(user(request),body);
+    }
+    @DeleteMapping("/demo/session") public Map<String,Boolean> logout(HttpServletResponse response) {
+        response.addHeader(HttpHeaders.SET_COOKIE,ResponseCookie.from("ff_demo_user","").httpOnly(true).sameSite("Lax").path("/").maxAge(0).build().toString());
+        return Map.of("signedOut",true);
+    }
     @PostMapping("/demo/session")
     public DemoUser session(@Valid @RequestBody SessionRequest body,HttpServletResponse response) {
         DemoUser user=store.user(body.userId());

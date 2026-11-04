@@ -2,6 +2,16 @@
 
 记录日期按 Asia/Shanghai。只有执行过的命令才写入结果；CI 配置存在不代表远端已运行。
 
+## 最新个人中心资料增强 / 2026-11-04
+
+本轮命令明细、原始失败与复验见 [PROFILE_UPDATE.md](PROFILE_UPDATE.md) 和 [profile-console.txt](evidence/profile-console.txt)。39 前端 +17 Java 单元 +16 真实 MySQL 集成共 72 项通过；全部 lint/typecheck/build 通过。首次失败为 effect 内同步更新状态触发 lint，后续测试没有执行；最小修复后才通过，未关闭检查。新增行为测试第一次实际运行均通过。单元日志中的模拟 IOException/ERROR 属于主动失败注入，JUnit 失败/错误/跳过均为 0。
+
+Docker 三服务更新并健康；UTF-8 增量导入 003 不删数据；旧库 27 任务/17素材变为运行脚本后的32/21。profile-smoke 最后恢复原 Bob 资料，版本正常递增。重复执行 003，资料与任务/素材数量前后相同。最终 Node 容器顺序执行 smoke、batch-smoke、profile-smoke 返回 PASS；两条并行运行、一条排队，失败仅影响指定任务。Compose config 退出 0。
+
+当前真实浏览器小屏、焦点、头像交互与双标签页操作未验证；不使用 Computer Use。GitHub 本地发布映射和实际云端结果见 SUBMISSION，不能用本地 72 项通过替代远端。人工贡献/工时待本人确认。
+
+最终 diff 检查发现 Docker 原始输出带行尾空格；仅对提交版日志规范换行并去除行尾空白，命令/错误/结果不变，.runtime 保留原件。源码审阅同时补齐“移除头像后清除旧成功提示”，保留原断言并追加交互断言，再执行完整前端四项检查：退出0、39/39；重新构建前端并启动三服务 healthy。六份主要交付文档本地链接无缺失，规范日志后 git diff --cached --check 退出0。
+
 ## M0 / 2026-11-02
 
 | 命令或检查 | 实际结果 |

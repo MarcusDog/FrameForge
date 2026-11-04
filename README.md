@@ -2,7 +2,7 @@
 
 选择模板、上传照片、提交后台制作，然后继续浏览。Java 按 **素材检查 → 模拟生成 → 结果整理** 执行，MySQL 保存任务和真实时间线，Java2D 将本次上传的照片拼成可预览 PNG。无真实 AI 调用。
 
-当前版本：个人中心、批量独立任务、两条并行制作和 12 种版式。最近本地验证为 **63 项测试通过**；代码验收提交为 [c893712](https://github.com/MarcusDog/FrameForge/commit/c89371247b44d3236b1d3c2510da87979878cab3)；远端 CI 状态见 [交付清单](docs/SUBMISSION.md)。
+当前版本：可保存头像/昵称/简介的个人中心、批量独立任务、两条并行制作和 12 种版式。最近本地验证为 **72 项测试通过**；最新代码验收提交与远端 CI 状态见 [交付清单](docs/SUBMISSION.md)。个人中心证据见 [PROFILE_UPDATE.md](docs/PROFILE_UPDATE.md)，后续完善优先级见 [SCORECARD.md](docs/SCORECARD.md)。
 
 ## 快速启动
 
@@ -23,8 +23,8 @@ docker compose ps
 
 | 要求 | 交付位置与核验方法 |
 |---|---|
-| R-12 CI 与关键测试 | [.github/workflows/ci.yml](.github/workflows/ci.yml) 在 push/PR 运行前端 lint、类型检查、33 项测试和 build；Java 一次 Maven verify 运行 17 单元+13 MySQL 集成并构建。Compose 再验证完整 HTTP 闭环与批量并行/失败隔离。测试报告和 Compose 日志作为 Actions artifacts 保存，远端状态以对应 run 为准 |
-| R-13 完整材料与 AI 工作流 | 前后端源码、npm 锁文件、Maven Wrapper/BOM、六表 SQL/种子、示例配置、素材、README 均包含。下文给出连接/API/演示/限制/回滚；AI_WORKFLOW 记录上下文、生成修改、真实失败与复验；个人实际投入与人工审查待本人确认 |
+| R-12 CI 与关键测试 | [.github/workflows/ci.yml](.github/workflows/ci.yml) 在 push/PR 运行前端 lint、类型检查、39 项测试和 build；Java 一次 Maven verify 运行 17 单元+16 MySQL 集成并构建。Compose 再验证完整 HTTP 闭环、批量并行/失败隔离与个人资料。报告和 Compose 日志作为 Actions artifacts 保存，远端状态以对应 run 为准 |
+| R-13 完整材料与 AI 工作流 | 前后端源码、npm 锁文件、Maven Wrapper/BOM、七表 SQL/种子与增量迁移、示例配置、素材、README 均包含。下文给出连接/API/演示/限制/回滚；AI_WORKFLOW 记录上下文、生成修改、真实失败与复验；个人实际投入与人工审查待本人确认 |
 | R-14 容器交付 | 根目录 docker compose up --build 启动前端、Java、MySQL，初始化表与种子；数据卷保留数据库和媒体。评估者无需在宿主机直接运行工程脚本 |
 
 历史本地代码验收基线（2026-11-02）：e70c44a9d06fc380fa55ea4c4d06730abcc672e6。GitHub 发布快照与最终验收提交见 SUBMISSION.md；原始题目/设计附件保留本地，公开仓库包含必要的题目归档与工程，不上传依赖、构建缓存和用户上传文件。
@@ -58,7 +58,7 @@ npm 直接依赖使用精确版本，完整依赖树及完整性值见 frontend/
 ~~~text
 frontend/              Next App Router、页面、上传与 TaskFeed、行为测试
 backend/               Spring Boot、Service、MyBatis Mapper、JUnit/MySQL 集成测试
-database/              六表结构与 Alice/Bob、十二模板种子
+database/              六张业务表、个人资料增量表与 Alice/Bob、十二模板种子
 docs/                  原题、验收矩阵、技术选择、实际 AI 工作流与验证
 scripts/               HTTP 验收、Java2D 本地封面生成器
 .github/workflows/     push / pull_request CI
@@ -69,7 +69,7 @@ compose.yaml           默认三服务；test profile 为独立测试服务
 
 浏览器只请求同源 /api。Next rewrite 转发到 Java；业务、文件处理和 MySQL 写入均在 Java。Compose 内前端使用 http://backend:8080，后端使用 mysql:3306/frameforge。
 
-MySQL 首次创建空数据卷时，自动执行 database/001-schema.sql 和 002-seed.sql。包含用户、模板、素材、任务、任务素材关联和阶段六表。已有卷不会重复执行初始化；修改结构需明确迁移，不能依赖重启自动重建。
+MySQL 首次创建空数据卷时，依次执行 database/001-schema.sql、002-seed.sql、003-user-profiles.sql。包含用户、模板、素材、任务、任务素材关联、阶段六表和独立的 user_profile 表。已有卷不会重复执行初始化；升级旧版本需在启动新版应用前执行 003 增量迁移，不能依赖重启自动重建。
 
 - mysql-data：MySQL 持久卷。
 - media-data：Java /data，保存 uploads 和 results。
@@ -123,6 +123,9 @@ JSON 成功响应直接返回对象；失败格式：
 | GET /api/demo/users | 无 | [{id,name}] |
 | GET /api/demo/session | Cookie | {id,name}；未选用户 401 |
 | POST /api/demo/session | {userId:"alice"或"bob"} | 用户；设置 HttpOnly、SameSite=Lax Cookie |
+| DELETE /api/demo/session | 无 | {signedOut:true}；过期 Cookie，保留资料和任务 |
+| GET /api/me/profile | Cookie | 当前用户 {userId,nickname,bio,avatarColor,avatarAssetId,avatarUrl,version,createdAt,updatedAt} |
+| PUT /api/me/profile | {nickname,bio,avatarColor,avatarAssetId,version} | 返回保存后的完整资料；过期版本 409，非本人头像 404 |
 | GET /api/config | 无 | {simulationEnabled} |
 | GET /api/me/summary | Cookie | 当前用户 {totalTasks,activeTasks,succeededTasks,failedTasks,assetCount}；从 MySQL 全量统计 |
 | GET /api/templates | 无 | 模板数组 |
@@ -136,6 +139,8 @@ JSON 成功响应直接返回对象；失败格式：
 | GET /api/tasks/{id}/result | Cookie | 成功后的 PNG；未成功或无权限 404 |
 
 模板字段：id、title、category、description、coverUrl、layout、requiredImageCount、acceptedMimeTypes、maxFileSizeBytes。
+
+资料昵称去除首尾空白后 1～24 字符，简介最多 160 字符；avatarColor 为六位十六进制颜色，avatarAssetId 为本人上传素材 ID 或 null（移除头像）。先 GET 获取 version，每次成功 PUT 增加版本。409 时显式重新读取，避免旧页面覆盖新资料。createdAt 表示资料记录创建时间，不冒充原账户注册时间。
 
 任务提交示例：
 
@@ -244,7 +249,7 @@ GitHub Actions 在 push / pull_request 时触发 frontend、backend、compose �
 
 ## 最终验收摘要
 
-R-01～R-14 的实现与证据见 docs/REQUIREMENTS.md，当前交付说明见 docs/DELIVERY.md。2026-11-04 最近本地验证通过 33 项前端、17 项 Java 单元、13 项 MySQL 集成，共 63 项；lint/typecheck/build、HTTP 闭环、两任务并行与单任务失败隔离均通过，原始输出见 docs/evidence/ui-update-console.txt。旧浏览器截图属于历史产物；当前浏览器视觉/手机/焦点和人工贡献仍待确认。GitHub 发布与 CI 的实际结果单独记录在 SUBMISSION.md。
+R-01～R-14 的实现与证据见 docs/REQUIREMENTS.md，当前交付说明见 docs/DELIVERY.md。2026-11-04 最近本地验证通过 39 项前端、17 项 Java 单元、16 项 MySQL 集成，共 72 项；lint/typecheck/build、HTTP 闭环、两任务并行、失败隔离及资料保存验证均通过，原始输出见 docs/evidence/profile-console.txt。旧浏览器截图属于历史产物；当前浏览器视觉/手机/焦点和人工贡献仍待确认。GitHub 发布与 CI 的实际结果单独记录在 SUBMISSION.md。
 
 无界面验证截图及结果：output/playwright/gallery-desktop.png、gallery-mobile.png、studio-mobile.png、history-desktop.png、result-preview.png、browser-check.json。可选脚本 scripts/browser-check.cjs 复用已安装的 Playwright Core/Edge；用 FF_PLAYWRIGHT_MODULE 指定模块，TEMP/TMP 可设为工程 D 盘 .runtime/temp；不参与项目启动，不要求评估者在宿主机安装或执行它。
 
@@ -265,3 +270,27 @@ R-07/R-08/R-12 的专项案例见 docs/AI_WORKFLOW.md：两个 RUNNING 任务中
 12 个模板分别使用明信片、拍立得、圆形肖像、杂志、庆祝卡、满版海报、胶片、留白双图、信笺、拼图、三联画、拱形双图。封面与结果使用同一个 Java2D 生成器；旧结果保留，新任务使用新排版。已有数据库升级需以 UTF-8 客户端重新执行 002-seed.sql；该种子只 upsert 用户/模板，不删除任务或素材。
 
 本轮本地验证：33 前端 + 17 Java 单元 + 13 MySQL 集成，共 63 项；lint/typecheck/build、HTTP 业务闭环、两条同时 RUNNING / 一条 QUEUED 以及单任务失败隔离均通过。详细记录和原始失败/复验见 [UI_UPDATE.md](docs/UI_UPDATE.md)。本轮功能已同步 GitHub；新旧验收快照与本地/云端结果分开记录。最新 CI 仍因账户计费锁定未启动任务，原始证据见 SUBMISSION.md。
+
+## 个人资料更新与演示（后续增强）
+
+个人中心现在支持编辑昵称、简介，上传/移除头像，或选择五种默认头像颜色。保存成功后顶栏同步更新，刷新从 Java/MySQL 恢复。Alice/Bob 仍是稳定身份，昵称不改变任务归属。统计和最近记录继续使用服务端数据；退出账户清除当前 Cookie 和私人视图，重新选择后恢复历史。
+
+演示：选择 Alice → 个人中心 → 上传一张 JPEG/PNG 头像并填写昵称/简介 → 保存 → 刷新 → 切换 Bob，确认资料/作品独立 → 退出 → 重新选择 Alice。两个页面同时修改时，后保存的旧版本收到冲突提示，草稿保留，点击“重新加载资料”后再编辑。
+
+**已有数据卷升级**：先备份数据库与媒体，完成正在执行的任务，再执行增量迁移，然后构建/启动新版应用。以下是 bash 命令；不删除数据卷，不重复执行破坏性初始化：
+
+~~~sh
+docker compose exec -T mysql sh -c 'MYSQL_PWD=$MYSQL_PASSWORD mysql --default-character-set=utf8mb4 -uframeforge -Dframeforge' < database/003-user-profiles.sql
+docker compose up --build -d --wait
+~~~
+
+PowerShell 导入使用：
+
+~~~powershell
+Get-Content -Raw -Encoding utf8 database/003-user-profiles.sql | docker compose exec -T mysql sh -c 'MYSQL_PWD=$MYSQL_PASSWORD mysql --default-character-set=utf8mb4 -uframeforge -Dframeforge'
+docker compose up --build -d --wait
+~~~
+
+003 使用 CREATE IF NOT EXISTS / INSERT IGNORE，可重复执行而不覆盖已编辑资料。首次空卷自动执行，无需手工导入。回滚到前一版应用时可保留新增表；该增量没有修改旧六表，旧版应用会忽略它。头像上传复用现有资产，移除头像不删旧文件；没有新增自动清理或存储配额。
+
+同源 HTTP 资料验收（与前述 smoke 命令相同容器参数，将脚本改为 scripts/profile-smoke.mjs）：验证真实资料读写、版本冲突、头像归属、退出与记录保留，最后恢复原 Bob 资料。会保留一张新增测试头像素材；若检测到同时有人编辑，恢复会因版本冲突失败，避免覆盖人工修改。CI 的 Compose 任务已加入此脚本。完整记录与本轮 72 项测试见 [PROFILE_UPDATE.md](docs/PROFILE_UPDATE.md)。

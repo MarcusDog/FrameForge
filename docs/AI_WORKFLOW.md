@@ -190,3 +190,21 @@ AI 实现个人中心与 MySQL 统计接口，扩展现有 UploadForm 的批量�
 本次没有改业务实现或测试断言，也没有重复执行已有的 63 项检查来制造新记录。实际执行文档链接检查、git diff --check、Compose config 和源码差异核对后，再导出不含原始附件/缓存的 GitHub 快照。发布 SHA、源码一致性与实际 CI 结果以 SUBMISSION.md 和新的原始 API 记录为准；没有把待推送或待运行提前写为成功。
 
 实际完成：代码快照 c893712 发布成功，Git 核对 backend/frontend/database/compose/scripts/.env.example 与本地 da3b2c6 完全一致；包括新界面、12 张封面和批量脚本。Actions run 41765366854 三任务均未启动，annotations 仍明确为账户计费锁定。保存新版 CI JSON 与源码映射，README/SUBMISSION 标明准确验收 SHA；未假称远端测试通过。
+
+## 真实案例：持久化个人资料与并发保存 / 2026-11-04
+
+**原始需求**：用户要求个人账户增加头像、昵称等个人中心内容，并围绕高分完善功能。AI 回读完整 EXAM_SPEC，确认头像是 R-10 增强，原题核心仍为 Java 异步和前端多任务。没有擅自把生产认证、会员、积分写成必做。
+
+**提供的上下文与提示词摘要**：原题 R-10/R-08/R-12、现有 Demo Cookie/StoreMapper/AssetService/FileStore、Providers/TaskFeed/Account、现有数据库/Compose/测试、用户要求不使用 Computer Use 且缓存位于 D 盘。摘要为“提供可保存的头像、昵称与简介；沿用已有素材校验与用户归属；保存资料不能重启任务追踪；取消旧请求并拒绝跨用户旧响应；避免多页面静默覆盖；真实验证、记录失败并同步 README/GitHub”。
+
+**AI 修改文件**：新增 database/003-user-profiles.sql、backend/.../ProfileService.java、frontend/src/components/avatar.tsx、profile-editor.tsx、scripts/profile-smoke.mjs、PROFILE_UPDATE/SCORECARD 文档。修改 Models、StoreMapper、ApiController、TaskFlowIT、frontend 的 types/providers/account/shell/globals.css/account.test、CI 及相关交付文档。profile 与稳定 DemoUser 分开，避免昵称保存替换 user 对象导致 TaskFeed 清理/重启；SQL 条件版本更新提供冲突 409，头像只能引用当前用户已有素材。表迁移为增量，INSERT IGNORE 不覆盖昵称。
+
+**实际顺序与结果**：本案例先实现再补行为测试，不冒称 TDD。首次容器前端检查退出 1：react-hooks/set-state-in-effect 指出 effect 同步 setProfile 不合适，后续测试并未执行。AI 将首次 loading 从缺少当前用户快照推导，重载 loading 移到点击事件，保留规则；复验 lint、typecheck、39 测试、build 全部通过。后续微调顶栏昵称与成功提示后再次完整通过。首次实际运行新增测试即通过，没有人为制造业务缺陷、删除断言或把 lint 失败写成测试失败。
+
+后端 docker compose --profile test run --rm --build backend-test 成功：17 单元 +16 真实 MySQL 集成，包含昵称/头像持久化、旧版本冲突、非法字段、跨用户头像及退出 Cookie。真实 MySQL GET 与直接 SQL 共同验证保存结果。前端新增行为测试覆盖保存/刷新、保存不重启追踪、非法头像/上传禁用、冲突保留草稿、旧用户 GET/PUT 响应被取消忽略、退出清空视图。共 72 项，不重复计算镜像构建中重跑的单元测试。
+
+**运行验证**：现有库更新前 0 个活跃任务、27 个任务和17个素材。UTF-8 导入 003，无删除；构建并启动三服务 healthy。容器执行 profile-smoke，中文资料/真实头像读回、409、越权404、退出401和历史保留均通过，恢复原 Bob 资料。日志见 evidence/profile-console.txt，完整命令/结果见 PROFILE_UPDATE.md / VERIFICATION.md。演示会增加测试记录和素材，不伪称数据库毫无变化。
+
+**人工需要审查**：当前小屏/键盘焦点、头像显示裁剪与失败回退、双标签页冲突交互、资料是否符合个人展示偏好；本人实际投入和贡献。均为待人工确认，未虚构人工操作或“人工审核通过”。
+
+**结论与未验证事项**：资料闭环、归属、并发版本和异步隔离已由组件/真实 MySQL/HTTP 分层验证；没有真实浏览器外观验收、生产身份认证、头像裁剪器、孤立文件回收或公网部署。GitHub 发布与对应云端任务的实际状态另记 SUBMISSION，不能用本地通过代替远端。高分建议按原题重点写入 SCORECARD，不保证招聘结果。

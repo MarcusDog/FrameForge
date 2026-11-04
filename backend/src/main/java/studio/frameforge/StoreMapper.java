@@ -8,6 +8,20 @@ public interface StoreMapper {
     @Select("SELECT * FROM demo_user ORDER BY id") List<DemoUser> users();
     @Select("SELECT * FROM demo_user WHERE id=#{id}") DemoUser user(String id);
     @Select("""
+        SELECT p.user_id,p.nickname,p.bio,p.avatar_color,p.avatar_asset_id,
+          CASE WHEN a.id IS NOT NULL THEN CONCAT('/api/assets/',a.id,'/content?v=',p.version) END AS avatar_url,
+          p.version,p.created_at,p.updated_at
+        FROM user_profile p LEFT JOIN asset a ON a.id=p.avatar_asset_id AND a.user_id=p.user_id
+        WHERE p.user_id=#{userId}
+        """)
+    UserProfile profile(String userId);
+    @Update("""
+        UPDATE user_profile SET nickname=#{profile.nickname},bio=#{profile.bio},avatar_color=#{profile.avatarColor},
+          avatar_asset_id=#{profile.avatarAssetId},version=version+1,updated_at=CURRENT_TIMESTAMP(3)
+        WHERE user_id=#{userId} AND version=#{profile.version}
+        """)
+    int updateProfile(@Param("userId") String userId,@Param("profile") ProfileRequest profile);
+    @Select("""
         SELECT COUNT(*) AS total_tasks,
           COALESCE(SUM(status IN ('QUEUED','RUNNING')),0) AS active_tasks,
           COALESCE(SUM(status='SUCCEEDED'),0) AS succeeded_tasks,

@@ -1,10 +1,10 @@
 # GitHub 工程交付与 AI 工作流核对
 
-日期：2026-11-03（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。当前版本已包含个人中心、批量制作、两 worker 和 12 种版式；最近本地验证 63 项通过。本文件是 R-12～R-14 的交付入口，逐条业务审查仍见 REVIEW.md / REQUIREMENTS.md。
+更新：2026-11-04（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。当前版本包含头像/昵称/简介个人中心、批量制作、两 worker 和 12 种版式；最近本地验证 **72 项通过**，见 PROFILE_UPDATE.md。下方旧 SHA/53～63 项记录为历史证据；最新公开验收 SHA 与实际云端状态以最后的发布记录为准。本文件是 R-12～R-14 的交付入口，逐条业务审查见 REQUIREMENTS.md，历史独立审查见 REVIEW.md。
 
 ## 审核结论与仍存在的不足
 
-核心闭环已有源码和容器运行证据：Java 后台按三个阶段执行，MySQL 保存状态，失败中断后续阶段，成功终态受保护；前端独立追踪任务，查询异常与制作失败分开。上一轮发现的五项前端竞态/重复查询已修复；本轮复核没有新增已复现的核心业务缺陷，未改业务代码。
+核心闭环已有源码和容器运行证据：Java 后台按三个阶段执行，MySQL 保存状态，失败中断后续阶段，成功终态受保护；前端独立追踪任务，查询异常与制作失败分开。上一轮发现的五项前端竞态/重复查询已修复。后续新增个人资料保存、头像归属/版本冲突和退出，原有异步任务行为测试继续通过；修改与失败修复见 PROFILE_UPDATE。
 
 仍需如实说明：
 
@@ -33,7 +33,7 @@
 | 提交要求 | 材料 |
 |---|---|
 | 前后端完整源码、版本/锁文件 | frontend、backend、frontend/package-lock.json、backend/pom.xml、Maven Wrapper |
-| 数据库结构与模拟数据 | database/001-schema.sql、002-seed.sql；两 Demo 用户、六模板 |
+| 数据库结构与模拟数据 | database/001-schema.sql、002-seed.sql、003-user-profiles.sql；两 Demo 用户、十二模板、七表 |
 | 构建/测试/启动与连接 | README 的快速启动、技术版本、连接初始化、测试与 CI |
 | 无真实凭据的配置示例 | .env.example、application.yml、Compose 中仅本地演示密码 |
 | API 字段、状态、阶段、后台执行 | README 的 API 与字段、异步正确性与边界 |
@@ -81,5 +81,11 @@
 新版代码验收提交：[c89371247b44d3236b1d3c2510da87979878cab3](https://github.com/MarcusDog/FrameForge/commit/c89371247b44d3236b1d3c2510da87979878cab3)。代码、依赖、模板封面和配置与本地 da3b2c6 已验证版本的 git diff 为 0，完整路径与统计见 [新版源码一致性记录](evidence/github-ui-provenance-2026-11-04.json)。后续提交仅整理文档/证据，GitHub main 提供最新交付入口。
 
 本次 [Actions run 41765366854](https://github.com/MarcusDog/FrameForge/actions/runs/41765366854) 返回 failure；backend/frontend/compose 三个任务的 steps 均为空，原因仍为账户计费锁定，未实际执行测试。原始返回见 [本次 CI 记录](evidence/github-ui-run-2026-11-04.json)。本地 63 项通过不代表云端已通过。账户所有者解除锁定后，可对该 run 重新运行全部任务。没有为获得绿色状态修改触发器、删除测试或换自托管 runner。
+
+## 个人资料增强：最新本地验收 / 2026-11-04
+
+39 前端、17 Java 单元、16 真实 MySQL 集成共72项通过；lint/typecheck/build 通过。增量003迁移、重复执行不覆盖、三服务 healthy、smoke/batch/profile 三个容器 HTTP 脚本 PASS。新增6项前端行为和3项MySQL测试，首次运行均通过；首次 lint 的 effect 同步更新失败与修复完整保留在 [profile-console.txt](evidence/profile-console.txt)。当前真实浏览器小屏/焦点/头像交互及双标签页冲突待人工确认。
+
+交付已补个人资料 API、升级/回滚说明、AI真实工作流案例与 [高分完善优先级](SCORECARD.md)。没有添加生产登录、会员或支付，也没有将建议当作完成项。该版业务验收 SHA、公开源码一致性和对应新 CI run 在发布后记录，旧的 c893712 不指代新个人资料代码。
 
 原始附件、缓存、个人上传文件继续留在本地；公开工程快照不携带本地原始附件历史。

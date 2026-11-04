@@ -13,6 +13,12 @@ public final class Models {
         public boolean terminal() { return this == SUCCEEDED || this == FAILED; }
     }
     public record DemoUser(String id, String name) {}
+    public record UserProfile(String userId,String nickname,String bio,String avatarColor,String avatarAssetId,
+                              String avatarUrl,long version,Instant createdAt,Instant updatedAt) {}
+    public record ProfileRequest(@NotBlank @Size(max=24) String nickname,
+                                 @NotNull @Size(max=160) String bio,
+                                 @NotBlank @Pattern(regexp="#[a-fA-F0-9]{6}") String avatarColor,
+                                 @Size(max=36) String avatarAssetId,@NotNull @Min(0) Long version) {}
     public record UserSummary(long totalTasks,long activeTasks,long succeededTasks,long failedTasks,long assetCount) {}
     public record Template(String id, String title, String category, String description,
                            int requiredImageCount, String coverUrl, String layout) {

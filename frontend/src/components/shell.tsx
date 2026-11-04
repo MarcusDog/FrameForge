@@ -3,6 +3,7 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import type {ReactNode} from "react";
 import {IdentityPrompt,useSession} from "./providers";
+import {Avatar} from "./avatar";
 
 export function Shell({children}:{children:ReactNode}){
   const pathname=usePathname(),session=useSession();
@@ -16,7 +17,7 @@ export function Shell({children}:{children:ReactNode}){
     </aside>
     <div className="main-shell">
       <header className="topbar"><div className="breadcrumb">工作空间 <span>/</span> {current}</div>
-        <div className="user-switch"><Link href="/account" className="avatar" aria-label="个人中心">{session.user?.name[0]||"?"}</Link>
+        <div className="user-switch"><Link href="/account" className="header-profile" aria-label="个人中心"><Avatar className="header-avatar" name={session.profile?.nickname||session.user?.name||"?"} url={session.profile?.avatarUrl} color={session.profile?.avatarColor}/><span>{session.profile?.nickname||session.user?.name}</span></Link>
           <select aria-label="切换演示用户" disabled={session.switching||session.sessionLoading} value={session.user?.id||""} onChange={event=>void session.switchUser(event.target.value)}>
             <option value="" disabled>{session.sessionLoading?"恢复身份…":session.switching?"切换中…":"选择账户"}</option>
             {session.users.map(user=><option key={user.id} value={user.id}>{user.name}</option>)}

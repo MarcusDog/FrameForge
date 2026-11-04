@@ -11,11 +11,11 @@
 | R-05 | 三阶段顺序与边界、开始/结束/耗时、查询只读、终态保护、PNG 结果 | Worker 顺序测试、真实阶段时间线、终态与最终阶段发布保护、PNG 解码 | 已实现并验证 |
 | R-06 | 三个阶段确定性失败，耗时持久化与校验 | 三阶段参数化单元/集成测试；演示面板；smoke 失败中断 | 已实现并验证 |
 | R-07 | 上传/提交/排队/处理/终态分开，查询错误保留快照并可恢复 | 本轮真实 api 封装+fetch HTTP 500 桩、TaskFeed 与 Provider/组件联动测试 | 自动化已验证；真实链路故障注入未验证 |
-| R-08 | 多任务隔离、错误隔离、终态停轮询、请求清理、旧响应保护 | 本轮 11 项 TaskFeed、5 项 Provider、5 项组件联动、2 项个人中心及 4 项 API 测试 | 自动化已验证；浏览器网络断言为上轮证据 |
+| R-08 | 多任务隔离、错误隔离、终态停轮询、请求清理、旧响应保护 | 11 项 TaskFeed、5 项 Provider、5 项组件联动、8 项个人中心及 4 项 API 测试；资料保存不重启任务追踪 | 自动化已验证；浏览器网络断言为上轮证据 |
 | R-09 | 个人历史/时间/状态/失败原因/结果预览，刷新恢复，游标分页 | 本轮 MySQL 分页、feed 恢复与 HTTP PNG；浏览器为上轮证据 | 后端/恢复逻辑已验证；当前浏览器刷新与预览未复测 |
-| R-10 | Alice/Bob Cookie Demo 身份，素材/任务/历史/结果服务端归属校验 | 本轮 HTTP/MySQL 隔离、个人中心统计与切换、smoke、Provider 用户切换 | 已实现并验证 |
+| R-10 | Alice/Bob Demo 身份及归属、真实资料/头像、个人统计历史、退出保留记录、版本冲突 | ProfileService/StoreMapper、003 SQL、profile-editor/Providers、TaskFlowIT、account.test、profile-smoke；PROFILE_UPDATE | 组件/真实 MySQL/HTTP 已验证；当前浏览器资料外观未验证 |
 | R-11 | 浅色工作台、参考信息布局、语义上传/按钮/对话框、焦点、小屏操作 | 本轮组件标签/禁用/错误反馈；桌面/390px/320px 图与断言为上轮产物 | 组件行为已验证；当前视觉/焦点/小屏源码支持但未复测 |
-| R-12 | push/PR 三任务 CI，前端四项检查、Java 测试构建、MySQL 集成、Compose smoke | 2026-11-04 本地 33 前端 + 17 单元 + 13 MySQL；GitHub 结果见 SUBMISSION | 本地通过；远端实际结论独立记录，见 SUBMISSION |
+| R-12 | push/PR 三任务 CI，前端四项检查、Java 测试构建、MySQL 集成、Compose 三脚本 | 2026-11-04 最新本地 39 前端 + 17 单元 + 16 MySQL；GitHub 结果见 SUBMISSION | 本地通过；远端实际结论独立记录，见 SUBMISSION |
 | R-13 | 源码、锁文件、SQL、完整 README、真实 AI 工作流/决策/修复/限制/工作量 | README、AI_WORKFLOW、DECISIONS、VERIFICATION、DELIVERY、REVIEW 与原始输出 | 材料已核对；个人投入/贡献/人工审查待本人确认 |
 | R-14 | 前后端 Dockerfile、三服务 Compose、卷、healthcheck、示例配置 | 本轮 config/up/三服务 healthy/HTTP smoke/全新 tmpfs MySQL 初始化 | 已实现并验证；全无缓存安装未验证 |
 

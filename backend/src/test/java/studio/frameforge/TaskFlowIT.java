@@ -29,7 +29,7 @@ import static studio.frameforge.Models.*;
 
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,properties={
     "spring.sql.init.mode=always","spring.sql.init.schema-locations=file:../database/001-schema.sql",
-    "spring.sql.init.data-locations=file:../database/002-seed.sql","frameforge.queue-capacity=1",
+    "spring.sql.init.data-locations=file:../database/002-seed.sql,file:../database/003-user-profiles.sql","frameforge.queue-capacity=1",
     "frameforge.storage=./target/it-storage","frameforge.workers=1"
 })
 class TaskFlowIT {
@@ -213,6 +213,53 @@ class TaskFlowIT {
         var missing=http.getForEntity("/api/not-an-api",String.class);
         assertEquals(HttpStatus.NOT_FOUND,missing.getStatusCode());
         assertTrue(missing.getBody().contains("HTTP_404"));
+    }
+    @Test void profilePersistsOwnedAvatarAndRejectsStaleEdits() throws Exception {
+        UserProfile original=get("/api/me/profile","alice",UserProfile.class).getBody();
+        UserProfile bob=get("/api/me/profile","bob",UserProfile.class).getBody();
+        String avatar=upload("alice");
+        var body=new ProfileRequest("  林间旅人  ","  光影日记  ","#386FA4",avatar,original.version());
+        var response=http.exchange("/api/me/profile",HttpMethod.PUT,new HttpEntity<>(body,headers("alice")),UserProfile.class);
+        assertEquals(HttpStatus.OK,response.getStatusCode());var saved=response.getBody();
+        assertEquals("林间旅人",saved.nickname());assertEquals("光影日记",saved.bio());
+        assertEquals("#386fa4",saved.avatarColor());assertEquals(original.version()+1,saved.version());
+        assertEquals(avatar,saved.avatarAssetId());
+        assertEquals(saved,get("/api/me/profile","alice",UserProfile.class).getBody());
+        assertEquals("林间旅人",jdbc.queryForObject("SELECT nickname FROM user_profile WHERE user_id='alice'",String.class));
+        assertEquals(HttpStatus.OK,get(saved.avatarUrl(),"alice",byte[].class).getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND,get(saved.avatarUrl(),"bob",String.class).getStatusCode());
+        assertEquals(bob,get("/api/me/profile?userId=alice","bob",UserProfile.class).getBody());
+        var stale=http.exchange("/api/me/profile",HttpMethod.PUT,new HttpEntity<>(body,headers("alice")),String.class);
+        assertEquals(HttpStatus.CONFLICT,stale.getStatusCode());assertTrue(stale.getBody().contains("PROFILE_CHANGED"));
+        assertEquals(saved,get("/api/me/profile","alice",UserProfile.class).getBody());
+        var remove=new ProfileRequest(original.nickname(),original.bio(),original.avatarColor(),null,saved.version());
+        var removed=http.exchange("/api/me/profile",HttpMethod.PUT,new HttpEntity<>(remove,headers("alice")),UserProfile.class);
+        assertEquals(HttpStatus.OK,removed.getStatusCode());assertNull(removed.getBody().avatarUrl());
+    }
+    @Test void profileRejectsInvalidFieldsAndOtherUsersAvatar() throws Exception {
+        var profile=get("/api/me/profile","bob",UserProfile.class).getBody();
+        var foreign=new ProfileRequest("Bob","","#38745d",upload("alice"),profile.version());
+        assertEquals(HttpStatus.NOT_FOUND,http.exchange("/api/me/profile",HttpMethod.PUT,new HttpEntity<>(foreign,headers("bob")),String.class).getStatusCode());
+        for(var invalid:List.of(
+            new ProfileRequest(" ","","#6551d9",null,profile.version()),
+            new ProfileRequest("x".repeat(25),"","#6551d9",null,profile.version()),
+            new ProfileRequest("Bob","x".repeat(161),"#6551d9",null,profile.version()),
+            new ProfileRequest("Bob","","red",null,profile.version()),
+            new ProfileRequest("Bob","","#6551d9",null,null))) {
+            assertEquals(HttpStatus.BAD_REQUEST,http.exchange("/api/me/profile",HttpMethod.PUT,new HttpEntity<>(invalid,headers("bob")),String.class).getStatusCode());
+        }
+        assertEquals(profile,get("/api/me/profile","bob",UserProfile.class).getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED,http.getForEntity("/api/me/profile",String.class).getStatusCode());
+    }
+    @Test void logoutExpiresCookieWithoutDeletingHistoryOrProfile() {
+        Long count=jdbc.queryForObject("SELECT COUNT(*) FROM task WHERE user_id='alice'",Long.class);
+        var profile=get("/api/me/profile","alice",UserProfile.class).getBody();
+        var response=http.exchange("/api/demo/session",HttpMethod.DELETE,new HttpEntity<>(headers("alice")),String.class);
+        assertEquals(HttpStatus.OK,response.getStatusCode());
+        String cookie=response.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
+        assertTrue(cookie.contains("Max-Age=0"));assertTrue(cookie.contains("HttpOnly"));
+        assertEquals(count,jdbc.queryForObject("SELECT COUNT(*) FROM task WHERE user_id='alice'",Long.class));
+        assertEquals(profile,get("/api/me/profile","alice",UserProfile.class).getBody());
     }
     @Test void personalSummaryUsesAllOwnedDatabaseRecordsAndCannotSelectAnotherUser() throws Exception {
         var accepted=submit(request(upload("alice"),key(),null,0)).getBody();terminal(accepted.taskId());upload("bob");
