@@ -1,0 +1,49 @@
+{
+  "verifiedAt": "2026-11-04T05:56:56.7672346Z",
+  "testedLocal": "1993dcc20a992d6c3d0e23e45daa180d733d94dd",
+  "publicAcceptance": "49239ac316f47d7ce0e3fb797de837251a1506c3",
+  "sourceDiffExit": 0,
+  "originalAttachmentsExcluded": true,
+  "remoteBlobs": [
+    {
+      "path": "README.md",
+      "sha": "2a63617d1d98c714965322ce6ca79e3fbe94eb3a",
+      "matches": true
+    },
+    {
+      "path": "backend/src/main/java/studio/frameforge/AuthService.java",
+      "sha": "6b2b95bb3ec2fdbc8cd83d4239ece8a3400ea17b",
+      "matches": true
+    },
+    {
+      "path": "frontend/src/components/auth-form.tsx",
+      "sha": "b0700c517c08cf2edcd324a48db1f5180f7f5585",
+      "matches": true
+    },
+    {
+      "path": "database/004-accounts.sql",
+      "sha": "a3627f3c3100e8516e3676731f6c28429d6db644",
+      "matches": true
+    },
+    {
+      "path": "scripts/browser-regression.cjs",
+      "sha": "6ae9361bb599bd4f8fb9613b0ad84306594c02be",
+      "matches": true
+    },
+    {
+      "path": "scripts/browser-account.cjs",
+      "sha": "302c338ce567656f00c60db6c6d81ef5eced254c",
+      "matches": true
+    },
+    {
+      "path": "output/playwright/2026-11-04-final/browser-account.json",
+      "sha": "88aee5877dd9db2eba8cffe61e067e62b5828603",
+      "matches": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha": "8899038d787edccf8ba9b20a2ff96be7139a406c",
+      "matches": true
+    }
+  ]
+}

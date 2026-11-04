@@ -101,4 +101,11 @@
 
 最新公开代码SHA与对应云端run在本次发布后补录；01e5347只指代前一版，不是当前账户与焦点修复代码。CI已加入相同浏览器脚本与截图artifact，但配置存在不等于云端已执行。
 
+## 本次发布回执：账户、浏览器与紧凑动态
+
+- 最新业务验收提交：[49239ac316f47d7ce0e3fb797de837251a1506c3](https://github.com/MarcusDog/FrameForge/commit/49239ac316f47d7ce0e3fb797de837251a1506c3)，已推送公开main。对应本地业务提交296d8db7ffe10912ceecfdfb6a6c5b77451a9043与配置补充1993dcc20a992d6c3d0e23e45daa180d733d94dd；最终完整树以1993dcc为本地验证基线。
+- [源码与证据映射](evidence/github-accounts-provenance-2026-11-04.json)：Git比对前后端/SQL/脚本/Compose/配置/CI退出0，并核对远端AuthService、AuthForm、004、两个浏览器脚本、最终账户JSON等blob。保留本地原始附件和完整历史，未发布原始附件目录、依赖、上传文件或临时凭据。
+- [本次run41782261196](https://github.com/MarcusDog/FrameForge/actions/runs/41782261196) 的三个任务都没有步骤，仍因GitHub账户计费锁定未启动。原始API返回见 [本次云端记录](evidence/github-accounts-run-2026-11-04.json)，不是代码测试失败，也不是云端已通过。
+- 本地81项、两套浏览器、三HTTP脚本、新空库四SQL均已验证；真实实体手机/iOS/生产回滚、人工贡献仍未验证。账户所有者解除锁定后重跑CI，未修改账单或规避检查。后续仅文档回执不改变上述验收业务源码。
+
 原始附件、缓存、个人上传文件继续留在本地；公开工程快照不携带本地原始附件历史。
