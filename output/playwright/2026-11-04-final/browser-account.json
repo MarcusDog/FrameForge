@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "time": "2026-11-04T05:47:45.342Z",
+  "browser": "156.0.8078.79",
+  "userId": "u_b852be2259934364",
+  "taskIds": [
+    "63b03597-6aac-4008-ad44-6c98a685e8ee",
+    "ed8d86c2-96fc-4dda-92da-ce0365b52436",
+    "5ee097c8-dc48-49f3-9eaa-635e36f8fca6"
+  ],
+  "checks": [
+    "375px keyboard registration, auto-login and persisted session/profile after reload",
+    "Real UI three-image batch: two running, one queued, reload restores three separate successful results",
+    "Demo endpoint cannot impersonate the registered account; Alice cannot read its task",
+    "Real logout returns 401; wrong password remains on login; correct login restores owned history"
+  ],
+  "pageErrors": []
+}

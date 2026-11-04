@@ -11,7 +11,7 @@ export function TaskPages({history=false}:{history?:boolean}){
   const [filter,setFilter]=useState(history?"ALL":"ACTIVE");
   const tasks=Object.values(state.items).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
   const visible=tasks.filter(task=>filter==="ALL"||(filter==="ACTIVE"?active(task):task.status===filter));
-  if(!user)return <div className="empty-state"><h2>{sessionLoading?"正在恢复工作空间…":"作品会保存在你的工作空间"}</h2><p>选择上方演示身份即可查看。</p></div>;
+  if(!user)return <div className="empty-state"><h2>{sessionLoading?"正在恢复工作空间…":"作品会保存在你的工作空间"}</h2><p>登录或选择演示账户即可查看。</p></div>;
   return <section>
     <div className="page-heading"><div><h1>{history?"历史记录":"我的任务"}</h1>{!history&&<p>{tasks.filter(task=>task.status==="RUNNING").length} 条处理中 · {tasks.filter(task=>task.status==="QUEUED").length} 条排队中</p>}</div><div className="button-row"><Link className="button secondary" href="/templates/pet-portrait?batch=1">批量制作</Link><Link className="button primary" href="/">选择模板 ＋</Link></div></div>
     <div className="toolbar"><div className="category-tabs">{[["ALL","全部"],["ACTIVE","进行中"],["SUCCEEDED","已完成"],["FAILED","失败"]].map(([key,label])=><button key={key} className={filter===key?"active":""} aria-pressed={filter===key} onClick={()=>setFilter(key)}>{label}{key==="ACTIVE"?" · "+tasks.filter(active).length:""}</button>)}</div><button className="button secondary small" disabled={state.loading} onClick={()=>void state.feed.start()}>↻ 刷新记录</button></div>
@@ -33,7 +33,7 @@ export function TaskDetail({id}:{id:string}){
       .catch(error=>{if(!controller.signal.aborted)setLoadError({userId:user.id,taskId:id,message:message(error)});});
     return()=>controller.abort();
   },[id,user,state.feed,state.loading,task,revision]);
-  if(!user)return <div className="empty-state">请选择演示身份查看任务。</div>;
+  if(!user)return <div className="empty-state">请登录或选择演示账户查看任务。</div>;
   if(!task)return <div className="empty-state" role={error?"alert":undefined}><h2>{error||"正在读取任务…"}</h2>{error&&<button className="button secondary" onClick={()=>setRevision(value=>value+1)}>重新查询</button>}</div>;
   return <section><Link className="back-link" href="/history">← 返回历史记录</Link>
     <div className="page-heading"><div><span className="eyebrow">THE STORY BEHIND YOUR CREATION</span><h1>{task.templateTitle}</h1><p>{dateTime(task.createdAt)} · <span className={"status "+task.status.toLowerCase()}>{statusName[task.status]}</span></p></div>{task.status==="SUCCEEDED"&&<ResultPreview task={task}/>}</div>

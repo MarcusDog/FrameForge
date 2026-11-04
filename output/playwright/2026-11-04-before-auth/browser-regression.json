@@ -1,0 +1,104 @@
+{
+  "result": "FAIL",
+  "time": "2026-11-04T05:32:58.408Z",
+  "browser": "156.0.8078.79",
+  "checks": [
+    {
+      "name": "realTaskIds",
+      "a": "35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "b": "0b8ab2f0-7d2a-4970-a31a-fa283a3d11c0",
+      "result": "INFO"
+    },
+    {
+      "name": "Real browser A HTTP500 / B success / independent recovery and terminal polling",
+      "result": "FAIL",
+      "error": "Dialog leaked focus\n\nfalse !== true\n"
+    },
+    {
+      "name": "Refresh restores a real RUNNING task; leaving page and switching user cancel tracking",
+      "result": "PASS"
+    },
+    {
+      "name": "Keyboard skip link, profile form focus ring and upload control",
+      "result": "FAIL",
+      "error": "Bio has no consistent visible focus ring\n\n'1px' !== '3px'\n"
+    },
+    {
+      "name": "Mobile 320/375/390px: gallery, studio, history, account without horizontal overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "studioGeometry",
+      "creation": 1214.796875,
+      "activity": 1753.1875,
+      "result": "INFO"
+    },
+    {
+      "name": "Desktop studio creation/activity heights",
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "network": [
+    {
+      "time": 1793770347988,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 500
+    },
+    {
+      "time": 1793770348004,
+      "path": "/api/tasks/0b8ab2f0-7d2a-4970-a31a-fa283a3d11c0",
+      "status": 200
+    },
+    {
+      "time": 1793770349525,
+      "path": "/api/tasks/0b8ab2f0-7d2a-4970-a31a-fa283a3d11c0",
+      "status": 200
+    },
+    {
+      "time": 1793770351045,
+      "path": "/api/tasks/0b8ab2f0-7d2a-4970-a31a-fa283a3d11c0",
+      "status": 200
+    },
+    {
+      "time": 1793770352564,
+      "path": "/api/tasks/0b8ab2f0-7d2a-4970-a31a-fa283a3d11c0",
+      "status": 200
+    },
+    {
+      "time": 1793770354695,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 200
+    },
+    {
+      "time": 1793770356210,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 200
+    },
+    {
+      "time": 1793770357727,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 200
+    },
+    {
+      "time": 1793770359242,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 200
+    },
+    {
+      "time": 1793770360757,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 200
+    },
+    {
+      "time": 1793770362272,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 200
+    },
+    {
+      "time": 1793770363790,
+      "path": "/api/tasks/35937b77-7f46-4ccb-aea8-f9faca123a59",
+      "status": 200
+    }
+  ]
+}

@@ -18,15 +18,16 @@ export function Shell({children}:{children:ReactNode}){
     <div className="main-shell">
       <header className="topbar"><div className="breadcrumb">工作空间 <span>/</span> {current}</div>
         <div className="user-switch"><Link href="/account" className="header-profile" aria-label="个人中心"><Avatar className="header-avatar" name={session.profile?.nickname||session.user?.name||"?"} url={session.profile?.avatarUrl} color={session.profile?.avatarColor}/><span>{session.profile?.nickname||session.user?.name}</span></Link>
-          <select aria-label="切换演示用户" disabled={session.switching||session.sessionLoading} value={session.user?.id||""} onChange={event=>void session.switchUser(event.target.value)}>
+          {session.user&&session.users.length>0?<select aria-label="切换演示用户" disabled={session.switching||session.sessionLoading} value={session.user.id} onChange={event=>void session.switchUser(event.target.value)}>
             <option value="" disabled>{session.sessionLoading?"恢复身份…":session.switching?"切换中…":"选择账户"}</option>
+            {!session.users.some(user=>user.id===session.user?.id)&&<option value={session.user.id} disabled>{session.user.name}</option>}
             {session.users.map(user=><option key={user.id} value={user.id}>{user.name}</option>)}
-          </select>
+          </select>:!session.user&&<><Link className="text-link" href="/login">登录</Link><Link className="button primary small" href="/register">注册</Link></>}
         </div>
       </header>
       <main id="main-content">
         {session.sessionError&&<div role="alert" className="notice error">{session.sessionError}<button className="text-button" onClick={session.reloadSession}>重新连接</button></div>}
-        {!session.user&&!session.sessionLoading&&!session.switching&&<IdentityPrompt/>}
+        {!session.user&&!session.sessionLoading&&!session.switching&&pathname!=="/login"&&pathname!=="/register"&&<IdentityPrompt/>}
         {children}
       </main>
       <footer className="site-footer"><span>FrameForge Studio</span></footer>

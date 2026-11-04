@@ -2,6 +2,10 @@
 
 记录日期按 Asia/Shanghai。只有执行过的命令才写入结果；CI 配置存在不代表远端已运行。
 
+## 最新注册登录、真实浏览器与布局 / 2026-11-04
+
+44前端+17Java单元+20真实MySQL共81项通过，lint/typecheck/build成功；新增账户MySQL测试第一次运行通过。前端首次类型检查因测试无效exact参数失败，修复保留断言后通过。真实Chromium首轮Tab弹窗/简介焦点两处失败，界面注册批量又暴露HTTP randomUUID不可用；均最小修复并保留失败输出。最终两脚本PASS、pageErrors为空：手机尺寸与键盘/网络500恢复/终态停询/切换旧响应、注册登录与界面三图2运行1排队及历史恢复。几何1215/1753→774/723px，图片与JSON分阶段保留，详见ACCOUNTS_QA及account-console。实体手机/Safari、人工贡献未验证。
+
 ## 最新个人中心资料增强 / 2026-11-04
 
 本轮命令明细、原始失败与复验见 [PROFILE_UPDATE.md](PROFILE_UPDATE.md) 和 [profile-console.txt](evidence/profile-console.txt)。39 前端 +17 Java 单元 +16 真实 MySQL 集成共 72 项通过；全部 lint/typecheck/build 通过。首次失败为 effect 内同步更新状态触发 lint，后续测试没有执行；最小修复后才通过，未关闭检查。新增行为测试第一次实际运行均通过。单元日志中的模拟 IOException/ERROR 属于主动失败注入，JUnit 失败/错误/跳过均为 0。

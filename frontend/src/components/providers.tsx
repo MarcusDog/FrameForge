@@ -3,6 +3,7 @@ import {createContext,useContext,useEffect,useMemo,useRef,useState,useSyncExtern
 import {api,ApiError,message,post} from "@/lib/api";
 import {TaskFeed} from "@/lib/task-feed";
 import {usePathname} from "next/navigation";
+import Link from "next/link";
 import type {User,UserProfile,ProfileInput} from "@/lib/types";
 
 type ContextValue={
@@ -10,6 +11,7 @@ type ContextValue={
   simulationEnabled:boolean;switchUser:(id:string)=>Promise<void>;reloadSession:()=>void;feed:TaskFeed;
   profile:UserProfile|null;profileLoading:boolean;profileError:string|null;reloadProfile:()=>void;
   saveProfile:(input:ProfileInput,signal:AbortSignal)=>Promise<UserProfile>;signOut:()=>Promise<void>;
+  authenticate:(mode:"login"|"register",input:{username:string;password:string;nickname?:string},signal:AbortSignal)=>Promise<void>;
 };
 const Context=createContext<ContextValue|null>(null);
 export function Providers({children}:{children:ReactNode}){
@@ -56,19 +58,22 @@ export function Providers({children}:{children:ReactNode}){
     });
     return()=>controller.abort();
   },[revision]);
-  async function changeSession(id:string|null){
+  async function changeSession(id:string|null,credentials?:{mode:"login"|"register";input:unknown;signal:AbortSignal}){
     if(switchLock.current||sessionLoading)return;
     switchLock.current=true;
     bootstrap.current?.abort();feed.stop();
     const generation=++epoch.current,controller=new AbortController();switchRequest.current=controller;
+    const cancel=()=>controller.abort();
+    if(credentials?.signal.aborted)cancel();else credentials?.signal.addEventListener("abort",cancel,{once:true});
     setUser(null);setProfile(null);setSwitching(true);setError(null);
     try{
-      const selected=await api<User>("/demo/session",{...(id?post({userId:id}):{method:"DELETE"}),signal:controller.signal});
-      if(!controller.signal.aborted&&generation===epoch.current)setUser(id?selected:null);
-    }catch(error){if(!controller.signal.aborted&&generation===epoch.current)setError(message(error));}
+      const selected=await api<User>(credentials?"/auth/"+credentials.mode:"/demo/session",{...(credentials?post(credentials.input):id?post({userId:id}):{method:"DELETE"}),signal:controller.signal});
+      if(!controller.signal.aborted&&generation===epoch.current)setUser(id||credentials?selected:null);
+    }catch(error){if(credentials)throw error;if(!controller.signal.aborted&&generation===epoch.current)setError(message(error));}
     finally{
+      credentials?.signal.removeEventListener("abort",cancel);
       switchLock.current=false;
-      if(!controller.signal.aborted&&generation===epoch.current)setSwitching(false);
+      if(generation===epoch.current)setSwitching(false);
     }
   }
   async function saveProfile(input:ProfileInput,signal:AbortSignal){
@@ -81,6 +86,7 @@ export function Providers({children}:{children:ReactNode}){
   }
   const profile=profileState?.owner===user?.id?profileState:null;
   return <Context.Provider value={{user,users,switching,sessionLoading,sessionError,simulationEnabled,switchUser:id=>changeSession(id),signOut:()=>changeSession(null),
+    authenticate:(mode,input,signal)=>changeSession(null,{mode,input,signal}),
     profile:profile?.value??null,profileError:profile?.error??null,profileLoading:!!user&&(!profile||profile.loading),reloadProfile:()=>{setProfile(previous=>previous?{...previous,loading:true,error:null}:null);setProfileRevision(value=>value+1);},saveProfile,
     reloadSession:()=>{if(!switchLock.current){setLoading(true);setError(null);setRevision(value=>value+1);}},feed}}>{children}</Context.Provider>;
 }
@@ -90,10 +96,10 @@ export function useFeed(){
   const snapshot=useSyncExternalStore(feed.subscribe,feed.getSnapshot,feed.getSnapshot);
   return {...snapshot,feed};
 }
-export function IdentityPrompt(){
+export function IdentityPrompt({showAuthLinks=true}:{showAuthLinks?:boolean}){
   const session=useSession();
   return <section className="identity-panel">
-    <div><h2>选择账户</h2></div>
-    <div className="button-row">{session.users.map(user=><button key={user.id} className="button secondary" disabled={session.switching||session.sessionLoading} onClick={()=>void session.switchUser(user.id)}>以 {user.name} 体验 <span aria-hidden>↗</span></button>)}</div>
+    <div><h2>{showAuthLinks?"开启你的创作空间":"演示账户"}</h2></div>
+    <div className="button-row">{showAuthLinks&&<><Link className="button primary" href="/register">创建账户</Link><Link className="button secondary" href="/login">登录</Link></>}{session.users.map(user=><button key={user.id} className="button secondary" disabled={session.switching||session.sessionLoading} onClick={()=>void session.switchUser(user.id)}>以 {user.name} 体验 <span aria-hidden>↗</span></button>)}</div>
   </section>;
 }

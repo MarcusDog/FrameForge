@@ -1,6 +1,6 @@
 # GitHub 工程交付与 AI 工作流核对
 
-更新：2026-11-04（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。当前版本包含头像/昵称/简介个人中心、批量制作、两 worker 和 12 种版式；最近本地验证 **72 项通过**，见 PROFILE_UPDATE.md。下方旧 SHA/测试数量为历史证据；最新公开验收 SHA 与实际云端状态以最后的发布记录为准。本文件是 R-12～R-14 的交付入口，逐条业务审查见 REQUIREMENTS.md，历史独立审查见 REVIEW.md。
+更新：2026-11-04（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。当前版本有注册/登录/独立会话、完整个人资料、批量任务与12版式；**81项本地测试与两套真实浏览器检查通过**，见ACCOUNTS_QA.md。下方旧SHA/72等测试数量是历史证据；最新公开验收与云端状态以文末为准。矩阵见REQUIREMENTS，历史审查见REVIEW。
 
 ## 审核结论与仍存在的不足
 
@@ -8,7 +8,7 @@
 
 仍需如实说明：
 
-- 真实浏览器小屏、刷新、键盘焦点与真实网络 500 注入本轮未复测；已有组件/状态测试及历史浏览器产物，不能混称本轮端到端验收。
+- 当前Chromium手机尺寸/键盘/刷新/网络500/多任务与注册登录已实测通过；实体手机/iOS/屏幕阅读器仍未验收，不能把视口模拟称为实体设备验收。截图/JSON分阶段保留于output/playwright。
 - 上传替换和移除不会删除服务端旧文件；未做孤立文件回收和存储配额。
 - 演示身份可主动切换，属于 Demo；单实例内存队列不提供崩溃级可靠调度，服务重启会清算遗留任务为失败，不自动续跑。以上边界在 README 已说明，不把题外能力写成已实现。
 - 历史列表存在有界 N+1 查询，暂未测得实际性能问题；不为此引入通用缓存或额外框架。
@@ -33,7 +33,7 @@
 | 提交要求 | 材料 |
 |---|---|
 | 前后端完整源码、版本/锁文件 | frontend、backend、frontend/package-lock.json、backend/pom.xml、Maven Wrapper |
-| 数据库结构与模拟数据 | database/001-schema.sql、002-seed.sql、003-user-profiles.sql；两 Demo 用户、十二模板、七表 |
+| 数据库结构与模拟数据 | database/001～004；两Demo用户、十二模板、九表；新空库自动初始化已验收 |
 | 构建/测试/启动与连接 | README 的快速启动、技术版本、连接初始化、测试与 CI |
 | 无真实凭据的配置示例 | .env.example、application.yml、Compose 中仅本地演示密码 |
 | API 字段、状态、阶段、后台执行 | README 的 API 与字段、异步正确性与边界 |
@@ -94,5 +94,11 @@
 - [源码一致性原始记录](evidence/github-profile-provenance-2026-11-04.json) 同时核对远端 README、AI_WORKFLOW、新增SQL、ProfileService、ProfileEditor 和 CI 的 Git blob；原始题目/设计目录未进入公开树。
 - 本次 [Actions run 41778534619](https://github.com/MarcusDog/FrameForge/actions/runs/41778534619) 状态 failure，三个任务 steps 都为空。annotations 原因仍为 GitHub 账户计费锁定，未执行任何构建/测试，见 [完整API记录](evidence/github-profile-run-2026-11-04.json)。另有 runner 镜像迁移提示，不是本次业务测试失败。
 - 本地72项通过与远端未启动明确分开。账户所有者需处理锁定后重跑；没有改账单、删除断言、关闭CI或替换runner规避检查。后续文档回执提交不改变业务源码，验收仍指向上述01e5347。
+
+## 注册登录与真实浏览器：当前本地验收
+
+当前81项=44前端+17单元+20真实MySQL；lint/typecheck/build通过。两套真实Chromium脚本PASS：手机尺寸、键盘焦点、网络500恢复/终态停询/切换旧响应、375px注册/实际三图2运行1排队/刷新/退出/错误与正确登录历史恢复。首轮焦点失败、类型错误、HTTP randomUUID失败及修复保留，详见ACCOUNTS_QA与account-console。创作面板/动态774/723px，解决截图指出的大片留白。三HTTP脚本与空tmpfs库四SQL初始化9表/2用户/12模板亦通过。
+
+最新公开代码SHA与对应云端run在本次发布后补录；01e5347只指代前一版，不是当前账户与焦点修复代码。CI已加入相同浏览器脚本与截图artifact，但配置存在不等于云端已执行。
 
 原始附件、缓存、个人上传文件继续留在本地；公开工程快照不携带本地原始附件历史。

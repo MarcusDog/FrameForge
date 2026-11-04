@@ -1,0 +1,155 @@
+{
+  "result": "PASS",
+  "time": "2026-11-04T05:47:26.609Z",
+  "browser": "156.0.8078.79",
+  "checks": [
+    {
+      "name": "realTaskIds",
+      "a": "3f76c089-85c6-4df7-b4cb-894246056748",
+      "b": "a4fd29d2-ed16-4dc4-a74e-88263f0102be",
+      "result": "INFO"
+    },
+    {
+      "name": "A/B real network behavior",
+      "result": "PASS",
+      "aInitial": "RUNNING with HTTP500",
+      "bFinal": "SUCCEEDED",
+      "aRecovered": "SUCCEEDED",
+      "terminalPollingStopped": true
+    },
+    {
+      "name": "Real browser A HTTP500 / B success / independent recovery and terminal polling",
+      "result": "PASS"
+    },
+    {
+      "name": "Refresh restores a real RUNNING task; leaving page and switching user cancel tracking",
+      "result": "PASS"
+    },
+    {
+      "name": "Keyboard skip link, profile form focus ring and upload control",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile 320/375/390px: gallery, studio, history, account without horizontal overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "studioGeometry",
+      "creation": 774,
+      "activity": 723,
+      "result": "INFO"
+    },
+    {
+      "name": "Desktop studio creation/activity heights",
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "network": [
+    {
+      "time": 1793771200039,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 500
+    },
+    {
+      "time": 1793771200057,
+      "path": "/api/tasks/a4fd29d2-ed16-4dc4-a74e-88263f0102be",
+      "status": 200
+    },
+    {
+      "time": 1793771201588,
+      "path": "/api/tasks/a4fd29d2-ed16-4dc4-a74e-88263f0102be",
+      "status": 200
+    },
+    {
+      "time": 1793771203112,
+      "path": "/api/tasks/a4fd29d2-ed16-4dc4-a74e-88263f0102be",
+      "status": 200
+    },
+    {
+      "time": 1793771204635,
+      "path": "/api/tasks/a4fd29d2-ed16-4dc4-a74e-88263f0102be",
+      "status": 200
+    },
+    {
+      "time": 1793771206788,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 200
+    },
+    {
+      "time": 1793771208313,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 200
+    },
+    {
+      "time": 1793771209832,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 200
+    },
+    {
+      "time": 1793771211353,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 200
+    },
+    {
+      "time": 1793771212874,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 200
+    },
+    {
+      "time": 1793771214396,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 200
+    },
+    {
+      "time": 1793771215917,
+      "path": "/api/tasks/3f76c089-85c6-4df7-b4cb-894246056748",
+      "status": 200
+    },
+    {
+      "time": 1793771226102,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771227619,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771229136,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771230655,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771232173,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771233692,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771235207,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771236724,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    },
+    {
+      "time": 1793771238239,
+      "path": "/api/tasks/c9fbd884-09de-486a-ac3c-4cf596647c78",
+      "status": 200
+    }
+  ]
+}

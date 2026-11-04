@@ -20,36 +20,35 @@ public class ApiController {
     private final TaskService tasks;
     private final FileStore files;
     private final ProfileService profiles;
+    private final AuthService auth;
     private final boolean simulationEnabled;
-    public ApiController(StoreMapper store,AssetService assets,TaskService tasks,FileStore files,ProfileService profiles,
+    public ApiController(StoreMapper store,AssetService assets,TaskService tasks,FileStore files,ProfileService profiles,AuthService auth,
                          @Value("${frameforge.simulation-enabled}") boolean enabled) {
-        this.store=store;this.assets=assets;this.tasks=tasks;this.files=files;this.profiles=profiles;this.simulationEnabled=enabled;
+        this.store=store;this.assets=assets;this.tasks=tasks;this.files=files;this.profiles=profiles;this.auth=auth;this.simulationEnabled=enabled;
     }
     private String user(HttpServletRequest request) {
-        if(request.getCookies()!=null) for(var cookie:request.getCookies()) {
-            if(cookie.getName().equals("ff_demo_user") && store.user(cookie.getValue())!=null) return cookie.getValue();
-        }
-        throw new ApiException(401,"IDENTITY_REQUIRED","请先选择 Alice 或 Bob 演示身份");
+        return auth.current(request).id();
     }
-    @GetMapping("/demo/users") public List<DemoUser> users() { return store.users(); }
-    @GetMapping("/demo/session") public DemoUser session(HttpServletRequest request) { return store.user(user(request)); }
+    @GetMapping("/demo/users") public List<DemoUser> users() { return auth.demoEnabled()?store.users():List.of(); }
+    @GetMapping({"/demo/session","/auth/session"}) public DemoUser session(HttpServletRequest request) { return auth.current(request); }
     @GetMapping("/me/summary") public UserSummary summary(HttpServletRequest request) { return store.summary(user(request)); }
     @GetMapping("/me/profile") public UserProfile profile(HttpServletRequest request) { return profiles.get(user(request)); }
     @PutMapping("/me/profile") public UserProfile profile(@Valid @RequestBody ProfileRequest body,HttpServletRequest request) throws IOException {
         return profiles.update(user(request),body);
     }
-    @DeleteMapping("/demo/session") public Map<String,Boolean> logout(HttpServletResponse response) {
-        response.addHeader(HttpHeaders.SET_COOKIE,ResponseCookie.from("ff_demo_user","").httpOnly(true).sameSite("Lax").path("/").maxAge(0).build().toString());
+    @DeleteMapping({"/demo/session","/auth/session"}) public Map<String,Boolean> logout(HttpServletRequest request,HttpServletResponse response) {
+        auth.logout(request,response);
         return Map.of("signedOut",true);
     }
     @PostMapping("/demo/session")
-    public DemoUser session(@Valid @RequestBody SessionRequest body,HttpServletResponse response) {
-        DemoUser user=store.user(body.userId());
-        if(user==null) throw ApiException.invalid("请选择有效演示用户");
-        response.addHeader(HttpHeaders.SET_COOKIE,ResponseCookie.from("ff_demo_user",user.id()).httpOnly(true).sameSite("Lax").path("/").maxAge(604800).build().toString());
-        return user;
+    public DemoUser session(@Valid @RequestBody SessionRequest body,HttpServletRequest request,HttpServletResponse response) {
+        return auth.demo(body.userId(),request,response);
     }
-    @GetMapping("/config") public Map<String,Boolean> config() { return Map.of("simulationEnabled",simulationEnabled); }
+    @PostMapping("/auth/register") @ResponseStatus(HttpStatus.CREATED)
+    public DemoUser register(@Valid @RequestBody RegisterRequest body,HttpServletRequest request,HttpServletResponse response) { return auth.register(body,request,response); }
+    @PostMapping("/auth/login")
+    public DemoUser login(@Valid @RequestBody LoginRequest body,HttpServletRequest request,HttpServletResponse response) { return auth.login(body,request,response); }
+    @GetMapping("/config") public Map<String,Boolean> config() { return Map.of("simulationEnabled",simulationEnabled,"demoEnabled",auth.demoEnabled()); }
     @GetMapping("/templates") public List<Template> templates() { return store.templates(); }
     @GetMapping("/templates/{id}") public Template template(@PathVariable String id) { return tasks.template(id); }
     @PostMapping("/assets")

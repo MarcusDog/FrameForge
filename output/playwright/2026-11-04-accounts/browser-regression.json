@@ -1,0 +1,155 @@
+{
+  "result": "PASS",
+  "time": "2026-11-04T05:42:16.668Z",
+  "browser": "156.0.8078.79",
+  "checks": [
+    {
+      "name": "realTaskIds",
+      "a": "08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "b": "14af821f-840c-484e-a982-e56ed3d7ae98",
+      "result": "INFO"
+    },
+    {
+      "name": "A/B real network behavior",
+      "result": "PASS",
+      "aInitial": "RUNNING with HTTP500",
+      "bFinal": "SUCCEEDED",
+      "aRecovered": "SUCCEEDED",
+      "terminalPollingStopped": true
+    },
+    {
+      "name": "Real browser A HTTP500 / B success / independent recovery and terminal polling",
+      "result": "PASS"
+    },
+    {
+      "name": "Refresh restores a real RUNNING task; leaving page and switching user cancel tracking",
+      "result": "PASS"
+    },
+    {
+      "name": "Keyboard skip link, profile form focus ring and upload control",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile 320/375/390px: gallery, studio, history, account without horizontal overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "studioGeometry",
+      "creation": 1214.796875,
+      "activity": 723,
+      "result": "INFO"
+    },
+    {
+      "name": "Desktop studio creation/activity heights",
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "network": [
+    {
+      "time": 1793770890174,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 500
+    },
+    {
+      "time": 1793770890193,
+      "path": "/api/tasks/14af821f-840c-484e-a982-e56ed3d7ae98",
+      "status": 200
+    },
+    {
+      "time": 1793770891721,
+      "path": "/api/tasks/14af821f-840c-484e-a982-e56ed3d7ae98",
+      "status": 200
+    },
+    {
+      "time": 1793770893244,
+      "path": "/api/tasks/14af821f-840c-484e-a982-e56ed3d7ae98",
+      "status": 200
+    },
+    {
+      "time": 1793770894767,
+      "path": "/api/tasks/14af821f-840c-484e-a982-e56ed3d7ae98",
+      "status": 200
+    },
+    {
+      "time": 1793770896895,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 200
+    },
+    {
+      "time": 1793770898415,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 200
+    },
+    {
+      "time": 1793770899936,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 200
+    },
+    {
+      "time": 1793770901457,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 200
+    },
+    {
+      "time": 1793770902978,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 200
+    },
+    {
+      "time": 1793770904500,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 200
+    },
+    {
+      "time": 1793770906021,
+      "path": "/api/tasks/08b7d290-25e8-46f0-ab9f-438f5f44b37c",
+      "status": 200
+    },
+    {
+      "time": 1793770916129,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770917649,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770919165,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770920684,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770922203,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770923722,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770925239,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770926755,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    },
+    {
+      "time": 1793770928271,
+      "path": "/api/tasks/0099b2c1-1e4f-41de-a00d-38dbfd8ed6ff",
+      "status": 200
+    }
+  ]
+}

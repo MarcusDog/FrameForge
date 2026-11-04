@@ -13,6 +13,11 @@ public final class Models {
         public boolean terminal() { return this == SUCCEEDED || this == FAILED; }
     }
     public record DemoUser(String id, String name) {}
+    public record RegisterRequest(@NotBlank @Pattern(regexp="[a-zA-Z0-9_]{4,32}") String username,
+                                  @NotBlank @Size(min=8,max=128) String password,@NotBlank @Size(max=24) String nickname) {}
+    public record LoginRequest(@NotBlank @Pattern(regexp="[a-zA-Z0-9_]{4,32}") String username,
+                               @NotBlank @Size(min=8,max=128) String password) {}
+    public record Credential(String username,String userId,String salt,String passwordHash,int iterations,int failedAttempts,Instant lockedUntil) {}
     public record UserProfile(String userId,String nickname,String bio,String avatarColor,String avatarAssetId,
                               String avatarUrl,long version,Instant createdAt,Instant updatedAt) {}
     public record ProfileRequest(@NotBlank @Size(max=24) String nickname,

@@ -6,18 +6,18 @@
 |---|---|---|---|
 | R-01 | Next App Router / React / TS；Java 21 / Boot / MyBatis / MySQL 业务持久化 | 两端容器构建；真实 MySQL 集成 | 已实现并验证 |
 | R-02 | Java 十二模板、三分类、1/2/3 张素材要求、卡片与详情、本地图片 | 本轮 HTTP 数量/分类/中文/封面断言；浏览器分类为上轮证据 | 数据已验证；本轮浏览器分类交互未复测 |
-| R-03 | 动态上传位、预览/替换/移除、上传状态、双端 MIME/大小/数量/归属校验、禁用提交 | 本轮 Studio 行为测试、FileStoreTest、TaskServiceTest、TaskFlowIT、HTTP 上传；浏览器为上轮 | 组件与双端上传已验证；完整浏览器交互未复测 |
+| R-03 | 上传位、预览/替换/移除、状态、双端限制、禁用提交与批量 | Studio/FileStore/TaskService/TaskFlowIT；本轮真实界面三图上传/3独立任务 | 组件/服务端/界面批量通过；单图替换/移除浏览器交互沿用历史，组件重新通过 |
 | R-04 | MySQL 创建任务后受理；事务提交后 Java 独立执行 | latch 集成测试证明响应先返回；回滚不调度；容量拒绝落库 | 已实现并验证 |
 | R-05 | 三阶段顺序与边界、开始/结束/耗时、查询只读、终态保护、PNG 结果 | Worker 顺序测试、真实阶段时间线、终态与最终阶段发布保护、PNG 解码 | 已实现并验证 |
 | R-06 | 三个阶段确定性失败，耗时持久化与校验 | 三阶段参数化单元/集成测试；演示面板；smoke 失败中断 | 已实现并验证 |
-| R-07 | 上传/提交/排队/处理/终态分开，查询错误保留快照并可恢复 | 本轮真实 api 封装+fetch HTTP 500 桩、TaskFeed 与 Provider/组件联动测试 | 自动化已验证；真实链路故障注入未验证 |
-| R-08 | 多任务隔离、错误隔离、终态停轮询、请求清理、旧响应保护 | 11 项 TaskFeed、5 项 Provider、5 项组件联动、8 项个人中心及 4 项 API 测试；资料保存不重启任务追踪 | 自动化已验证；浏览器网络断言为上轮证据 |
-| R-09 | 个人历史/时间/状态/失败原因/结果预览，刷新恢复，游标分页 | 本轮 MySQL 分页、feed 恢复与 HTTP PNG；浏览器为上轮证据 | 后端/恢复逻辑已验证；当前浏览器刷新与预览未复测 |
-| R-10 | Alice/Bob Demo 身份及归属、真实资料/头像、个人统计历史、退出保留记录、版本冲突 | ProfileService/StoreMapper、003 SQL、profile-editor/Providers、TaskFlowIT、account.test、profile-smoke；PROFILE_UPDATE | 组件/真实 MySQL/HTTP 已验证；当前浏览器资料外观未验证 |
-| R-11 | 浅色工作台、参考信息布局、语义上传/按钮/对话框、焦点、小屏操作 | 本轮组件标签/禁用/错误反馈；桌面/390px/320px 图与断言为上轮产物 | 组件行为已验证；当前视觉/焦点/小屏源码支持但未复测 |
-| R-12 | push/PR 三任务 CI，前端四项检查、Java 测试构建、MySQL 集成、Compose 三脚本 | 2026-11-04 最新本地 39 前端 + 17 单元 + 16 MySQL；GitHub 结果见 SUBMISSION | 本地通过；远端实际结论独立记录，见 SUBMISSION |
+| R-07 | 各状态分开，查询错误保留快照并可恢复 | 原状态测试及真实Chromium：A GET500/RUNNING，B成功，A恢复 | 组件与真实浏览器网络层故障注入通过；非服务器宕机测试 |
+| R-08 | 多任务/错误隔离、终态停请求、请求清理、旧响应保护 | TaskFeed/Provider/组件；browser-regression与browser-account实际多任务/迟到响应/界面批量 | 本轮真实浏览器通过，见ACCOUNTS_QA及final JSON |
+| R-09 | 个人历史、时间/状态/结果/失败、刷新恢复、分页 | MySQL/feed；真实浏览器刷新RUNNING、预览焦点、退出登录恢复3条本人历史 | 本轮后端、组件及浏览器通过 |
+| R-10 | Demo隔离；资料/头像/统计/版本冲突；增强注册、登录、独立MySQL会话/退出 | AuthService/AuthMapper、003/004、TaskFlowIT、auth/account测试、profile-smoke、browser-account | 组件/真实MySQL/HTTP/浏览器通过；完整生产认证不在本轮范围 |
+| R-11 | 浅色工作台、语义/焦点/手机尺寸、紧凑动态与独立滚动 | 真Chromium320/375/390px；Tab/Shift+Tab/Escape；制作/动态774/723px；本轮截图 | 实际通过；非实体手机/iOS/屏幕阅读器验收 |
+| R-12 | push/PR前端四项、Java/MySQL、Compose HTTP与真实浏览器 | 最新44前端+17单元+20MySQL共81项，两套浏览器脚本；CI新增相同执行与artifact | 本地通过；云端实际结论独立记录，见SUBMISSION |
 | R-13 | 源码、锁文件、SQL、完整 README、真实 AI 工作流/决策/修复/限制/工作量 | README、AI_WORKFLOW、DECISIONS、VERIFICATION、DELIVERY、REVIEW 与原始输出 | 材料已核对；个人投入/贡献/人工审查待本人确认 |
-| R-14 | 前后端 Dockerfile、三服务 Compose、卷、healthcheck、示例配置 | 本轮 config/up/三服务 healthy/HTTP smoke/全新 tmpfs MySQL 初始化 | 已实现并验证；全无缓存安装未验证 |
+| R-14 | 前后端Dockerfile、三服务Compose、卷/healthcheck/配置；可选浏览器QA镜像 | 本轮config/up健康、三HTTP脚本、新tmpfs MySQL四SQL自动初始化9表/2用户/12模板 | 已实现并验证；全无缓存安装未验证 |
 
 ## 增强项与限制
 
@@ -26,7 +26,7 @@
 - 自动恢复的是浏览器中的任务追踪；服务重启采用明确失败清算，不声称自动续跑。
 - 不声称已经公网部署、远端 CI 通过、人工手写代码或人工审查通过。
 
-以上是开发阶段实现索引，不替代独立验收。以 REVIEW.md 的 R-01～R-14 表为最新证据分级：本轮未复测真实浏览器分类/刷新/小屏/焦点、未运行远端 CI；个人投入/人工审查待本人确认。已修复五项先前未被测试覆盖的前端竞态/重复查询问题。
+本表为当前实现索引；REVIEW.md是历史独立审查，最新补验以ACCOUNTS_QA为准。当前浏览器异步/刷新/焦点/宽度及注册批量已运行，分类和单图替换交互未在本轮重做；实体手机/人工审查/个人投入待确认。GitHub云端与本地检查仍分开记录。
 
 2026-11-03 GitHub 发布与新增材料入口见 SUBMISSION.md；它补充 REVIEW 的历史结论：远端工作流已触发，但账户计费锁定导致任务未启动，仍没有远端测试通过记录。
 

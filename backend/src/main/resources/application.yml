@@ -21,6 +21,8 @@ management:
   endpoints.web.exposure.include: health
   endpoint.health.show-details: never
 frameforge:
+  demo-enabled: ${DEMO_ENABLED:true}
+  secure-cookie: ${SECURE_COOKIE:false}
   storage: ${STORAGE_PATH:./.runtime/storage}
   simulation-enabled: ${SIMULATION_ENABLED:true}
   queue-capacity: ${TASK_QUEUE_CAPACITY:20}

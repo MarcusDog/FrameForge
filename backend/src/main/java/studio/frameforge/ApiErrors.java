@@ -27,7 +27,7 @@ public class ApiErrors {
     ResponseEntity<?> size(Exception e) { return ResponseEntity.status(413).body(Map.of("code","FILE_TOO_LARGE","message","单张图片不能超过 5 MiB")); }
     @ExceptionHandler({MethodArgumentNotValidException.class,HttpMessageNotReadableException.class,
         MethodArgumentTypeMismatchException.class,MissingServletRequestParameterException.class,MissingServletRequestPartException.class})
-    ResponseEntity<?> invalid(Exception e) { return ResponseEntity.badRequest().body(Map.of("code","INVALID_INPUT","message","请求参数不正确，请检查素材数量、格式和演示耗时")); }
+    ResponseEntity<?> invalid(Exception e,HttpServletRequest request) { return ResponseEntity.badRequest().body(Map.of("code","INVALID_INPUT","message",request.getRequestURI().startsWith("/api/auth/")?"请检查用户名格式、密码长度和昵称":"请求参数不正确，请检查素材数量、格式和演示耗时")); }
     @ExceptionHandler(Exception.class)
     ResponseEntity<?> unexpected(Exception e) {
         if(e instanceof ErrorResponse response && response.getStatusCode().is4xxClientError()) {

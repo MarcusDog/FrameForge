@@ -29,7 +29,7 @@ import static studio.frameforge.Models.*;
 
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,properties={
     "spring.sql.init.mode=always","spring.sql.init.schema-locations=file:../database/001-schema.sql",
-    "spring.sql.init.data-locations=file:../database/002-seed.sql,file:../database/003-user-profiles.sql","frameforge.queue-capacity=1",
+    "spring.sql.init.data-locations=file:../database/002-seed.sql,file:../database/003-user-profiles.sql,file:../database/004-accounts.sql","frameforge.queue-capacity=1",
     "frameforge.storage=./target/it-storage","frameforge.workers=1"
 })
 class TaskFlowIT {
@@ -272,5 +272,62 @@ class TaskFlowIT {
             assertEquals(summary.totalTasks(),summary.activeTasks()+summary.succeededTasks()+summary.failedTasks());
         }
         assertEquals(HttpStatus.UNAUTHORIZED,http.getForEntity("/api/me/summary",String.class).getStatusCode());
+    }
+    RegisterRequest account(String suffix) {return new RegisterRequest("qa_"+suffix+key().substring(0,8),"Test-only password 2026!","新创作者");}
+    String sessionCookie(ResponseEntity<?> response) {
+        return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream().filter(value->value.startsWith("ff_session=")&&!value.startsWith("ff_session=;")).findFirst().orElseThrow().split(";")[0];
+    }
+    HttpHeaders sessionHeaders(String cookie) {var headers=new HttpHeaders();headers.add(HttpHeaders.COOKIE,cookie);return headers;}
+    @Test void registerLoginPersistedProfileAndRevokedOpaqueSession() {
+        var input=account("user");
+        var registered=http.postForEntity("/api/auth/register",input,DemoUser.class);
+        assertEquals(HttpStatus.CREATED,registered.getStatusCode());var user=registered.getBody();String cookie=sessionCookie(registered);
+        assertNotEquals("alice",user.id());assertTrue(cookie.length()>40);
+        var profile=http.exchange("/api/me/profile",HttpMethod.GET,new HttpEntity<>(sessionHeaders(cookie)),UserProfile.class);
+        assertEquals("新创作者",profile.getBody().nickname());assertEquals(user.id(),profile.getBody().userId());
+        String hash=jdbc.queryForObject("SELECT password_hash FROM account_credential WHERE user_id=?",String.class,user.id());
+        assertNotEquals(input.password(),hash);assertEquals(44,hash.length());
+        assertEquals(600000,jdbc.queryForObject("SELECT iterations FROM account_credential WHERE user_id=?",Integer.class,user.id()));
+        assertEquals(0,jdbc.queryForObject("SELECT COUNT(*) FROM auth_session WHERE token_hash=?",Integer.class,cookie.substring("ff_session=".length())));
+        assertEquals(HttpStatus.OK,http.exchange("/api/auth/session",HttpMethod.GET,new HttpEntity<>(sessionHeaders(cookie)),DemoUser.class).getStatusCode());
+        assertEquals(HttpStatus.OK,http.exchange("/api/auth/session",HttpMethod.DELETE,new HttpEntity<>(sessionHeaders(cookie)),String.class).getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED,http.exchange("/api/auth/session",HttpMethod.GET,new HttpEntity<>(sessionHeaders(cookie)),String.class).getStatusCode());
+        var logged=http.postForEntity("/api/auth/login",new LoginRequest(input.username().toUpperCase(Locale.ROOT),input.password()),DemoUser.class);
+        assertEquals(HttpStatus.OK,logged.getStatusCode());assertEquals(user,logged.getBody());assertNotEquals(cookie,sessionCookie(logged));
+        assertEquals(HttpStatus.BAD_REQUEST,http.postForEntity("/api/demo/session",new SessionRequest(user.id()),String.class).getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED,http.exchange("/api/me/profile",HttpMethod.GET,new HttpEntity<>(headers(user.id())),String.class).getStatusCode());
+        assertEquals(2,http.getForObject("/api/demo/users",DemoUser[].class).length);
+    }
+    @Test void duplicateAccountRollsBackUserAndProfileAndInvalidFieldsAreRejected() {
+        var input=account("dup");assertEquals(HttpStatus.CREATED,http.postForEntity("/api/auth/register",input,String.class).getStatusCode());
+        Long before=jdbc.queryForObject("SELECT COUNT(*) FROM demo_user",Long.class);
+        assertEquals(HttpStatus.CONFLICT,http.postForEntity("/api/auth/register",new RegisterRequest(input.username().toUpperCase(Locale.ROOT),input.password(),"其他昵称"),String.class).getStatusCode());
+        assertEquals(before,jdbc.queryForObject("SELECT COUNT(*) FROM demo_user",Long.class));
+        assertEquals(0,jdbc.queryForObject("SELECT COUNT(*) FROM user_profile p LEFT JOIN demo_user u ON u.id=p.user_id WHERE u.id IS NULL",Integer.class));
+        for(var invalid:List.of(new RegisterRequest("bad!","long password","正常"),new RegisterRequest("valid_user","short","正常"),new RegisterRequest("valid_user","long password"," ")))
+            assertEquals(HttpStatus.BAD_REQUEST,http.postForEntity("/api/auth/register",invalid,String.class).getStatusCode());
+    }
+    @Test void loginFailuresPersistAndLockExpiresWithoutLeakingPasswordOrCreatingSessions() {
+        var input=account("lock");var registered=http.postForEntity("/api/auth/register",input,DemoUser.class);String id=registered.getBody().id();
+        for(int i=0;i<5;i++){
+            var failed=http.postForEntity("/api/auth/login",new LoginRequest(input.username(),"wrong password"),String.class);
+            assertEquals(HttpStatus.UNAUTHORIZED,failed.getStatusCode());assertFalse(failed.getBody().contains(input.password()));
+        }
+        assertEquals(5,jdbc.queryForObject("SELECT failed_attempts FROM account_credential WHERE user_id=?",Integer.class,id));
+        assertEquals(HttpStatus.TOO_MANY_REQUESTS,http.postForEntity("/api/auth/login",new LoginRequest(input.username(),input.password()),String.class).getStatusCode());
+        assertEquals(1,jdbc.queryForObject("SELECT COUNT(*) FROM auth_session WHERE user_id=?",Integer.class,id));
+        jdbc.update("UPDATE account_credential SET locked_until=DATE_SUB(CURRENT_TIMESTAMP(3),INTERVAL 1 SECOND) WHERE user_id=?",id);
+        assertEquals(HttpStatus.OK,http.postForEntity("/api/auth/login",new LoginRequest(input.username(),input.password()),String.class).getStatusCode());
+        assertEquals(0,jdbc.queryForObject("SELECT failed_attempts FROM account_credential WHERE user_id=?",Integer.class,id));
+    }
+    @Test void expiredOrForgedSessionCannotReadPrivateDataAndDemoCannotSelectRegisteredAccount() {
+        var registered=http.postForEntity("/api/auth/register",account("expire"),DemoUser.class);String cookie=sessionCookie(registered);
+        jdbc.update("UPDATE auth_session SET expires_at=DATE_SUB(CURRENT_TIMESTAMP(3),INTERVAL 1 SECOND) WHERE user_id=?",registered.getBody().id());
+        for(String value:List.of(cookie,"ff_session="+"a".repeat(43)))
+            assertEquals(HttpStatus.UNAUTHORIZED,http.exchange("/api/tasks",HttpMethod.GET,new HttpEntity<>(sessionHeaders(value)),String.class).getStatusCode());
+        var disabled=new AuthService(null,null,false,false);
+        var request=new org.springframework.mock.web.MockHttpServletRequest();request.setCookies(new jakarta.servlet.http.Cookie("ff_demo_user","alice"));
+        assertThrows(ApiException.class,()->disabled.current(request));
+        assertThrows(ApiException.class,()->disabled.demo("alice",request,new org.springframework.mock.web.MockHttpServletResponse()));
     }
 }

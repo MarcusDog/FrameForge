@@ -5,7 +5,7 @@ import static studio.frameforge.Models.*;
 
 @Mapper
 public interface StoreMapper {
-    @Select("SELECT * FROM demo_user ORDER BY id") List<DemoUser> users();
+    @Select("SELECT * FROM demo_user WHERE id IN ('alice','bob') ORDER BY id") List<DemoUser> users();
     @Select("SELECT * FROM demo_user WHERE id=#{id}") DemoUser user(String id);
     @Select("""
         SELECT p.user_id,p.nickname,p.bio,p.avatar_color,p.avatar_asset_id,

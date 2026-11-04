@@ -4,6 +4,9 @@ coverage/
 reports/
 smoke-result.json
 batch-smoke-result.json
+profile-smoke-result.json
+browser-regression-result.json
+browser-account-result.json
 target/
 .env
 .env.*.local

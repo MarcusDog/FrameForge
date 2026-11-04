@@ -6,10 +6,12 @@ import {api,message,post} from "@/lib/api";
 import {active,STAGES,stageName,type Asset,type Simulation,type Task,type Template} from "@/lib/types";
 import {useFeed,useSession} from "./providers";
 import {TaskCard} from "./task-card";
+import {requestKey} from "@/lib/request-key";
 
 type Slot={file?:File;preview?:string;status:"empty"|"waiting"|"uploading"|"ready"|"error";asset?:Asset;error?:string};
 export function Studio({templateId,initialBatch=false}:{templateId:string;initialBatch?:boolean}){
   const [batch,setBatch]=useState(initialBatch);
+  const [activityFilter,setActivityFilter]=useState("ALL");
   const [template,setTemplate]=useState<Template|null>(null),[error,setError]=useState<string|null>(null),[revision,setRevision]=useState(0);
   const {user,sessionLoading}=useSession(),state=useFeed();
   useEffect(()=>{
@@ -20,7 +22,8 @@ export function Studio({templateId,initialBatch=false}:{templateId:string;initia
   },[templateId,revision]);
   if(error)return <div className="empty-state" role="alert"><h2>{error}</h2><p>请返回模板广场，或重新连接。</p><div className="button-row"><Link className="button secondary" href="/">返回模板</Link><button className="button secondary" onClick={()=>setRevision(value=>value+1)}>重新加载</button></div></div>;
   if(!template)return <div className="empty-state">正在打开创作工作台…</div>;
-  const recent=Object.values(state.items).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,6);
+  const tasks=Object.values(state.items),running=tasks.filter(active);
+  const recent=tasks.filter(task=>activityFilter==="ALL"||active(task)).sort((a,b)=>Number(active(b))-Number(active(a))||Number(b.templateId===template.id)-Number(a.templateId===template.id)||b.createdAt.localeCompare(a.createdAt)).slice(0,8);
   return <section>
     <Link className="back-link" href="/">← 返回模板广场</Link>
     <div className="studio-title"><h1>制作作品</h1></div>
@@ -29,13 +32,14 @@ export function Studio({templateId,initialBatch=false}:{templateId:string;initia
         <div><span className="eyebrow">{template.category}</span><h2>{template.title}</h2><p>{template.description}</p></div></div>
       <div className="requirements"><span>需要 {template.requiredImageCount} 张图片</span><span>JPG / PNG</span><span>每张 ≤ 5 MiB</span></div>
       <div className="category-tabs creation-modes"><button aria-pressed={!batch} className={!batch?"active":""} onClick={()=>setBatch(false)}>单次制作</button><button aria-pressed={batch} className={batch?"active":""} onClick={()=>setBatch(true)}>批量制作</button></div>
-      {user?<UploadForm key={user.id+template.id+batch} template={template} batch={batch}/>:<div className="empty-state"><h3>{sessionLoading?"正在恢复身份…":"先选择上方的演示身份"}</h3><p>你的素材和作品将独立保存。</p></div>}
+      {user?<UploadForm key={user.id+template.id+batch} template={template} batch={batch}/>:<div className="empty-state"><h3>{sessionLoading?"正在恢复身份…":"登录后开始制作"}</h3><Link className="text-link" href="/login">去登录 →</Link></div>}
     </div><aside className="panel live-tasks">
-      <div className="section-heading"><div><h2>创作动态 <span className="muted-count">{Object.values(state.items).filter(active).length}</span></h2></div><Link className="text-link" href="/history">全部记录 →</Link></div>
+      <div className="section-heading"><div><h2>创作动态 <span className="muted-count">{running.length}</span></h2></div><Link className="text-link" href="/history">全部记录 →</Link></div>
+      <div className="category-tabs activity-tabs">{[["ALL","最近动态"],["ACTIVE","进行中 · "+running.length]].map(([key,label])=><button key={key} className={activityFilter===key?"active":""} aria-pressed={activityFilter===key} onClick={()=>setActivityFilter(key)}>{label}</button>)}</div>
 
       {state.pageError&&<div className="notice error" role="alert">{state.pageError}<button className="text-button" onClick={()=>void state.feed.start()}>重新连接</button></div>}
-      {state.loading&&user?<div className="skeleton task-skeleton"/>:!recent.length?<div className="empty-state small-empty"><span className="empty-icon" aria-hidden>◷</span><h3>暂无任务</h3></div>:
-        <div className="live-list">{recent.map(task=><TaskCard key={task.id} task={task} error={state.errors[task.id]} onRetry={()=>state.feed.retry(task.id)} compact/>)}</div>}
+      {state.loading&&user?<div className="skeleton task-skeleton"/>:!recent.length?<div className="empty-state small-empty"><span className="empty-icon" aria-hidden>◷</span><h3>{activityFilter==="ACTIVE"?"暂无进行中的任务":"暂无任务"}</h3></div>:
+        <div className="live-list" role="region" aria-label="创作动态列表" tabIndex={0}>{recent.map(task=><TaskCard key={task.id} task={task} error={state.errors[task.id]} onRetry={()=>state.feed.retry(task.id)} compact/>)}</div>}
     </aside></div>
   </section>;
 }
@@ -101,7 +105,7 @@ export function UploadForm({template,batch=false}:{template:Template;batch?:bool
     try{
       await Promise.all(pending.map(async index=>{
         const controller=new AbortController();submissions.current.add(controller);
-        requestKeys.current[index]??=crypto.randomUUID();
+        requestKeys.current[index]??=requestKey();
         try{
           const result=await api<{taskId:string;task:Task}>("/tasks",{...post({templateId:template.id,
             assetIds:slots.slice(index*count,(index+1)*count).map(slot=>slot.asset!.id),requestKey:requestKeys.current[index],
