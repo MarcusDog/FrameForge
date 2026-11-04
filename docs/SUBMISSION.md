@@ -1,6 +1,6 @@
 # GitHub 工程交付与 AI 工作流核对
 
-更新：2026-11-04（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。当前版本包含头像/昵称/简介个人中心、批量制作、两 worker 和 12 种版式；最近本地验证 **72 项通过**，见 PROFILE_UPDATE.md。下方旧 SHA/53～63 项记录为历史证据；最新公开验收 SHA 与实际云端状态以最后的发布记录为准。本文件是 R-12～R-14 的交付入口，逐条业务审查见 REQUIREMENTS.md，历史独立审查见 REVIEW.md。
+更新：2026-11-04（Asia/Shanghai）。公开仓库：https://github.com/MarcusDog/FrameForge 。当前版本包含头像/昵称/简介个人中心、批量制作、两 worker 和 12 种版式；最近本地验证 **72 项通过**，见 PROFILE_UPDATE.md。下方旧 SHA/测试数量为历史证据；最新公开验收 SHA 与实际云端状态以最后的发布记录为准。本文件是 R-12～R-14 的交付入口，逐条业务审查见 REQUIREMENTS.md，历史独立审查见 REVIEW.md。
 
 ## 审核结论与仍存在的不足
 
@@ -87,5 +87,12 @@
 39 前端、17 Java 单元、16 真实 MySQL 集成共72项通过；lint/typecheck/build 通过。增量003迁移、重复执行不覆盖、三服务 healthy、smoke/batch/profile 三个容器 HTTP 脚本 PASS。新增6项前端行为和3项MySQL测试，首次运行均通过；首次 lint 的 effect 同步更新失败与修复完整保留在 [profile-console.txt](evidence/profile-console.txt)。当前真实浏览器小屏/焦点/头像交互及双标签页冲突待人工确认。
 
 交付已补个人资料 API、升级/回滚说明、AI真实工作流案例与 [高分完善优先级](SCORECARD.md)。没有添加生产登录、会员或支付，也没有将建议当作完成项。该版业务验收 SHA、公开源码一致性和对应新 CI run 在发布后记录，旧的 c893712 不指代新个人资料代码。
+
+## 最新公开验收提交与实际云端结果
+
+- 个人资料业务验收提交：[01e5347b6b0c19b481440202ad7fdf99951fb336](https://github.com/MarcusDog/FrameForge/commit/01e5347b6b0c19b481440202ad7fdf99951fb336)。本地验证基线 2180ec35b276bd8f6071df680f349069fc6fb4ca；Git 比对 backend/frontend/database/scripts/Compose/配置/CI 无差异，退出0。
+- [源码一致性原始记录](evidence/github-profile-provenance-2026-11-04.json) 同时核对远端 README、AI_WORKFLOW、新增SQL、ProfileService、ProfileEditor 和 CI 的 Git blob；原始题目/设计目录未进入公开树。
+- 本次 [Actions run 41778534619](https://github.com/MarcusDog/FrameForge/actions/runs/41778534619) 状态 failure，三个任务 steps 都为空。annotations 原因仍为 GitHub 账户计费锁定，未执行任何构建/测试，见 [完整API记录](evidence/github-profile-run-2026-11-04.json)。另有 runner 镜像迁移提示，不是本次业务测试失败。
+- 本地72项通过与远端未启动明确分开。账户所有者需处理锁定后重跑；没有改账单、删除断言、关闭CI或替换runner规避检查。后续文档回执提交不改变业务源码，验收仍指向上述01e5347。
 
 原始附件、缓存、个人上传文件继续留在本地；公开工程快照不携带本地原始附件历史。

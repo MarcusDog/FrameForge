@@ -1,0 +1,39 @@
+{
+  "verifiedAt": "2026-11-04T05:20:14.2616815Z",
+  "testedLocal": "2180ec35b276bd8f6071df680f349069fc6fb4ca",
+  "publicAcceptance": "01e5347b6b0c19b481440202ad7fdf99951fb336",
+  "sourceDiffExit": 0,
+  "originalAttachmentsExcluded": true,
+  "remoteBlobs": [
+    {
+      "path": "README.md",
+      "remoteBlob": "ff5086040f9938f27647359eff3fbdef8df22c38",
+      "matchesPublishedLocal": true
+    },
+    {
+      "path": "docs/AI_WORKFLOW.md",
+      "remoteBlob": "36e1c03786bac50a67ee06a6768adc3a50a6c8d0",
+      "matchesPublishedLocal": true
+    },
+    {
+      "path": "database/003-user-profiles.sql",
+      "remoteBlob": "9b24fd396169fe82e6ade7aa0a1cc5320c6aa9b0",
+      "matchesPublishedLocal": true
+    },
+    {
+      "path": "backend/src/main/java/studio/frameforge/ProfileService.java",
+      "remoteBlob": "0c54b576458115620d8a2d6e197993fe26dbe217",
+      "matchesPublishedLocal": true
+    },
+    {
+      "path": "frontend/src/components/profile-editor.tsx",
+      "remoteBlob": "248f4b428fb165bdb64a16b7ee8c2e22e00cecd3",
+      "matchesPublishedLocal": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "remoteBlob": "7a31267f34c3e5d50c9646e8a5ea9dca163c144f",
+      "matchesPublishedLocal": true
+    }
+  ]
+}

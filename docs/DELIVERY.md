@@ -2,7 +2,7 @@
 
 交付材料更新：2026-11-04（Asia/Shanghai），历史阶段记录保留。本地工程即完整交付物，不需要真实 AI Key 或外部素材服务。
 
-最新个人资料增强已交付：昵称/简介、默认或上传头像、保存冲突保护、真实退出，新增可重复的 003 数据迁移。当前为 39 前端 +17 Java 单元 +16 真实 MySQL 共72项通过，lint/typecheck/build、三服务健康、smoke/batch/profile 三脚本通过。详见 PROFILE_UPDATE.md 与原始 profile-console.txt；高分完善建议见 SCORECARD.md，当前发布 SHA/云端执行状态见 SUBMISSION.md。以下较早的53/54/63项记录均是历史阶段，不能当作本轮数量。
+最新个人资料增强已交付：昵称/简介、默认或上传头像、保存冲突保护、真实退出，新增可重复的 003 数据迁移。当前为 39 前端 +17 Java 单元 +16 真实 MySQL 共72项通过，lint/typecheck/build、三服务健康、smoke/batch/profile 三脚本通过。详见 PROFILE_UPDATE.md 与原始 profile-console.txt；高分完善建议见 SCORECARD.md。公开验收01e5347已推送，云端run41778534619因账户计费锁定未开始执行，见SUBMISSION.md。以下较早验证记录均是历史阶段，不能当作本轮数量。
 
 ## 当前完成情况
 

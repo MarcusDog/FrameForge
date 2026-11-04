@@ -2,7 +2,7 @@
 
 选择模板、上传照片、提交后台制作，然后继续浏览。Java 按 **素材检查 → 模拟生成 → 结果整理** 执行，MySQL 保存任务和真实时间线，Java2D 将本次上传的照片拼成可预览 PNG。无真实 AI 调用。
 
-当前版本：可保存头像/昵称/简介的个人中心、批量独立任务、两条并行制作和 12 种版式。最近本地验证为 **72 项测试通过**；最新代码验收提交与远端 CI 状态见 [交付清单](docs/SUBMISSION.md)。个人中心证据见 [PROFILE_UPDATE.md](docs/PROFILE_UPDATE.md)，后续完善优先级见 [SCORECARD.md](docs/SCORECARD.md)。
+当前版本：可保存头像/昵称/简介的个人中心、批量独立任务、两条并行制作和 12 种版式。最近本地验证为 **72 项测试通过**；代码验收提交 [01e5347](https://github.com/MarcusDog/FrameForge/commit/01e5347b6b0c19b481440202ad7fdf99951fb336)，远端 CI 真实状态见 [交付清单](docs/SUBMISSION.md)。个人中心证据见 [PROFILE_UPDATE.md](docs/PROFILE_UPDATE.md)，后续完善优先级见 [SCORECARD.md](docs/SCORECARD.md)。
 
 ## 快速启动
 
